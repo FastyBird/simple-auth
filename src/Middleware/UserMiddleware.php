@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * AccountMiddleware.php
+ * UserMiddleware.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -24,14 +24,14 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Access token check middleware
+ * User login middleware
  *
  * @package        FastyBird:NodeAuth!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class AccountMiddleware implements MiddlewareInterface
+final class UserMiddleware implements MiddlewareInterface
 {
 
 	/** @var NS\User */
@@ -40,16 +40,18 @@ final class AccountMiddleware implements MiddlewareInterface
 	/** @var Security\TokenReader */
 	private $tokenReader;
 
-	/** @var Security\TokenValidator */
-	private $tokenValidator;
+	/** @var Security\IIdentityFactory */
+	private $identityFactory;
 
 	public function __construct(
 		NS\User $user,
-		Security\TokenReader $tokenReader
+		Security\TokenReader $tokenReader,
+		Security\IIdentityFactory $identityFactory
 	) {
 		$this->user = $user;
 
 		$this->tokenReader = $tokenReader;
+		$this->identityFactory = $identityFactory;
 	}
 
 	/**
@@ -67,12 +69,18 @@ final class AccountMiddleware implements MiddlewareInterface
 			$token = $this->tokenReader->read($request);
 
 			if ($token !== null) {
-				$jwToken = $this->tokenValidator->validate($token);
+				$identity = $this->identityFactory->create($token);
+
+				if ($identity !== null) {
+					$this->user->login($identity);
+
+					return $handler->handle($request);
+				}
 			}
 
-		} else {
-			$this->user->logout(true);
 		}
+
+		$this->user->logout(true);
 
 		return $handler->handle($request);
 	}

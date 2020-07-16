@@ -16,6 +16,7 @@
 namespace FastyBird\NodeAuth\Security;
 
 use FastyBird\NodeAuth;
+use Lcobucci\JWT;
 use Nette;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -32,18 +33,31 @@ final class TokenReader
 
 	use Nette\SmartObject;
 
+	/** @var TokenValidator */
+	private $tokenValidator;
+
+	public function __construct(
+		TokenValidator $tokenValidator
+	) {
+		$this->tokenValidator = $tokenValidator;
+	}
+
 	/**
 	 * @param ServerRequestInterface $request
 	 *
-	 * @return string|null
+	 * @return JWT\Token|null
 	 */
-	public function read(ServerRequestInterface $request): ?string
+	public function read(ServerRequestInterface $request): ?JWT\Token
 	{
-		$headerJWT = $request->hasHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) ? $request->getHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) : null;
+		$headerJWT = $request->hasHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) ?
+			$request->getHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) : null;
 		$headerJWT = is_array($headerJWT) ? reset($headerJWT) : $headerJWT;
 
-		if (is_string($headerJWT) && preg_match(NodeAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false) {
-			return $matches[1];
+		if (
+			is_string($headerJWT)
+			&& preg_match(NodeAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false
+		) {
+			return $this->tokenValidator->validate($matches[1]);
 		}
 
 		return null;

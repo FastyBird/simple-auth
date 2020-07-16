@@ -15,9 +15,9 @@
 
 namespace FastyBird\NodeAuth\DI;
 
-use FastyBird\NodeAuth\Events;
-use FastyBird\NodeAuth\Middleware;
-use FastyBird\NodeWebServer\Commands as NodeWebServerCommands;
+use FastyBird\NodeAuth\Mapping;
+use FastyBird\NodeAuth\Security;
+use FastyBird\NodeAuth\Subscribers;
 use Nette;
 use Nette\DI;
 
@@ -39,60 +39,20 @@ class NodeAuthExtension extends DI\CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$builder->addDefinition(null)
-			->setType(Middleware\JsonApiMiddleware::class)
-			->setTags([
-				'middleware' => [
-					'priority' => 10,
-				],
-			]);
+		$builder->addDefinition($this->prefix('tokenBuilder'))
+			->setType(Security\TokenBuilder::class);
 
-		$builder->addDefinition(null)
-			->setType(Middleware\DbErrorMiddleware::class)
-			->setTags([
-				'middleware' => [
-					'priority' => 50,
-				],
-			]);
+		$builder->addDefinition($this->prefix('tokenReader'))
+			->setType(Security\TokenReader::class);
 
-		$builder->addDefinition($this->prefix('event.serverStart'))
-			->setType(Events\ServerStartHandler::class);
+		$builder->addDefinition($this->prefix('tokenValidator'))
+			->setType(Security\TokenValidator::class);
 
-		$builder->addDefinition($this->prefix('event.request'))
-			->setType(Events\RequestHandler::class);
+		$builder->addDefinition($this->prefix('driver'))
+			->setType(Mapping\Driver\Owner::class);
 
-		$builder->addDefinition($this->prefix('event.response'))
-			->setType(Events\ResponseHandler::class);
-
-		$builder->addDefinition($this->prefix('event.afterConsume'))
-			->setType(Events\AfterConsumeHandler::class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function beforeCompile(): void
-	{
-		parent::beforeCompile();
-
-		$builder = $this->getContainerBuilder();
-
-		/**
-		 * SERVER EVENTS
-		 */
-
-		$serverCommandServiceName = $builder->getByType(NodeWebServerCommands\HttpServerCommand::class);
-
-		if ($serverCommandServiceName !== null) {
-			/** @var DI\Definitions\ServiceDefinition $serverCommandService */
-			$serverCommandService = $builder->getDefinition($serverCommandServiceName);
-
-			$serverCommandService
-				->addSetup('$onServerStart[]', ['@' . $this->prefix('event.serverStart')])
-				->addSetup('$onRequest[]', ['@' . $this->prefix('event.request')])
-				->addSetup('$onResponse[]', ['@' . $this->prefix('event.response')])
-				->addSetup('$onAfterConsumeMessage[]', ['@' . $this->prefix('event.afterConsume')]);
-		}
+		$builder->addDefinition($this->prefix('subscriber'))
+			->setType(Subscribers\UserSubscriber::class);
 	}
 
 	/**
@@ -103,7 +63,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'nodeDatabase'
+		string $extensionName = 'nodeAuth'
 	): void {
 		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new NodeAuthExtension());

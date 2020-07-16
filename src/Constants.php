@@ -26,7 +26,21 @@ namespace FastyBird\NodeAuth;
 final class Constants
 {
 
+	/**
+	 * Node ACL
+	 */
+
+	// Permissions string delimiter
+	public const PERMISSIONS_DELIMITER = ':';
+
+	/**
+	 * Security tokens
+	 */
+
 	public const TOKEN_HEADER_NAME = 'authorization';
 	public const TOKEN_HEADER_REGEXP = '/Bearer\s+(.*)$/i';
+
+	public const TOKEN_TYPE_ACCESS = 'access';
+	public const TOKEN_TYPE_REFRESH = 'refresh';
 
 }

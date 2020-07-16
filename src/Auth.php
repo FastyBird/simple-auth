@@ -15,9 +15,8 @@
 
 namespace FastyBird\NodeAuth;
 
-use FastyBird\NodeAuth;
 use Nette;
-use Psr\Http\Message\ServerRequestInterface;
+use Nette\Security as NS;
 
 /**
  * Authentication service
@@ -32,21 +31,54 @@ final class Auth
 
 	use Nette\SmartObject;
 
-	/** @var Security\TokenReader */
-	private $tokenReader;
+	/** @var string|null */
+	private $accessToken = null;
 
 	/** @var Security\TokenValidator */
 	private $tokenValidator;
 
-	public function login(ServerRequestInterface $request)
+	/** @var Security\IIdentityFactory */
+	private $identityFactory;
+
+	/** @var NS\User */
+	private $user;
+
+	/**
+	 * @param string $token
+	 *
+	 * @return void
+	 */
+	public function setAccessToken(string $token): void
 	{
-		// Request has to have Authorization header
-		if ($request->hasHeader(NodeAuth\Constants::TOKEN_HEADER_NAME)) {
-			$token = $this->tokenReader->read($request);
+		$this->accessToken = $token;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function getAccessToken(): ?string
+	{
+		return $this->accessToken;
+	}
+
+	/**
+	 * @return void
+	 *
+	 * @throws NS\AuthenticationException
+	 */
+	public function login(): void
+	{
+		if ($this->accessToken !== null) {
+			$token = $this->tokenValidator->validate($this->accessToken);
 
 			if ($token !== null) {
-				$jwToken = $this->tokenValidator->validate($token);
+				$identity = $this->identityFactory->create($token);
+
+				if ($identity !== null) {
+					$this->user->login($identity);
+				}
 			}
 		}
 	}
+
 }
