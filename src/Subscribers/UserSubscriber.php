@@ -54,9 +54,11 @@ final class UserSubscriber implements Common\EventSubscriber
 	}
 
 	public function __construct(
-		Mapping\Driver\Owner $driver
+		Mapping\Driver\Owner $driver,
+		NS\User $user
 	) {
 		$this->driver = $driver;
+		$this->user = $user;
 	}
 
 	/**

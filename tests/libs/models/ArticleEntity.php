@@ -4,7 +4,6 @@ namespace Tests\Cases\Models;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\NodeAuth\Entities;
-use FastyBird\NodeAuth\Mapping\Annotation as FB;
 
 /**
  * @ORM\Entity
@@ -29,13 +28,6 @@ class ArticleEntity implements Entities\IEntityOwner
 	private $title;
 
 	/**
-	 * @var mixed
-	 *
-	 * @FB\Owner(on="create")
-	 */
-	protected $owner;
-
-	/**
 	 * @return int
 	 */
 	public function getId(): int
@@ -57,22 +49,6 @@ class ArticleEntity implements Entities\IEntityOwner
 	public function setTitle(string $title): void
 	{
 		$this->title = $title;
-	}
-
-	/**
-	 * @param mixed $owner
-	 */
-	public function setOwner($owner): void
-	{
-		$this->owner = $owner;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getOwner()
-	{
-		return $this->owner;
 	}
 
 }

@@ -3,28 +3,27 @@
 namespace Tests\Cases;
 
 use DateTimeImmutable;
-use Doctrine\ORM;
 use FastyBird\NodeAuth;
+use FastyBird\NodeAuth\Middleware;
 use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
+use IPub\SlimRouter;
 use Mockery;
 use Nette;
+use Nette\Security as NS;
 use Nette\DI;
-use Nettrine;
 use Ninjify\Nunjuck\TestCase\BaseMockeryTestCase;
+use React\Http\Io\ServerRequest;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 
-require_once __DIR__ . '/../../../libs/models/ArticleEntity.php';
+require_once __DIR__ . '/../../../libs/controllers/TestingController.php';
 
-final class OwnerMappingTests extends BaseMockeryTestCase
+final class UserMiddlewareTest extends BaseMockeryTestCase
 {
 
 	/** @var DI\Container */
 	private $container;
-
-	/** @var ORM\EntityManager */
-	private $em;
 
 	/**
 	 * {@inheritdoc}
@@ -34,7 +33,6 @@ final class OwnerMappingTests extends BaseMockeryTestCase
 		parent::setUp();
 
 		$this->container = $this->createContainer();
-		$this->em = $this->container->getByType(Nettrine\ORM\EntityManagerDecorator::class);
 
 		$dateTimeFactory = Mockery::mock(NodeLibsHelpers\DateFactory::class);
 		$dateTimeFactory
@@ -47,42 +45,72 @@ final class OwnerMappingTests extends BaseMockeryTestCase
 		);
 	}
 
-	public function testCreate(): void
+	/**
+	 * @param string $url
+	 * @param string $method
+	 * @param string $token
+	 * @param string $id
+	 *
+	 * @dataProvider ./../../../fixtures/Middleware/signIn.php
+	 */
+	public function testAllowedPermission(string $url, string $method, string $token, string $id): void
 	{
-		$this->generateDbSchema();
+		$router = $this->createRouter();
 
-		/** @var NodeAuth\Auth $auth */
-		$auth = $this->container->getByType(NodeAuth\Auth::class);
+		$request = new ServerRequest(
+			$method,
+			$url,
+			[
+				'authorization' => $token,
+			]
+		);
 
-		$auth->setAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODU3NDI0MDAsImV4cCI6MTU4NTc2NDAwMCwianRpIjoiN2U4NGNkNjgtZTdlYi00ZWQ3LTllOGUtZmMwOTdhODk2M2JkIiwiYWNjb3VudCI6ImJjZTdkNjYwLTEzYmQtNGQwNC1hMDkzLWZkZTAwMGRjOTdkMSIsIm5hbWUiOiJUZXN0ZXIiLCJ0eXBlIjoiYWNjZXNzIiwicm9sZXMiOlsiYWRtaW5pc3RyYXRvciJdfQ.3LJsE3SZ7KWEtxEwb2X9d2qDotsKUMKk2hU5vTKRcIE');
-		$auth->login();
+		$router->handle($request);
 
-		$article = new Models\ArticleEntity();
+		/** @var NS\User $user */
+		$user = $this->container->getByType(NS\User::class);
 
-		$this->em->persist($article);
-		$this->em->flush();
-
-		Assert::equal('bce7d660-13bd-4d04-a093-fde000dc97d1', $article->getOwnerId());
-
-		$auth->setAccessToken('eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODU3NDI0MDAsImV4cCI6MTU4NTc2NDAwMCwianRpIjoiZTVkNDU4MDMtNWQ1NS00YTk5LTg2ZGUtNzA0YzM5MjAwOTI1IiwiYWNjb3VudCI6ImJjNmU2M2ZkLWI5MzMtNGY3Ni1hMDRjLTk1ZDM4ZjRlMzQwNSIsIm5hbWUiOiJUZXN0ZXIiLCJ0eXBlIjoiYWNjZXNzIiwicm9sZXMiOlsiQWRtaW5pc3RyYXRvciJdfQ.oF_cO5DERnWHI9wLtT9Jd4Gy_qwH3-Jyu4x7qbo1d54');
-		$auth->login();
-
-		$article->setTitle('Updated title');
-
-		$this->em->persist($article);
-		$this->em->flush();
-
-		Assert::equal('bce7d660-13bd-4d04-a093-fde000dc97d1', $article->getOwnerId());
+		Assert::same($id, $user->getId());
+		Assert::same([
+			NodeAuth\Constants::ROLE_AUTHENTICATED,
+		], $user->getRoles());
 	}
 
-
 	/**
-	 * @return void
+	 * @return SlimRouter\Routing\Router
 	 */
-	private function generateDbSchema(): void
+	protected function createRouter(): SlimRouter\Routing\Router
 	{
-		$schema = new ORM\Tools\SchemaTool($this->em);
-		$schema->createSchema($this->em->getMetadataFactory()->getAllMetadata());
+		$controller = new Controllers\TestingController();
+
+		$router = new SlimRouter\Routing\Router();
+
+		$router
+			->group('/v1', function (SlimRouter\Routing\RouteCollector $group) use ($controller): void {
+				$group->get('/testing-endpoint', [$controller, 'read']);
+				$group->patch('/testing-endpoint', [$controller, 'update']);
+			})
+			->addMiddleware($this->container->getByType(Middleware\AccessMiddleware::class));
+
+		$middlewareServices = $this->container->findByTag('middleware');
+
+		// Sort by priority
+		uasort($middlewareServices, function (array $a, array $b): int {
+			$p1 = $a['priority'] ?? 10;
+			$p2 = $b['priority'] ?? 10;
+
+			if ($p1 === $p2) {
+				return 0;
+			}
+
+			return ($p1 < $p2) ? -1 : 1;
+		});
+
+		foreach ($middlewareServices as $middlewareService => $middlewareServiceTags) {
+			$router->addMiddleware($this->container->getService($middlewareService));
+		}
+
+		return $router;
 	}
 
 	/**
@@ -136,5 +164,5 @@ final class OwnerMappingTests extends BaseMockeryTestCase
 
 }
 
-$test_case = new OwnerMappingTests();
+$test_case = new UserMiddlewareTest();
 $test_case->run();

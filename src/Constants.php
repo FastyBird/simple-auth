@@ -43,4 +43,12 @@ final class Constants
 	public const TOKEN_TYPE_ACCESS = 'access';
 	public const TOKEN_TYPE_REFRESH = 'refresh';
 
+	/**
+	 * Defined roles
+	 */
+
+	public const ROLE_ANONYMOUS = 'guest';
+	public const ROLE_AUTHENTICATED = 'authenticated';
+	public const ROLE_ADMINISTRATOR = 'administrator';
+
 }

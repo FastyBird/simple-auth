@@ -43,6 +43,17 @@ final class Auth
 	/** @var NS\User */
 	private $user;
 
+	public function __construct(
+		Security\TokenValidator $tokenValidator,
+		Security\IIdentityFactory $identityFactory,
+		NS\User $user
+	) {
+		$this->tokenValidator = $tokenValidator;
+		$this->identityFactory = $identityFactory;
+
+		$this->user = $user;
+	}
+
 	/**
 	 * @param string $token
 	 *

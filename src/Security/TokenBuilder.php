@@ -23,6 +23,7 @@ use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
+use Throwable;
 
 /**
  * JW token builder
@@ -65,6 +66,8 @@ final class TokenBuilder
 	 * @param User\IUser $user
 	 *
 	 * @return JWT\Token
+	 *
+	 * @throws Throwable
 	 */
 	public function build(
 		string $type,

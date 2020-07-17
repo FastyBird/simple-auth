@@ -4,78 +4,58 @@
 # @license		More in license.md
 # @copyright	https://www.fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
-# @package		FastyBird:NodeDatabase!
+# @package		FastyBird:NodeAuth!
 # @subpackage	config
 # @since		0.1.0
 #
-# @date			25.05.20
+# @date			16.07.20
 
-#########################
-# Used Nette extensions #
-#########################
+php:
+	date.timezone: Europe/Prague
 
 extensions:
-	nettrineAnnotations			: Nettrine\Annotations\DI\AnnotationsExtension
-	nettrineCache				: Nettrine\Cache\DI\CacheExtension
-	nettrineDbal				: Nettrine\DBAL\DI\DbalExtension
-	nettrineOrm					: Nettrine\ORM\DI\OrmExtension
-	nettrineOrmAnnotations		: Nettrine\ORM\DI\OrmAnnotationsExtension
-	nettrineOrmConsole			: Nettrine\ORM\DI\OrmConsoleExtension
-	nettrineOrmCache			: Nettrine\ORM\DI\OrmCacheExtension
-	nodeWebServer				: FastyBird\NodeWebServer\DI\NodeWebServerExtension
-	nodeAuth					: FastyBird\NodeAuth\DI\NodeAuthExtension
+	contributteConsole		: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+	nettrineAnnotations		: Nettrine\Annotations\DI\AnnotationsExtension
+	nettrineCache			: Nettrine\Cache\DI\CacheExtension
+	nettrineDbal			: Nettrine\DBAL\DI\DbalExtension
+	nettrineOrm				: Nettrine\ORM\DI\OrmExtension
+	nettrineOrmAnnotations	: Nettrine\ORM\DI\OrmAnnotationsExtension
+	nettrineOrmConsole		: Nettrine\ORM\DI\OrmConsoleExtension
+	nettrineOrmCache		: Nettrine\ORM\DI\OrmCacheExtension
 
-##################################
-# Nette extensions configuration #
-##################################
+contributteConsole:
+	name: FastyBird:Libraries!
+	version: '1.0'
+	catchExceptions: true
+	autoExit: true
+	url: http://example.com
+	lazy: false
+	helperSet: \Symfony\Component\Console\Helper\HelperSet
+	helpers: []
 
-# Doctrine DBAL
-###############
 nettrineDbal:
 	connection:
-		serverVersion: %database.version%
-		host: %database.host%
-		port: %database.port%
-		driver: %database.driver%
-		memory: %database.memory%
-		dbname: %database.dbname%
-		user: %database.username%
-		password: %database.password%
-		charset: utf8
+		host: 127.0.0.1
+		driver: pdo_sqlite
+		memory: true
 
-# Doctrine ORM annoations
-#########################
 nettrineAnnotations:
 	debug: %debugMode%
-	ignore:
-		- writable
-		- validator
-		- required
-		- module
-		- author
-		- subpackage
-		- package
 
-# Doctrine ORM
-##############
 nettrineOrm:
 	configuration:
 		proxyDir	: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
-	namespaces: []
+	namespaces:
+		- Tests\Cases\Models
 	paths:
-		- %appDir%/src/Entities
+		- %appDir%libs/models
 
-# Default configuration
-##############
-parameters:
-	database:
-		version: 5.7
-		host: 127.0.0.1
-		port: 3306
-		driver: pdo_mysql
-		memory: false
-		dbname: devices_node
-		username: root
-		password:
+nodeAuth:
+	enable:
+		middleware: true
+		entity: true
+
+services:
+	- {factory: FastyBird\NodeLibs\Helpers\DateFactory}
