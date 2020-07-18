@@ -15,9 +15,11 @@
 
 namespace FastyBird\NodeAuth\Security;
 
+use FastyBird\NodeAuth;
 use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use Lcobucci\JWT;
 use Nette;
+use Ramsey\Uuid;
 
 /**
  * JW token parser
@@ -69,6 +71,9 @@ final class TokenValidator
 		if (
 			$token->validate($validationData)
 			&& $token->verify($this->signer, $this->tokenSignature)
+			&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_USER)
+			&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
+			&& Uuid\Uuid::isValid($token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER))
 		) {
 			return $token;
 		}

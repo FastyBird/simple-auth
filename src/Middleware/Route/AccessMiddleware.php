@@ -13,7 +13,7 @@
  * @date           01.04.20
  */
 
-namespace FastyBird\NodeAuth\Middleware;
+namespace FastyBird\NodeAuth\Middleware\Route;
 
 use FastyBird\NodeAuth;
 use FastyBird\NodeAuth\Exceptions;
@@ -57,8 +57,10 @@ final class AccessMiddleware implements MiddlewareInterface
 	 * @throws Exceptions\ForbiddenAccessException
 	 * @throws ReflectionException
 	 */
-	public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-	{
+	public function process(
+		ServerRequestInterface $request,
+		RequestHandlerInterface $handler
+	): ResponseInterface {
 		$route = $request->getAttribute(SlimRouter\Routing\Router::ROUTE);
 
 		if ($route instanceof SlimRouter\Routing\IRoute) {

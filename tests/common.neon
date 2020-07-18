@@ -22,6 +22,7 @@ extensions:
 	nettrineOrmAnnotations	: Nettrine\ORM\DI\OrmAnnotationsExtension
 	nettrineOrmConsole		: Nettrine\ORM\DI\OrmConsoleExtension
 	nettrineOrmCache		: Nettrine\ORM\DI\OrmCacheExtension
+	ipubDoctrineCrud		: IPub\DoctrineCrud\DI\DoctrineCrudExtension
 
 contributteConsole:
 	name: FastyBird:Libraries!
@@ -53,9 +54,14 @@ nettrineOrmAnnotations:
 		- %appDir%libs/models
 
 nodeAuth:
+	token:
+		issuer: fb_tester
 	enable:
+		identity: true
 		middleware: true
-		entity: true
+		doctrine:
+			mapping: true
+			models: true
 
 services:
 	- {factory: FastyBird\NodeLibs\Helpers\DateFactory}

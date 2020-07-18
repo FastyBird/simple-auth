@@ -15,10 +15,8 @@
 
 namespace FastyBird\NodeAuth\Security;
 
-use DateTimeImmutable;
+use DateTimeInterface;
 use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Exceptions;
-use FastyBird\NodeAuth\User;
 use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use Lcobucci\JWT;
 use Nette;
@@ -38,11 +36,11 @@ final class TokenBuilder
 
 	use Nette\SmartObject;
 
-	private const ACCESS_TOKEN_EXPIRATION = '+6 hours';
-	private const REFRESH_TOKEN_EXPIRATION = '+3 days';
-
 	/** @var string */
 	private $tokenSignature;
+
+	/** @var string */
+	private $tokenIssuer;
 
 	/** @var JWT\Signer */
 	private $signer;
@@ -52,67 +50,46 @@ final class TokenBuilder
 
 	public function __construct(
 		string $tokenSignature,
+		string $tokenIssuer,
 		JWT\Signer $signer,
 		NodeLibsHelpers\IDateFactory $dateTimeFactory
 	) {
 		$this->tokenSignature = $tokenSignature;
+		$this->tokenIssuer = $tokenIssuer;
 
 		$this->signer = $signer;
 		$this->dateTimeFactory = $dateTimeFactory;
 	}
 
 	/**
-	 * @param string $type
-	 * @param User\IUser $user
+	 * @param string $userId
+	 * @param string[] $roles
+	 * @param DateTimeInterface|null $expiration
 	 *
 	 * @return JWT\Token
 	 *
 	 * @throws Throwable
 	 */
 	public function build(
-		string $type,
-		User\IUser $user
+		string $userId,
+		array $roles,
+		?DateTimeInterface $expiration = null
 	): JWT\Token {
-		if (!in_array($type, [NodeAuth\Constants::TOKEN_TYPE_ACCESS, NodeAuth\Constants::TOKEN_TYPE_REFRESH], true)) {
-			throw new Exceptions\InvalidStateException('Provided token type is not valid type.');
-		}
-
 		$timestamp = $this->dateTimeFactory->getNow()->getTimestamp();
 
 		$jwtBuilder = new JWT\Builder();
+		$jwtBuilder->identifiedBy(Uuid\Uuid::uuid4()->toString());
+		$jwtBuilder->issuedBy($this->tokenIssuer);
 		$jwtBuilder->issuedAt($timestamp);
 
-		if ($type === NodeAuth\Constants::TOKEN_TYPE_ACCESS) {
-			$jwtBuilder->expiresAt($this->getNow()->modify(self::ACCESS_TOKEN_EXPIRATION)->getTimestamp());
-
-		} else {
-			$jwtBuilder->expiresAt($this->getNow()->modify(self::REFRESH_TOKEN_EXPIRATION)->getTimestamp());
+		if ($expiration !== null) {
+			$jwtBuilder->expiresAt($expiration->getTimestamp());
 		}
 
-		$jwtBuilder->identifiedBy(Uuid\Uuid::uuid4()->toString());
-
-		$jwtBuilder->withClaim('account', $user->getId());
-		$jwtBuilder->withClaim('name', $user->getName());
-		$jwtBuilder->withClaim('type', $type);
-
-		if ($type === NodeAuth\Constants::TOKEN_TYPE_ACCESS) {
-			$jwtBuilder->withClaim('roles', array_map(function ($role): string {
-				return (string) $role;
-			}, $user->getRoles()));
-		}
+		$jwtBuilder->withClaim(NodeAuth\Constants::TOKEN_CLAIM_USER, $userId);
+		$jwtBuilder->withClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES, $roles);
 
 		return $jwtBuilder->getToken($this->signer, new JWT\Signer\Key($this->tokenSignature));
-	}
-
-	/**
-	 * @return DateTimeImmutable
-	 */
-	private function getNow(): DateTimeImmutable
-	{
-		/** @var DateTimeImmutable $now */
-		$now = $this->dateTimeFactory->getNow();
-
-		return $now;
 	}
 
 }

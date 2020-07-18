@@ -37,18 +37,21 @@ final class Constants
 	 * Security tokens
 	 */
 
+	public const TOKEN_URI_NAME = 'authorization';
+
 	public const TOKEN_HEADER_NAME = 'authorization';
 	public const TOKEN_HEADER_REGEXP = '/Bearer\s+(.*)$/i';
 
-	public const TOKEN_TYPE_ACCESS = 'access';
-	public const TOKEN_TYPE_REFRESH = 'refresh';
-
+	public const TOKEN_CLAIM_USER = 'user';
+	public const TOKEN_CLAIM_ROLES = 'roles';
 	/**
 	 * Defined roles
 	 */
 
 	public const ROLE_ANONYMOUS = 'guest';
-	public const ROLE_AUTHENTICATED = 'authenticated';
+	public const ROLE_VISITOR = 'visitor';
+	public const ROLE_OPERATOR = 'operator';
+	public const ROLE_MANAGER = 'manager';
 	public const ROLE_ADMINISTRATOR = 'administrator';
 
 }

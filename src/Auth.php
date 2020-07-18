@@ -17,6 +17,7 @@ namespace FastyBird\NodeAuth;
 
 use Nette;
 use Nette\Security as NS;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Authentication service
@@ -31,11 +32,8 @@ final class Auth
 
 	use Nette\SmartObject;
 
-	/** @var string|null */
-	private $accessToken = null;
-
-	/** @var Security\TokenValidator */
-	private $tokenValidator;
+	/** @var Security\TokenReader */
+	private $tokenReader;
 
 	/** @var Security\IIdentityFactory */
 	private $identityFactory;
@@ -44,52 +42,38 @@ final class Auth
 	private $user;
 
 	public function __construct(
-		Security\TokenValidator $tokenValidator,
+		Security\TokenReader $tokenReader,
 		Security\IIdentityFactory $identityFactory,
 		NS\User $user
 	) {
-		$this->tokenValidator = $tokenValidator;
+		$this->tokenReader = $tokenReader;
 		$this->identityFactory = $identityFactory;
 
 		$this->user = $user;
 	}
 
 	/**
-	 * @param string $token
+	 * @param ServerRequestInterface $request
 	 *
-	 * @return void
-	 */
-	public function setAccessToken(string $token): void
-	{
-		$this->accessToken = $token;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getAccessToken(): ?string
-	{
-		return $this->accessToken;
-	}
-
-	/**
 	 * @return void
 	 *
 	 * @throws NS\AuthenticationException
 	 */
-	public function login(): void
+	public function login(ServerRequestInterface $request): void
 	{
-		if ($this->accessToken !== null) {
-			$token = $this->tokenValidator->validate($this->accessToken);
+		$token = $this->tokenReader->read($request);
 
-			if ($token !== null) {
-				$identity = $this->identityFactory->create($token);
+		if ($token !== null) {
+			$identity = $this->identityFactory->create($token);
 
-				if ($identity !== null) {
-					$this->user->login($identity);
-				}
+			if ($identity !== null) {
+				$this->user->login($identity);
+
+				return;
 			}
 		}
+
+		$this->user->logout(true);
 	}
 
 }

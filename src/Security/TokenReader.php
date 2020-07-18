@@ -51,6 +51,7 @@ final class TokenReader
 	{
 		$headerJWT = $request->hasHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) ?
 			$request->getHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) : null;
+
 		$headerJWT = is_array($headerJWT) ? reset($headerJWT) : $headerJWT;
 
 		if (

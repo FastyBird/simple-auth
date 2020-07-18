@@ -10,11 +10,12 @@
  * @subpackage     Security
  * @since          0.1.0
  *
- * @date           31.03.20
+ * @date           15.07.20
  */
 
 namespace FastyBird\NodeAuth\Security;
 
+use FastyBird\NodeAuth;
 use Lcobucci\JWT;
 use Nette\Security as NS;
 
@@ -34,12 +35,10 @@ class IdentityFactory implements IIdentityFactory
 	 */
 	public function create(JWT\Token $token): ?NS\IIdentity
 	{
-		$identity = new PlainIdentity(
-			$token->getClaim('account'),
-			$token->getClaim('roles')
+		return new PlainIdentity(
+			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER),
+			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
 		);
-
-		return $identity;
 	}
 
 }

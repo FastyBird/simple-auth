@@ -10,7 +10,7 @@
  * @subpackage     Security
  * @since          0.1.0
  *
- * @date           31.03.20
+ * @date           15.07.20
  */
 
 namespace FastyBird\NodeAuth\Security;

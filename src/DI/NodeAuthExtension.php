@@ -16,13 +16,16 @@
 namespace FastyBird\NodeAuth\DI;
 
 use FastyBird\NodeAuth;
+use FastyBird\NodeAuth\Entities;
 use FastyBird\NodeAuth\Mapping;
 use FastyBird\NodeAuth\Middleware;
 use FastyBird\NodeAuth\Security;
 use FastyBird\NodeAuth\Subscribers;
+use IPub\DoctrineCrud;
 use Lcobucci;
 use Nette;
 use Nette\DI;
+use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
 
@@ -44,11 +47,16 @@ class NodeAuthExtension extends DI\CompilerExtension
 	{
 		return Schema\Expect::structure([
 			'token'  => Schema\Expect::structure([
+				'issuer'    => Schema\Expect::string(),
 				'signature' => Schema\Expect::string('g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='),
 			]),
 			'enable' => Schema\Expect::structure([
+				'identity'   => Schema\Expect::bool(false),
 				'middleware' => Schema\Expect::bool(false),
-				'entity'     => Schema\Expect::bool(false),
+				'doctrine'   => Schema\Expect::structure([
+					'mapping' => Schema\Expect::bool(false),
+					'models'  => Schema\Expect::bool(false),
+				]),
 			]),
 		]);
 	}
@@ -71,7 +79,8 @@ class NodeAuthExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('token.builder'))
 			->setType(Security\TokenBuilder::class)
-			->setArgument('tokenSignature', $configuration->token->signature);
+			->setArgument('tokenSignature', $configuration->token->signature)
+			->setArgument('tokenIssuer', $configuration->token->issuer);
 
 		$builder->addDefinition($this->prefix('token.reader'))
 			->setType(Security\TokenReader::class);
@@ -84,8 +93,10 @@ class NodeAuthExtension extends DI\CompilerExtension
 		 * User security
 		 */
 
-		$builder->addDefinition($this->prefix('identityFactory'))
-			->setType(Security\IdentityFactory::class);
+		if ($configuration->enable->identity) {
+			$builder->addDefinition($this->prefix('identityFactory'))
+				->setType(Security\IdentityFactory::class);
+		}
 
 		/**
 		 * Web server extension
@@ -93,7 +104,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 
 		if ($configuration->enable->middleware) {
 			$builder->addDefinition($this->prefix('middleware.access'))
-				->setType(Middleware\AccessMiddleware::class);
+				->setType(Middleware\Route\AccessMiddleware::class);
 
 			$builder->addDefinition($this->prefix('middleware.user'))
 				->setType(Middleware\UserMiddleware::class)
@@ -108,12 +119,21 @@ class NodeAuthExtension extends DI\CompilerExtension
 		 * Doctrine extension
 		 */
 
-		if ($configuration->enable->entity) {
+		if ($configuration->enable->doctrine->mapping) {
 			$builder->addDefinition($this->prefix('doctrine.driver'))
 				->setType(Mapping\Driver\Owner::class);
 
 			$builder->addDefinition($this->prefix('doctrine.subscriber'))
 				->setType(Subscribers\UserSubscriber::class);
+		}
+
+		if ($configuration->enable->doctrine->models) {
+			$builder->addDefinition($this->prefix('doctrine.tokenRepository'))
+				->setType(NodeAuth\Models\Tokens\TokenRepository::class);
+
+			$builder->addDefinition($this->prefix('doctrine.tokensManager'))
+				->setType(NodeAuth\Models\Tokens\TokensManager::class)
+				->setArgument('entityCrud', '__placeholder__');
 		}
 
 		/**
@@ -125,6 +145,24 @@ class NodeAuthExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('jwt.parser'))
 			->setType(Lcobucci\JWT\Parser::class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function afterCompile(
+		PhpGenerator\ClassType $class
+	): void {
+		$builder = $this->getContainerBuilder();
+		/** @var stdClass $configuration */
+		$configuration = $this->getConfig();
+
+		if ($configuration->enable->doctrine->models) {
+			$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
+
+			$tokensManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__doctrine__tokensManager');
+			$tokensManagerService->setBody('return new ' . NodeAuth\Models\Tokens\TokensManager::class . '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));');
+		}
 	}
 
 	/**
