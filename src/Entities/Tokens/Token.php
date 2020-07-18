@@ -19,7 +19,6 @@ use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\NodeAuth\Types;
-use FastyBird\NodeDatabase\Entities as NodeDatabaseEntities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
 use Throwable;
@@ -44,10 +43,8 @@ use Throwable;
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Token extends NodeDatabaseEntities\Entity implements IToken
+abstract class Token implements IToken
 {
-
-	use NodeDatabaseEntities\TEntityParams;
 
 	/**
 	 * @var Uuid\UuidInterface

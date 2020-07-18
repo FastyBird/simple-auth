@@ -15,9 +15,8 @@
 
 namespace FastyBird\NodeAuth\Entities\Tokens;
 
-use DateTimeInterface;
 use FastyBird\NodeAuth\Types;
-use FastyBird\NodeDatabase\Entities as NodeDatabaseEntities;
+use IPub\DoctrineCrud;
 
 /**
  * Security token entity interface
@@ -27,8 +26,7 @@ use FastyBird\NodeDatabase\Entities as NodeDatabaseEntities;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface IToken extends NodeDatabaseEntities\IEntity,
-	NodeDatabaseEntities\IEntityParams
+interface IToken extends DoctrineCrud\Entities\IEntity
 {
 
 	/**
@@ -78,18 +76,6 @@ interface IToken extends NodeDatabaseEntities\IEntity,
 	 * @return string
 	 */
 	public function getToken(): string;
-
-	/**
-	 * @return DateTimeInterface
-	 */
-	public function getValidTill(): ?DateTimeInterface;
-
-	/**
-	 * @param DateTimeInterface $dateTime
-	 *
-	 * @return bool
-	 */
-	public function isValid(DateTimeInterface $dateTime): bool;
 
 	/**
 	 * @param Types\TokenStatusType $status

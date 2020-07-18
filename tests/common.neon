@@ -14,15 +14,17 @@ php:
 	date.timezone: Europe/Prague
 
 extensions:
-	contributteConsole		: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-	nettrineAnnotations		: Nettrine\Annotations\DI\AnnotationsExtension
-	nettrineCache			: Nettrine\Cache\DI\CacheExtension
-	nettrineDbal			: Nettrine\DBAL\DI\DbalExtension
-	nettrineOrm				: Nettrine\ORM\DI\OrmExtension
-	nettrineOrmAnnotations	: Nettrine\ORM\DI\OrmAnnotationsExtension
-	nettrineOrmConsole		: Nettrine\ORM\DI\OrmConsoleExtension
-	nettrineOrmCache		: Nettrine\ORM\DI\OrmCacheExtension
-	ipubDoctrineCrud		: IPub\DoctrineCrud\DI\DoctrineCrudExtension
+	contributteConsole			: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+	nettrineAnnotations			: Nettrine\Annotations\DI\AnnotationsExtension
+	nettrineCache				: Nettrine\Cache\DI\CacheExtension
+	nettrineDbal				: Nettrine\DBAL\DI\DbalExtension
+	nettrineOrm					: Nettrine\ORM\DI\OrmExtension
+	nettrineOrmAnnotations		: Nettrine\ORM\DI\OrmAnnotationsExtension
+	nettrineOrmConsole			: Nettrine\ORM\DI\OrmConsoleExtension
+	nettrineOrmCache			: Nettrine\ORM\DI\OrmCacheExtension
+	ipubDoctrineCrud			: IPub\DoctrineCrud\DI\DoctrineCrudExtension
+	ipubDoctrineConsistence		: IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
+	ipubDynamicDiscriminatorMap	: IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
 
 contributteConsole:
 	name: FastyBird:Libraries!
@@ -40,6 +42,14 @@ nettrineDbal:
 		driver: pdo_sqlite
 		memory: true
 
+		types:
+			uuid_binary:
+				class: Ramsey\Uuid\Doctrine\UuidBinaryType
+				commented: false
+
+		typesMapping:
+			uuid_binary: binary
+
 nettrineAnnotations:
 	debug: %debugMode%
 
@@ -50,8 +60,10 @@ nettrineOrm:
 nettrineOrmAnnotations:
 	namespaces:
 		- Tests\Cases\Models
+		- FastyBird\NodeAuth\Entities
 	paths:
 		- %appDir%libs/models
+		- %appDir%../src/Entities
 
 nodeAuth:
 	token:
