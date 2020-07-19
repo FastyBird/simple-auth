@@ -12,6 +12,9 @@ require_once __DIR__ . '/../BaseTestCase.php';
 
 require_once __DIR__ . '/../../../libs/controllers/TestingController.php';
 
+/**
+ * @testCase
+ */
 final class AccessMiddlewareTest extends BaseTestCase
 {
 

@@ -13,6 +13,9 @@ require_once __DIR__ . '/../BaseTestCase.php';
 
 require_once __DIR__ . '/../../../libs/models/ArticleEntity.php';
 
+/**
+ * @testCase
+ */
 final class OwnerMappingTests extends BaseTestCase
 {
 

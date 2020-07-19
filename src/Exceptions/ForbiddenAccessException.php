@@ -15,9 +15,9 @@
 
 namespace FastyBird\NodeAuth\Exceptions;
 
-use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
+use RuntimeException;
 
-class ForbiddenAccessException extends NodeLibsExceptions\InvalidStateException implements IException
+class ForbiddenAccessException extends RuntimeException implements IException
 {
 
 }

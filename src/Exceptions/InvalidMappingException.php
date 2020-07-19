@@ -15,9 +15,7 @@
 
 namespace FastyBird\NodeAuth\Exceptions;
 
-use FastyBird\NodeLibs\Exceptions as NodeLibsExceptions;
-
-class InvalidMappingException extends NodeLibsExceptions\InvalidArgumentException
+class InvalidMappingException extends InvalidArgumentException
 {
 
 }

@@ -4,8 +4,8 @@ namespace Tests\Cases;
 
 use DateTimeImmutable;
 use Doctrine\ORM;
+use FastyBird\DateTimeFactory;
 use FastyBird\NodeAuth;
-use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use Mockery;
 use Nette;
 use Nette\DI;
@@ -31,13 +31,13 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 		$this->container = $this->createContainer();
 		$this->em = $this->container->getByType(Nettrine\ORM\EntityManagerDecorator::class);
 
-		$dateTimeFactory = Mockery::mock(NodeLibsHelpers\DateFactory::class);
+		$dateTimeFactory = Mockery::mock(DateTimeFactory\DateTimeFactory::class);
 		$dateTimeFactory
 			->shouldReceive('getNow')
 			->andReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
 
 		$this->mockContainerService(
-			NodeLibsHelpers\IDateFactory::class,
+			DateTimeFactory\DateTimeFactory::class,
 			$dateTimeFactory
 		);
 	}
@@ -52,9 +52,11 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 	}
 
 	/**
+	 * @param string|null $additionalConfig
+	 *
 	 * @return Nette\DI\Container
 	 */
-	protected function createContainer(): Nette\DI\Container
+	protected function createContainer(?string $additionalConfig = null): Nette\DI\Container
 	{
 		$rootDir = __DIR__ . '/../../';
 
@@ -65,6 +67,10 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 		$config->addParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir]);
 
 		$config->addConfig(__DIR__ . '/../../common.neon');
+
+		if ($additionalConfig && file_exists($additionalConfig)) {
+			$config->addConfig($additionalConfig);
+		}
 
 		NodeAuth\DI\NodeAuthExtension::register($config);
 

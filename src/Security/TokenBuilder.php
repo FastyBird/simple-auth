@@ -16,8 +16,8 @@
 namespace FastyBird\NodeAuth\Security;
 
 use DateTimeInterface;
+use FastyBird\DateTimeFactory;
 use FastyBird\NodeAuth;
-use FastyBird\NodeLibs\Helpers as NodeLibsHelpers;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
@@ -45,14 +45,14 @@ final class TokenBuilder
 	/** @var JWT\Signer */
 	private $signer;
 
-	/** @var NodeLibsHelpers\IDateFactory */
+	/** @var DateTimeFactory\DateTimeFactory */
 	private $dateTimeFactory;
 
 	public function __construct(
 		string $tokenSignature,
 		string $tokenIssuer,
 		JWT\Signer $signer,
-		NodeLibsHelpers\IDateFactory $dateTimeFactory
+		DateTimeFactory\DateTimeFactory $dateTimeFactory
 	) {
 		$this->tokenSignature = $tokenSignature;
 		$this->tokenIssuer = $tokenIssuer;

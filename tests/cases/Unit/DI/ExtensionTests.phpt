@@ -11,7 +11,10 @@ use Tester\Assert;
 require_once __DIR__ . '/../../../bootstrap.php';
 require_once __DIR__ . '/../BaseTestCase.php';
 
-final class ServicesTest extends BaseTestCase
+/**
+ * @testCase
+ */
+final class ExtensionTests extends BaseTestCase
 {
 
 	public function testServicesRegistration(): void
@@ -33,5 +36,5 @@ final class ServicesTest extends BaseTestCase
 
 }
 
-$test_case = new ServicesTest();
+$test_case = new ExtensionTests();
 $test_case->run();
