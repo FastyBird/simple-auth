@@ -10,7 +10,7 @@
 
 ## What is FastyBird node authentication library?
 
-This is a [Nette framework](https://nette.org) extension with useful helpers and services for [FastyBird](https://www.fastybird.com) IoT microservices
+This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication for [FastyBird](https://fastybird.com) IoT microservices
 
 ## Installation
 
@@ -25,4 +25,4 @@ $ composer require fastybird/node-auth
 Learn how to use database services in [documentation](https://github.com/FastyBird/node-auth/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://www.fastybird.com](http://www.fastybird.com) and repository [https://github.com/FastyBird/node-auth](https://github.com/FastyBird/node-auth).
+Homepage [http://fastybird.com](http://fastybird.com) and repository [https://github.com/FastyBird/node-auth](https://github.com/FastyBird/node-auth).

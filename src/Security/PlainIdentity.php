@@ -4,7 +4,7 @@
  * PlainIdentity.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     Security
@@ -18,6 +18,14 @@ namespace FastyBird\NodeAuth\Security;
 use Nette;
 use Nette\Security as NS;
 
+/**
+ * System basic plain identity
+ *
+ * @package        FastyBird:NodeAuth!
+ * @subpackage     Security
+ *
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ */
 class PlainIdentity implements NS\IIdentity
 {
 

@@ -4,7 +4,7 @@
  * Constants.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     common
@@ -44,13 +44,17 @@ final class Constants
 
 	public const TOKEN_CLAIM_USER = 'user';
 	public const TOKEN_CLAIM_ROLES = 'roles';
+
 	/**
 	 * Defined roles
 	 */
 
+	// Anonymous
 	public const ROLE_ANONYMOUS = 'guest';
+
+	// Signed in
 	public const ROLE_VISITOR = 'visitor';
-	public const ROLE_OPERATOR = 'operator';
+	public const ROLE_USER = 'user';
 	public const ROLE_MANAGER = 'manager';
 	public const ROLE_ADMINISTRATOR = 'administrator';
 

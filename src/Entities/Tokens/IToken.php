@@ -4,7 +4,7 @@
  * IToken.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     Entities
@@ -21,7 +21,7 @@ use IPub\DoctrineCrud;
 /**
  * Security token entity interface
  *
- * @package        FastyBird:AuthNode!
+ * @package        FastyBird:NodeAuth!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

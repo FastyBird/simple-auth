@@ -4,7 +4,7 @@
  * NodeAuthExtension.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     DI
@@ -30,7 +30,7 @@ use Nette\Schema;
 use stdClass;
 
 /**
- * Microservice node helpers extension container
+ * Authentication helpers extension container
  *
  * @package        FastyBird:NodeAuth!
  * @subpackage     DI
@@ -51,12 +51,14 @@ class NodeAuthExtension extends DI\CompilerExtension
 				'signature' => Schema\Expect::string('g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='),
 			]),
 			'enable' => Schema\Expect::structure([
-				'identity'   => Schema\Expect::bool(false),
 				'middleware' => Schema\Expect::bool(false),
 				'doctrine'   => Schema\Expect::structure([
 					'mapping' => Schema\Expect::bool(false),
 					'models'  => Schema\Expect::bool(false),
 				]),
+			]),
+			'services' => Schema\Expect::structure([
+				'identity'   => Schema\Expect::bool(false),
 			]),
 		]);
 	}
@@ -93,7 +95,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 		 * User security
 		 */
 
-		if ($configuration->enable->identity) {
+		if ($configuration->services->identity) {
 			$builder->addDefinition($this->prefix('identityFactory'))
 				->setType(Security\IdentityFactory::class);
 		}
@@ -110,7 +112,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 				->setType(Middleware\UserMiddleware::class)
 				->setTags([
 					'middleware' => [
-						'priority' => 15,
+						'priority' => 30,
 					],
 				]);
 		}

@@ -4,10 +4,10 @@
  * Owner.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
- * @subpackage     Entities
+ * @subpackage     Mapping
  * @since          0.1.0
  *
  * @date           15.07.20
@@ -21,7 +21,7 @@ use Doctrine\Common\Annotations\Annotation;
  * Entity owner annotation for Doctrine2
  *
  * @package        FastyBird:NodeAuth!
- * @subpackage     Annotation
+ * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *

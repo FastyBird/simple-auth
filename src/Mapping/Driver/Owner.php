@@ -4,10 +4,10 @@
  * Owner.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
- * @subpackage     Entities
+ * @subpackage     Mapping
  * @since          0.1.0
  *
  * @date           15.07.20
@@ -23,10 +23,10 @@ use FastyBird\NodeAuth\Mapping;
 use Nette;
 
 /**
- * Doctrine blameable annotation driver
+ * Doctrine owner annotation driver
  *
  * @package        FastyBird:NodeAuth!
- * @subpackage     Driver
+ * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

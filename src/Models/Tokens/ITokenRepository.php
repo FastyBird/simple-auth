@@ -4,7 +4,7 @@
  * ITokenRepository.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     Models
@@ -20,7 +20,7 @@ use FastyBird\NodeAuth\Models;
 use FastyBird\NodeAuth\Queries;
 
 /**
- * Access token repository interface
+ * Security token repository interface
  *
  * @package        FastyBird:NodeAuth!
  * @subpackage     Models

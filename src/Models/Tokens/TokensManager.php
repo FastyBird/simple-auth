@@ -4,7 +4,7 @@
  * TokensManager.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     Models
@@ -22,7 +22,7 @@ use Nette;
 use Nette\Utils;
 
 /**
- * Access tokens entities manager
+ * Security tokens entities manager
  *
  * @package        FastyBird:NodeAuth!
  * @subpackage     Models

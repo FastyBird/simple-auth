@@ -4,7 +4,7 @@
  * UserSubscriber.php
  *
  * @license        More in license.md
- * @copyright      https://www.fastybird.com
+ * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:NodeAuth!
  * @subpackage     Subscribers
@@ -24,7 +24,7 @@ use Nette\Security as NS;
 /**
  * Doctrine entities events
  *
- * @package        FastyBird:AuthNode!
+ * @package        FastyBird:NodeAuth!
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

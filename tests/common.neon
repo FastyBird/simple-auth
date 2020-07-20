@@ -2,7 +2,7 @@
 # Node auth DI configuration
 #
 # @license		More in license.md
-# @copyright	https://www.fastybird.com
+# @copyright	https://fastybird.com
 # @author		Adam Kadlec <adam.kadlec@fastybird.com>
 # @package		FastyBird:NodeAuth!
 # @subpackage	config
@@ -71,9 +71,10 @@ nodeAuth:
 	token:
 		issuer: fb_tester
 	enable:
-		identity: true
 		middleware: true
 		doctrine:
 			mapping: true
 			models: true
+	services:
+		identity: true
 
