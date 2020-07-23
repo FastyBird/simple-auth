@@ -16,6 +16,7 @@
 namespace FastyBird\NodeAuth\Security;
 
 use FastyBird\NodeAuth;
+use FastyBird\NodeAuth\Exceptions;
 use Lcobucci\JWT;
 use Nette;
 use Psr\Http\Message\ServerRequestInterface;
@@ -58,7 +59,13 @@ final class TokenReader
 			is_string($headerJWT)
 			&& preg_match(NodeAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false
 		) {
-			return $this->tokenValidator->validate($matches[1]);
+			$token = $this->tokenValidator->validate($matches[1]);
+
+			if ($token === null) {
+				throw new Exceptions\UnauthorizedAccessException('Access token is not valid');
+			}
+
+			return $token;
 		}
 
 		return null;

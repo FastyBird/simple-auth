@@ -17,9 +17,11 @@ namespace FastyBird\NodeAuth\Security;
 
 use FastyBird\DateTimeFactory;
 use FastyBird\NodeAuth;
+use FastyBird\NodeAuth\Exceptions;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
+use Throwable;
 
 /**
  * JW token validator
@@ -64,18 +66,23 @@ final class TokenValidator
 	): ?JWT\Token {
 		$jwtParser = new JWT\Parser();
 
-		$token = $jwtParser->parse($token);
+		try {
+			$token = $jwtParser->parse($token);
 
-		$validationData = new JWT\ValidationData($this->dateTimeFactory->getNow()->getTimestamp());
+			$validationData = new JWT\ValidationData($this->dateTimeFactory->getNow()->getTimestamp());
 
-		if (
-			$token->validate($validationData)
-			&& $token->verify($this->signer, $this->tokenSignature)
-			&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_USER)
-			&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
-			&& Uuid\Uuid::isValid($token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER))
-		) {
-			return $token;
+			if (
+				$token->validate($validationData)
+				&& $token->verify($this->signer, $this->tokenSignature)
+				&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_USER)
+				&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
+				&& Uuid\Uuid::isValid($token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER))
+			) {
+				return $token;
+			}
+
+		} catch (Throwable $ex) {
+			throw new Exceptions\UnauthorizedAccessException('Token is not valid JWToken');
 		}
 
 		return null;
