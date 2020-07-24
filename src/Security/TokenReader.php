@@ -58,6 +58,7 @@ final class TokenReader
 		if (
 			is_string($headerJWT)
 			&& preg_match(NodeAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false
+			&& count($matches) >= 2
 		) {
 			$token = $this->tokenValidator->validate($matches[1]);
 
