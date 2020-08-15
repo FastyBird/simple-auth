@@ -56,7 +56,7 @@ final class TokenRepository implements ITokenRepository
 	): ?Entities\Tokens\IToken {
 		$findQuery = new Queries\FindTokensQuery();
 		$findQuery->byId(Uuid\Uuid::fromString($identifier));
-		$findQuery->inStatus(Types\TokenStatusType::STATE_ACTIVE);
+		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
 
 		return $this->findOneBy($findQuery, $type);
 	}
@@ -70,7 +70,7 @@ final class TokenRepository implements ITokenRepository
 	): ?Entities\Tokens\IToken {
 		$findQuery = new Queries\FindTokensQuery();
 		$findQuery->byToken($token);
-		$findQuery->inStatus(Types\TokenStatusType::STATE_ACTIVE);
+		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
 
 		return $this->findOneBy($findQuery, $type);
 	}

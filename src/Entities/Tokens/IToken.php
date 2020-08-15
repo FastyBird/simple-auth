@@ -78,16 +78,16 @@ interface IToken extends DoctrineCrud\Entities\IEntity
 	public function getToken(): string;
 
 	/**
-	 * @param Types\TokenStatusType $status
+	 * @param Types\TokenStateType $state
 	 *
 	 * @return void
 	 */
-	public function setStatus(Types\TokenStatusType $status): void;
+	public function setState(Types\TokenStateType $state): void;
 
 	/**
-	 * @return Types\TokenStatusType
+	 * @return Types\TokenStateType
 	 */
-	public function getStatus(): Types\TokenStatusType;
+	public function getState(): Types\TokenStateType;
 
 	/**
 	 * @return bool

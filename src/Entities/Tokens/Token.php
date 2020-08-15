@@ -33,7 +33,7 @@ use Throwable;
  *       "comment"="Security tokens"
  *     },
  *     indexes={
- *       @ORM\Index(name="token_status_idx", columns={"token_status"})
+ *       @ORM\Index(name="token_state_idx", columns={"token_state"})
  *     }
  * )
  * @ORM\InheritanceType("JOINED")
@@ -80,13 +80,13 @@ abstract class Token implements IToken
 	protected $token;
 
 	/**
-	 * @var Types\TokenStatusType
+	 * @var Types\TokenStateType
 	 *
-	 * @Enum(class=Types\TokenStatusType::class)
+	 * @Enum(class=Types\TokenStateType::class)
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="token_status", nullable=false, options={"default": "active"})
+	 * @ORM\Column(type="string_enum", name="token_state", nullable=false, options={"default": "active"})
 	 */
-	protected $status;
+	protected $state;
 
 	/**
 	 * @param string $token
@@ -101,7 +101,7 @@ abstract class Token implements IToken
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->token = $token;
-		$this->status = Types\TokenStatusType::get(Types\TokenStatusType::STATE_ACTIVE);
+		$this->state = Types\TokenStateType::get(Types\TokenStateType::STATE_ACTIVE);
 
 		$this->children = new Common\Collections\ArrayCollection();
 	}
@@ -192,17 +192,17 @@ abstract class Token implements IToken
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setStatus(Types\TokenStatusType $status): void
+	public function setState(Types\TokenStateType $state): void
 	{
-		$this->status = $status;
+		$this->state = $state;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getStatus(): Types\TokenStatusType
+	public function getState(): Types\TokenStateType
 	{
-		return $this->status;
+		return $this->state;
 	}
 
 	/**
@@ -210,7 +210,7 @@ abstract class Token implements IToken
 	 */
 	public function isActive(): bool
 	{
-		return $this->status === Types\TokenStatusType::get(Types\TokenStatusType::STATE_ACTIVE);
+		return $this->state === Types\TokenStateType::get(Types\TokenStateType::STATE_ACTIVE);
 	}
 
 	/**
@@ -218,7 +218,7 @@ abstract class Token implements IToken
 	 */
 	public function isBlocked(): bool
 	{
-		return $this->status === Types\TokenStatusType::get(Types\TokenStatusType::STATE_BLOCKED);
+		return $this->state === Types\TokenStateType::get(Types\TokenStateType::STATE_BLOCKED);
 	}
 
 	/**
@@ -226,7 +226,7 @@ abstract class Token implements IToken
 	 */
 	public function isDeleted(): bool
 	{
-		return $this->status === Types\TokenStatusType::get(Types\TokenStatusType::STATE_DELETED);
+		return $this->state === Types\TokenStateType::get(Types\TokenStateType::STATE_DELETED);
 	}
 
 	/**

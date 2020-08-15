@@ -68,20 +68,20 @@ class FindTokensQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param string $status
+	 * @param string $state
 	 *
 	 * @return void
 	 *
 	 * @throw Exceptions\InvalidArgumentException
 	 */
-	public function inStatus(string $status): void
+	public function inState(string $state): void
 	{
-		if (!Types\TokenStatusType::isValidValue($status)) {
-			throw new Exceptions\InvalidArgumentException('Invalid token status given');
+		if (!Types\TokenStateType::isValidValue($state)) {
+			throw new Exceptions\InvalidArgumentException('Invalid token state given');
 		}
 
-		$this->filter[] = function (ORM\QueryBuilder $qb) use ($status): void {
-			$qb->andWhere('t.status = :status')->setParameter('status', $status);
+		$this->filter[] = function (ORM\QueryBuilder $qb) use ($state): void {
+			$qb->andWhere('t.state = :state')->setParameter('state', $state);
 		};
 	}
 
