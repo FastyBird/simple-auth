@@ -16,7 +16,7 @@
 namespace FastyBird\NodeAuth\Middleware;
 
 use FastyBird\NodeAuth;
-use Nette\Security as NS;
+use FastyBird\NodeAuth\Exceptions;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -48,7 +48,7 @@ final class UserMiddleware implements MiddlewareInterface
 	 *
 	 * @return ResponseInterface
 	 *
-	 * @throws NS\AuthenticationException
+	 * @throws Exceptions\AuthenticationException
 	 */
 	public function process(
 		ServerRequestInterface $request,

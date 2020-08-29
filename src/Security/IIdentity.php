@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IdentityFactory.php
+ * IIdentity.php
  *
  * @license        More in license.md
  * @copyright      https://fastybird.com
@@ -10,34 +10,32 @@
  * @subpackage     Security
  * @since          0.1.0
  *
- * @date           15.07.20
+ * @date           29.08.20
  */
 
 namespace FastyBird\NodeAuth\Security;
 
-use FastyBird\NodeAuth;
-use Lcobucci\JWT;
+use Ramsey\Uuid;
 
 /**
- * Application plain identity factory
+ * Application identity interface
  *
  * @package        FastyBird:NodeAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class IdentityFactory implements IIdentityFactory
+interface IIdentity
 {
 
 	/**
-	 * {@inheritDoc}
+	 * @return Uuid\UuidInterface
 	 */
-	public function create(JWT\Token $token): ?IIdentity
-	{
-		return new PlainIdentity(
-			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER),
-			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
-		);
-	}
+	public function getId(): Uuid\UuidInterface;
+
+	/**
+	 * @return string[]
+	 */
+	public function getRoles(): array;
 
 }

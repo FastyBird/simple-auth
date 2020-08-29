@@ -27,13 +27,13 @@ interface IEntityOwner
 {
 
 	/**
-	 * @param string $ownerId
+	 * @param string|null $ownerId
 	 */
-	public function setOwnerId(string $ownerId): void;
+	public function setOwnerId(?string $ownerId): void;
 
 	/**
-	 * @return mixed
+	 * @return string|null
 	 */
-	public function getOwnerId();
+	public function getOwnerId(): ?string;
 
 }

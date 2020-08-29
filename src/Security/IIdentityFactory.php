@@ -16,7 +16,6 @@
 namespace FastyBird\NodeAuth\Security;
 
 use Lcobucci\JWT;
-use Nette\Security as NS;
 
 /**
  * Application identity factory interface
@@ -32,8 +31,8 @@ interface IIdentityFactory
 	/**
 	 * @param JWT\Token $token
 	 *
-	 * @return NS\IIdentity|null
+	 * @return IIdentity|null
 	 */
-	public function create(JWT\Token $token): ?NS\IIdentity;
+	public function create(JWT\Token $token): ?IIdentity;
 
 }

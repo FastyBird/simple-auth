@@ -43,8 +43,6 @@
     "lcobucci/jwt" : "^3.3",
     "nette/bootstrap" : "^3.0",
     "nette/di" : "^3.0",
-    "nette/http" : "^3.0",
-    "nette/security" : "^3.0",
     "nette/utils" : "^3.0",
     "ramsey/uuid" : "^3.5 || ^4.0 ",
     "ramsey/uuid-doctrine" : "^1.6"

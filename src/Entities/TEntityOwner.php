@@ -36,19 +36,19 @@ trait TEntityOwner
 	protected $owner;
 
 	/**
-	 * @param mixed $ownerId
+	 * @param string|null $ownerId
 	 *
 	 * @return void
 	 */
-	public function setOwnerId($ownerId): void
+	public function setOwnerId(?string $ownerId): void
 	{
 		$this->owner = $ownerId;
 	}
 
 	/**
-	 * @return mixed|null
+	 * @return string|null
 	 */
-	public function getOwnerId()
+	public function getOwnerId(): ?string
 	{
 		return $this->owner;
 	}

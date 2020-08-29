@@ -15,8 +15,10 @@
 
 namespace FastyBird\NodeAuth\Security;
 
+use FastyBird\NodeAuth\Exceptions;
+use FastyBird\NodeAuth\Security;
 use Nette;
-use Nette\Security as NS;
+use Ramsey\Uuid;
 
 /**
  * System basic plain identity
@@ -26,37 +28,41 @@ use Nette\Security as NS;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class PlainIdentity implements NS\IIdentity
+class PlainIdentity implements Security\IIdentity
 {
 
 	use Nette\SmartObject;
 
-	/** @var string */
+	/** @var Uuid\UuidInterface */
 	private $id;
 
-	/** @var mixed[] */
+	/** @var string[] */
 	private $roles;
 
 	/**
 	 * @param string $id
-	 * @param mixed[] $roles
+	 * @param string[] $roles
 	 */
 	public function __construct(string $id, array $roles = [])
 	{
-		$this->id = $id;
+		if (!Uuid\Uuid::isValid($id)) {
+			throw new Exceptions\InvalidArgumentException('User identifier have to be valid UUID string');
+		}
+
+		$this->id = Uuid\Uuid::fromString($id);
 		$this->roles = $roles;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getId()
+	public function getId(): Uuid\UuidInterface
 	{
 		return $this->id;
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return string[]
 	 */
 	public function getRoles(): array
 	{

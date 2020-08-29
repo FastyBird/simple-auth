@@ -4,8 +4,8 @@ namespace Tests\Cases;
 
 use FastyBird\NodeAuth;
 use FastyBird\NodeAuth\Middleware;
+use FastyBird\NodeAuth\Security;
 use IPub\SlimRouter;
-use Nette\Security as NS;
 use React\Http\Io\ServerRequest;
 use Tester\Assert;
 
@@ -42,10 +42,10 @@ final class UserMiddlewareTest extends BaseTestCase
 
 		$router->handle($request);
 
-		/** @var NS\User $user */
-		$user = $this->container->getByType(NS\User::class);
+		/** @var Security\User $user */
+		$user = $this->container->getByType(Security\User::class);
 
-		Assert::same($id, $user->getId());
+		Assert::same($id, (string) $user->getId());
 		Assert::same([
 			NodeAuth\Constants::ROLE_ADMINISTRATOR,
 		], $user->getRoles());

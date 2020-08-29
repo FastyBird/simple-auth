@@ -15,8 +15,9 @@
 
 namespace FastyBird\NodeAuth;
 
+use FastyBird\NodeAuth\Exceptions as NodeAuthExceptions;
+use FastyBird\NodeAuth\Security as NodeAuthSecurity;
 use Nette;
-use Nette\Security as NS;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -32,19 +33,19 @@ final class Auth
 
 	use Nette\SmartObject;
 
-	/** @var Security\TokenReader */
+	/** @var NodeAuthSecurity\TokenReader */
 	private $tokenReader;
 
-	/** @var Security\IIdentityFactory */
+	/** @var NodeAuthSecurity\IIdentityFactory */
 	private $identityFactory;
 
-	/** @var NS\User */
+	/** @var NodeAuthSecurity\User */
 	private $user;
 
 	public function __construct(
-		Security\TokenReader $tokenReader,
-		Security\IIdentityFactory $identityFactory,
-		NS\User $user
+		NodeAuthSecurity\TokenReader $tokenReader,
+		NodeAuthSecurity\IIdentityFactory $identityFactory,
+		NodeAuthSecurity\User $user
 	) {
 		$this->tokenReader = $tokenReader;
 		$this->identityFactory = $identityFactory;
@@ -57,7 +58,7 @@ final class Auth
 	 *
 	 * @return void
 	 *
-	 * @throws NS\AuthenticationException
+	 * @throws NodeAuthExceptions\AuthenticationException
 	 */
 	public function login(ServerRequestInterface $request): void
 	{
@@ -73,7 +74,7 @@ final class Auth
 			}
 		}
 
-		$this->user->logout(true);
+		$this->user->logout();
 	}
 
 }

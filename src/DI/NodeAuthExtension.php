@@ -96,9 +96,15 @@ class NodeAuthExtension extends DI\CompilerExtension
 		 */
 
 		if ($configuration->services->identity) {
-			$builder->addDefinition($this->prefix('identityFactory'))
+			$builder->addDefinition($this->prefix('security.identityFactory'))
 				->setType(Security\IdentityFactory::class);
 		}
+
+		$builder->addDefinition($this->prefix('security.userStorage'))
+			->setType(Security\UserStorage::class);
+
+		$builder->addDefinition($this->prefix('security.user'))
+			->setType(Security\User::class);
 
 		/**
 		 * Web server extension

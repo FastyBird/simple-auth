@@ -32,6 +32,8 @@ final class ExtensionTests extends BaseTestCase
 		Assert::notNull($container->getByType(Security\TokenReader::class));
 		Assert::notNull($container->getByType(Security\TokenValidator::class));
 		Assert::notNull($container->getByType(Security\IdentityFactory::class));
+		Assert::notNull($container->getByType(Security\User::class));
+		Assert::notNull($container->getByType(Security\UserStorage::class));
 	}
 
 }

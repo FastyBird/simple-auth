@@ -3,8 +3,8 @@
 namespace Tests\Cases;
 
 use FastyBird\NodeAuth;
+use FastyBird\NodeAuth\Security;
 use Fig\Http\Message\RequestMethodInterface;
-use Nette\Security as NS;
 use React\Http\Io\ServerRequest;
 use Tester\Assert;
 
@@ -26,8 +26,8 @@ final class OwnerMappingTests extends BaseTestCase
 		/** @var NodeAuth\Auth $auth */
 		$auth = $this->container->getByType(NodeAuth\Auth::class);
 
-		/** @var NS\User $user */
-		$user = $this->container->getByType(NS\User::class);
+		/** @var Security\User $user */
+		$user = $this->container->getByType(Security\User::class);
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_GET,
@@ -45,7 +45,7 @@ final class OwnerMappingTests extends BaseTestCase
 		$this->em->flush();
 
 		Assert::same('5785924c-75a8-42ae-9bdd-a6ce5edbadac', $article->getOwnerId());
-		Assert::same('5785924c-75a8-42ae-9bdd-a6ce5edbadac', $user->getId());
+		Assert::same('5785924c-75a8-42ae-9bdd-a6ce5edbadac', (string) $user->getId());
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_GET,
@@ -63,7 +63,7 @@ final class OwnerMappingTests extends BaseTestCase
 		$this->em->flush();
 
 		Assert::same('5785924c-75a8-42ae-9bdd-a6ce5edbadac', $article->getOwnerId());
-		Assert::same('2784d750-f085-4580-8525-4d622face83d', $user->getId());
+		Assert::same('2784d750-f085-4580-8525-4d622face83d', (string) $user->getId());
 	}
 
 }

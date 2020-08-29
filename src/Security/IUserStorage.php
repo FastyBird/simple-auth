@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * IdentityFactory.php
+ * IUserStorage.php
  *
  * @license        More in license.md
  * @copyright      https://fastybird.com
@@ -10,34 +10,39 @@
  * @subpackage     Security
  * @since          0.1.0
  *
- * @date           15.07.20
+ * @date           29.08.20
  */
 
 namespace FastyBird\NodeAuth\Security;
 
-use FastyBird\NodeAuth;
-use Lcobucci\JWT;
+use FastyBird\NodeAuth\Security;
 
 /**
- * Application plain identity factory
+ * Application user storage
  *
  * @package        FastyBird:NodeAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class IdentityFactory implements IIdentityFactory
+interface IUserStorage
 {
 
 	/**
-	 * {@inheritDoc}
+	 * @return bool
 	 */
-	public function create(JWT\Token $token): ?IIdentity
-	{
-		return new PlainIdentity(
-			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER),
-			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
-		);
-	}
+	public function isAuthenticated(): bool;
+
+	/**
+	 * @param IIdentity|null $identity
+	 *
+	 * @return void
+	 */
+	public function setIdentity(?Security\IIdentity $identity): void;
+
+	/**
+	 * @return Security\IIdentity|null
+	 */
+	public function getIdentity(): ?Security\IIdentity;
 
 }

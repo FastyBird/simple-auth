@@ -18,8 +18,8 @@ namespace FastyBird\NodeAuth\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use FastyBird\NodeAuth\Mapping;
+use FastyBird\NodeAuth\Security;
 use Nette;
-use Nette\Security as NS;
 
 /**
  * Doctrine entities events
@@ -34,7 +34,7 @@ final class UserSubscriber implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	/** @var NS\User */
+	/** @var Security\User */
 	private $user;
 
 	/** @var Mapping\Driver\Owner */
@@ -55,7 +55,7 @@ final class UserSubscriber implements Common\EventSubscriber
 
 	public function __construct(
 		Mapping\Driver\Owner $driver,
-		NS\User $user
+		Security\User $user
 	) {
 		$this->driver = $driver;
 		$this->user = $user;
@@ -191,7 +191,7 @@ final class UserSubscriber implements Common\EventSubscriber
 		$property = $classMetadata->getReflectionProperty($field);
 
 		$oldValue = $property->getValue($object);
-		$newValue = (string) $this->user->getId();
+		$newValue = $this->user->getId() !== null ? $this->user->getId()->toString() : null;
 
 		$property->setValue($object, $newValue);
 
