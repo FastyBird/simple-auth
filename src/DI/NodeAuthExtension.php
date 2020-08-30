@@ -152,7 +152,10 @@ class NodeAuthExtension extends DI\CompilerExtension
 			->setType(Lcobucci\JWT\Parser::class);
 	}
 
-	public function beforeCompile()
+	/**
+	 * {@inheritDoc}
+	 */
+	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
 
