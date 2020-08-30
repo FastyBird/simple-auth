@@ -46,11 +46,11 @@ class NodeAuthExtension extends DI\CompilerExtension
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'token'  => Schema\Expect::structure([
+			'token'    => Schema\Expect::structure([
 				'issuer'    => Schema\Expect::string(),
 				'signature' => Schema\Expect::string('g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='),
 			]),
-			'enable' => Schema\Expect::structure([
+			'enable'   => Schema\Expect::structure([
 				'middleware' => Schema\Expect::bool(false),
 				'doctrine'   => Schema\Expect::structure([
 					'mapping' => Schema\Expect::bool(false),
@@ -58,7 +58,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 				]),
 			]),
 			'services' => Schema\Expect::structure([
-				'identity'   => Schema\Expect::bool(false),
+				'identity' => Schema\Expect::bool(false),
 			]),
 		]);
 	}
@@ -102,9 +102,6 @@ class NodeAuthExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('security.userStorage'))
 			->setType(Security\UserStorage::class);
-
-		$builder->addDefinition($this->prefix('security.user'))
-			->setType(Security\User::class);
 
 		/**
 		 * Web server extension
@@ -153,6 +150,26 @@ class NodeAuthExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('jwt.parser'))
 			->setType(Lcobucci\JWT\Parser::class);
+	}
+
+	public function beforeCompile()
+	{
+		parent::beforeCompile();
+
+		$builder = $this->getContainerBuilder();
+
+		$userContextServiceName = $builder->getByType(Security\User::class);
+
+		$userContext = null;
+
+		if ($userContextServiceName !== null) {
+			$userContext = $builder->getDefinition($userContextServiceName);
+		}
+
+		if ($userContext === null) {
+			$builder->addDefinition($this->prefix('security.user'))
+				->setType(Security\User::class);
+		}
 	}
 
 	/**
