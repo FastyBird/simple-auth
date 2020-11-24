@@ -1,4 +1,4 @@
-# FastyBird authentication helpers library
+# FastyBird simple authentication library
 
 [![Build Status](https://img.shields.io/travis/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.org/FastyBird/simple-auth)
 [![Code coverage](https://img.shields.io/coveralls/FastyBird/simple-auth.svg?style=flat-square)](https://coveralls.io/r/FastyBird/simple-auth)
