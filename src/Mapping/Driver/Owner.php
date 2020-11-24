@@ -6,26 +6,26 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Mapping
  * @since          0.1.0
  *
  * @date           15.07.20
  */
 
-namespace FastyBird\NodeAuth\Mapping\Driver;
+namespace FastyBird\SimpleAuth\Mapping\Driver;
 
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\NodeAuth\Exceptions;
-use FastyBird\NodeAuth\Mapping;
+use FastyBird\SimpleAuth\Exceptions;
+use FastyBird\SimpleAuth\Mapping;
 use Nette;
 
 /**
  * Doctrine owner annotation driver
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -35,7 +35,7 @@ final class Owner
 
 	use Nette\SmartObject;
 
-	private const EXTENSION_ANNOTATION = 'FastyBird\NodeAuth\Mapping\Annotation\Owner';
+	private const EXTENSION_ANNOTATION = 'FastyBird\SimpleAuth\Mapping\Annotation\Owner';
 
 	/**
 	 * List of cached object configurations

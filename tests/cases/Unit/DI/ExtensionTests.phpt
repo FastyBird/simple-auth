@@ -2,10 +2,10 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeAuth\Mapping;
-use FastyBird\NodeAuth\Middleware;
-use FastyBird\NodeAuth\Security;
-use FastyBird\NodeAuth\Subscribers;
+use FastyBird\SimpleAuth\Mapping;
+use FastyBird\SimpleAuth\Middleware;
+use FastyBird\SimpleAuth\Security;
+use FastyBird\SimpleAuth\Subscribers;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';

@@ -6,21 +6,21 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Mapping
  * @since          0.1.0
  *
  * @date           15.07.20
  */
 
-namespace FastyBird\NodeAuth\Mapping\Annotation;
+namespace FastyBird\SimpleAuth\Mapping\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
 
 /**
  * Entity owner annotation for Doctrine2
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

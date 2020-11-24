@@ -6,17 +6,17 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  * @since          0.1.0
  *
  * @date           09.07.20
  */
 
-namespace FastyBird\NodeAuth\Security;
+namespace FastyBird\SimpleAuth\Security;
 
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Exceptions;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions;
 use Lcobucci\JWT;
 use Nette;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,7 +24,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * JW token reader
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -50,14 +50,14 @@ final class TokenReader
 	 */
 	public function read(ServerRequestInterface $request): ?JWT\Token
 	{
-		$headerJWT = $request->hasHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) ?
-			$request->getHeader(NodeAuth\Constants::TOKEN_HEADER_NAME) : null;
+		$headerJWT = $request->hasHeader(SimpleAuth\Constants::TOKEN_HEADER_NAME) ?
+			$request->getHeader(SimpleAuth\Constants::TOKEN_HEADER_NAME) : null;
 
 		$headerJWT = is_array($headerJWT) ? reset($headerJWT) : $headerJWT;
 
 		if (
 			is_string($headerJWT)
-			&& preg_match(NodeAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false
+			&& preg_match(SimpleAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false
 			&& count($matches) >= 2
 		) {
 			$token = $this->tokenValidator->validate($matches[1]);

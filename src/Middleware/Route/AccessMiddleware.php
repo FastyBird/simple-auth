@@ -6,17 +6,17 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           01.04.20
  */
 
-namespace FastyBird\NodeAuth\Middleware\Route;
+namespace FastyBird\SimpleAuth\Middleware\Route;
 
-use FastyBird\NodeAuth\Exceptions;
-use FastyBird\NodeAuth\Security;
+use FastyBird\SimpleAuth\Exceptions;
+use FastyBird\SimpleAuth\Security;
 use IPub\SlimRouter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,7 +29,7 @@ use Reflector;
 /**
  * Access check middleware
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

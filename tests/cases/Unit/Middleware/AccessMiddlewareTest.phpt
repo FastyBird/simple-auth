@@ -2,9 +2,9 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeAuth\Middleware;
+use FastyBird\SimpleAuth\Middleware;
 use IPub\SlimRouter;
-use React\Http\Io\ServerRequest;
+use React\Http;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -24,13 +24,13 @@ final class AccessMiddlewareTest extends BaseTestCase
 	 *
 	 * @dataProvider ./../../../fixtures/Middleware/withoutToken.php
 	 *
-	 * @throws FastyBird\NodeAuth\Exceptions\ForbiddenAccessException Access to this action is not allowed
+	 * @throws FastyBird\SimpleAuth\Exceptions\ForbiddenAccessException Access to this action is not allowed
 	 */
 	public function testWithoutToken(string $url, string $method): void
 	{
 		$router = $this->createRouter();
 
-		$request = new ServerRequest(
+		$request = new Http\Message\ServerRequest(
 			$method,
 			$url
 		);
@@ -51,7 +51,7 @@ final class AccessMiddlewareTest extends BaseTestCase
 	{
 		$router = $this->createRouter();
 
-		$request = new ServerRequest(
+		$request = new Http\Message\ServerRequest(
 			$method,
 			$url,
 			[
@@ -74,13 +74,13 @@ final class AccessMiddlewareTest extends BaseTestCase
 	 *
 	 * @dataProvider ./../../../fixtures/Middleware/deniedPermission.php
 	 *
-	 * @throws FastyBird\NodeAuth\Exceptions\ForbiddenAccessException Access to this action is not allowed
+	 * @throws FastyBird\SimpleAuth\Exceptions\ForbiddenAccessException Access to this action is not allowed
 	 */
 	public function testDeniedPermission(string $url, string $method, string $token, string $body): void
 	{
 		$router = $this->createRouter();
 
-		$request = new ServerRequest(
+		$request = new Http\Message\ServerRequest(
 			$method,
 			$url,
 			[

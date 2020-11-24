@@ -6,18 +6,18 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  * @since          0.1.0
  *
  * @date           31.03.20
  */
 
-namespace FastyBird\NodeAuth\Security;
+namespace FastyBird\SimpleAuth\Security;
 
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\NodeAuth;
+use FastyBird\SimpleAuth;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
@@ -26,7 +26,7 @@ use Throwable;
 /**
  * JW token builder
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -86,8 +86,8 @@ final class TokenBuilder
 			$jwtBuilder->expiresAt($expiration->getTimestamp());
 		}
 
-		$jwtBuilder->withClaim(NodeAuth\Constants::TOKEN_CLAIM_USER, $userId);
-		$jwtBuilder->withClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES, $roles);
+		$jwtBuilder->withClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER, $userId);
+		$jwtBuilder->withClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES, $roles);
 
 		return $jwtBuilder->getToken($this->signer, new JWT\Signer\Key($this->tokenSignature));
 	}

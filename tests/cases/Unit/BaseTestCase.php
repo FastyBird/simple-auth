@@ -5,7 +5,7 @@ namespace Tests\Cases;
 use DateTimeImmutable;
 use Doctrine\ORM;
 use FastyBird\DateTimeFactory;
-use FastyBird\NodeAuth;
+use FastyBird\SimpleAuth;
 use Mockery;
 use Nette;
 use Nette\DI;
@@ -72,7 +72,7 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 			$config->addConfig($additionalConfig);
 		}
 
-		NodeAuth\DI\NodeAuthExtension::register($config);
+		SimpleAuth\DI\SimpleAuthExtension::register($config);
 
 		return $config->createContainer();
 	}

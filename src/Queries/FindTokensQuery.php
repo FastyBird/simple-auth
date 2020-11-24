@@ -6,27 +6,27 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Queries
  * @since          0.1.0
  *
  * @date           31.03.20
  */
 
-namespace FastyBird\NodeAuth\Queries;
+namespace FastyBird\SimpleAuth\Queries;
 
 use Closure;
 use Doctrine\ORM;
-use FastyBird\NodeAuth\Entities;
-use FastyBird\NodeAuth\Exceptions;
-use FastyBird\NodeAuth\Types;
+use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Exceptions;
+use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
 
 /**
  * Find tokens entities query
  *
- * @package          FastyBird:NodeAuth!
+ * @package          FastyBird:SimpleAuth!
  * @subpackage       Queries
  *
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>

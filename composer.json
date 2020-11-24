@@ -1,7 +1,7 @@
 {
-  "name" : "fastybird/node-auth",
+  "name" : "fastybird/simple-auth",
   "type" : "library",
-  "description" : "FastyBird authentication utils for nodes",
+  "description" : "FastyBird authentication utils",
   "keywords" : [
     "fastybird",
     "fb",
@@ -35,7 +35,6 @@
     "php" : ">=7.3.0",
     "ext-openssl" : "*",
     "fastybird/datetime-factory" : "@dev",
-    "fastybird/node-web-server" : "@dev",
     "ipub/doctrine-consistence" : "^0.3",
     "ipub/doctrine-crud" : "^2.3",
     "ipub/doctrine-dynamic-discriminator-map" : "^1.3",
@@ -44,13 +43,14 @@
     "nette/bootstrap" : "^3.0",
     "nette/di" : "^3.0",
     "nette/utils" : "^3.0",
-    "ramsey/uuid" : "^3.5 || ^4.0 ",
+    "ramsey/uuid" : "^3.5 || ^4.0",
     "ramsey/uuid-doctrine" : "^1.6"
   },
 
   "require-dev" : {
     "contributte/console" : "^0.8",
     "doctrine/orm" : "2.7.2",
+    "fastybird/web-server" : "@dev",
     "mockery/mockery" : "^1.3",
     "nettrine/cache" : "^0.1",
     "nettrine/orm" : "^0.6",
@@ -68,7 +68,7 @@
 
   "autoload" : {
     "psr-4" : {
-      "FastyBird\\NodeAuth\\" : "src/"
+      "FastyBird\\SimpleAuth\\" : "src/"
     }
   },
 

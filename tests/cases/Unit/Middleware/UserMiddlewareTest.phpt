@@ -2,11 +2,11 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Middleware;
-use FastyBird\NodeAuth\Security;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Middleware;
+use FastyBird\SimpleAuth\Security;
 use IPub\SlimRouter;
-use React\Http\Io\ServerRequest;
+use React\Http;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -32,7 +32,7 @@ final class UserMiddlewareTest extends BaseTestCase
 	{
 		$router = $this->createRouter();
 
-		$request = new ServerRequest(
+		$request = new Http\Message\ServerRequest(
 			$method,
 			$url,
 			[
@@ -47,7 +47,7 @@ final class UserMiddlewareTest extends BaseTestCase
 
 		Assert::same($id, (string) $user->getId());
 		Assert::same([
-			NodeAuth\Constants::ROLE_ADMINISTRATOR,
+			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		], $user->getRoles());
 	}
 

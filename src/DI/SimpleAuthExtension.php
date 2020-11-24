@@ -1,26 +1,26 @@
 <?php declare(strict_types = 1);
 
 /**
- * NodeAuthExtension.php
+ * SimpleAuthExtension.php
  *
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     DI
  * @since          0.1.0
  *
  * @date           09.07.20
  */
 
-namespace FastyBird\NodeAuth\DI;
+namespace FastyBird\SimpleAuth\DI;
 
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Entities;
-use FastyBird\NodeAuth\Mapping;
-use FastyBird\NodeAuth\Middleware;
-use FastyBird\NodeAuth\Security;
-use FastyBird\NodeAuth\Subscribers;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Mapping;
+use FastyBird\SimpleAuth\Middleware;
+use FastyBird\SimpleAuth\Security;
+use FastyBird\SimpleAuth\Subscribers;
 use IPub\DoctrineCrud;
 use Lcobucci;
 use Nette;
@@ -32,12 +32,12 @@ use stdClass;
 /**
  * Authentication helpers extension container
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class NodeAuthExtension extends DI\CompilerExtension
+class SimpleAuthExtension extends DI\CompilerExtension
 {
 
 	/**
@@ -73,7 +73,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 		$configuration = $this->getConfig();
 
 		$builder->addDefinition($this->prefix('auth'))
-			->setType(NodeAuth\Auth::class);
+			->setType(SimpleAuth\Auth::class);
 
 		/**
 		 * Token utilities
@@ -134,10 +134,10 @@ class NodeAuthExtension extends DI\CompilerExtension
 
 		if ($configuration->enable->doctrine->models) {
 			$builder->addDefinition($this->prefix('doctrine.tokenRepository'))
-				->setType(NodeAuth\Models\Tokens\TokenRepository::class);
+				->setType(SimpleAuth\Models\Tokens\TokenRepository::class);
 
 			$builder->addDefinition($this->prefix('doctrine.tokensManager'))
-				->setType(NodeAuth\Models\Tokens\TokensManager::class)
+				->setType(SimpleAuth\Models\Tokens\TokensManager::class)
 				->setArgument('entityCrud', '__placeholder__');
 		}
 
@@ -189,7 +189,7 @@ class NodeAuthExtension extends DI\CompilerExtension
 			$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
 
 			$tokensManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__doctrine__tokensManager');
-			$tokensManagerService->setBody('return new ' . NodeAuth\Models\Tokens\TokensManager::class . '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));');
+			$tokensManagerService->setBody('return new ' . SimpleAuth\Models\Tokens\TokensManager::class . '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));');
 		}
 	}
 
@@ -201,10 +201,10 @@ class NodeAuthExtension extends DI\CompilerExtension
 	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'nodeAuth'
+		string $extensionName = 'fbSimpleAuth'
 	): void {
 		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new NodeAuthExtension());
+			$compiler->addExtension($extensionName, new SimpleAuthExtension());
 		};
 	}
 

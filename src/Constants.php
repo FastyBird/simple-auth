@@ -6,19 +6,19 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     common
  * @since          0.1.0
  *
  * @date           09.07.20
  */
 
-namespace FastyBird\NodeAuth;
+namespace FastyBird\SimpleAuth;
 
 /**
  * Library constants
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     common
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -27,7 +27,7 @@ final class Constants
 {
 
 	/**
-	 * Node ACL
+	 * ACL
 	 */
 
 	// Permissions string delimiter

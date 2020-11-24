@@ -6,19 +6,19 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Entities
  * @since          0.1.0
  *
  * @date           30.03.20
  */
 
-namespace FastyBird\NodeAuth\Entities\Tokens;
+namespace FastyBird\SimpleAuth\Entities\Tokens;
 
 use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\NodeAuth\Types;
+use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
 use Throwable;
@@ -39,7 +39,7 @@ use Throwable;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="token_type", type="string", length=20)
  * @ORM\DiscriminatorMap({
- *      "token" = "FastyBird\NodeAuth\Entities\Tokens\Token"
+ *      "token" = "FastyBird\SimpleAuth\Entities\Tokens\Token"
  * })
  * @ORM\MappedSuperclass
  */
@@ -59,7 +59,7 @@ abstract class Token implements IToken
 	 * @var IToken|null
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\NodeAuth\Entities\Tokens\Token", inversedBy="children")
+	 * @ORM\ManyToOne(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", inversedBy="children")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="token_id", nullable=true, onDelete="set null")
 	 */
 	protected $parent;
@@ -68,7 +68,7 @@ abstract class Token implements IToken
 	 * @var Common\Collections\Collection<int, IToken>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\NodeAuth\Entities\Tokens\Token", mappedBy="parent")
+	 * @ORM\OneToMany(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", mappedBy="parent")
 	 */
 	protected $children;
 

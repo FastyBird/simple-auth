@@ -2,8 +2,8 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeAuth\Models;
-use FastyBird\NodeAuth\Queries;
+use FastyBird\SimpleAuth\Models;
+use FastyBird\SimpleAuth\Queries;
 use Nette\Utils;
 use Tester\Assert;
 use Tests\Cases\Models\TestTokenEntity;

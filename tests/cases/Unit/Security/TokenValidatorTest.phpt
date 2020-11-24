@@ -2,7 +2,7 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeAuth\Security;
+use FastyBird\SimpleAuth\Security;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';

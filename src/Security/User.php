@@ -6,26 +6,26 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  * @since          0.1.0
  *
  * @date           29.08.20
  */
 
-namespace FastyBird\NodeAuth\Security;
+namespace FastyBird\SimpleAuth\Security;
 
 use Closure;
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Exceptions;
-use FastyBird\NodeAuth\Security;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions;
+use FastyBird\SimpleAuth\Security;
 use Nette;
 use Ramsey\Uuid;
 
 /**
  * Application user
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -127,12 +127,12 @@ class User
 	public function getRoles(): array
 	{
 		if (!$this->isLoggedIn()) {
-			return [NodeAuth\Constants::ROLE_ANONYMOUS];
+			return [SimpleAuth\Constants::ROLE_ANONYMOUS];
 		}
 
 		$identity = $this->getIdentity();
 
-		return $identity !== null && $identity->getRoles() !== [] ? $identity->getRoles() : [NodeAuth\Constants::ROLE_USER];
+		return $identity !== null && $identity->getRoles() !== [] ? $identity->getRoles() : [SimpleAuth\Constants::ROLE_USER];
 	}
 
 	/**

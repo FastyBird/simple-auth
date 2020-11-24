@@ -6,22 +6,22 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  * @since          0.1.0
  *
  * @date           15.07.20
  */
 
-namespace FastyBird\NodeAuth\Security;
+namespace FastyBird\SimpleAuth\Security;
 
-use FastyBird\NodeAuth;
+use FastyBird\SimpleAuth;
 use Lcobucci\JWT;
 
 /**
  * Application plain identity factory
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -35,8 +35,8 @@ class IdentityFactory implements IIdentityFactory
 	public function create(JWT\Token $token): ?IIdentity
 	{
 		return new PlainIdentity(
-			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER),
-			$token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
+			$token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER),
+			$token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
 		);
 	}
 

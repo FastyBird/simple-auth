@@ -3,7 +3,7 @@
 namespace Tests\Cases\Models;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\NodeAuth\Entities;
+use FastyBird\SimpleAuth\Entities;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 
 /**

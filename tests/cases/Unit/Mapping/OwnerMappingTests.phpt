@@ -2,10 +2,10 @@
 
 namespace Tests\Cases;
 
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Security;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Security;
 use Fig\Http\Message\RequestMethodInterface;
-use React\Http\Io\ServerRequest;
+use React\Http;
 use Tester\Assert;
 
 require_once __DIR__ . '/../../../bootstrap.php';
@@ -23,13 +23,13 @@ final class OwnerMappingTests extends BaseTestCase
 	{
 		$this->generateDbSchema();
 
-		/** @var NodeAuth\Auth $auth */
-		$auth = $this->container->getByType(NodeAuth\Auth::class);
+		/** @var SimpleAuth\Auth $auth */
+		$auth = $this->container->getByType(SimpleAuth\Auth::class);
 
 		/** @var Security\User $user */
 		$user = $this->container->getByType(Security\User::class);
 
-		$request = new ServerRequest(
+		$request = new Http\Message\ServerRequest(
 			RequestMethodInterface::METHOD_GET,
 			'/some/fake/url',
 			[
@@ -47,7 +47,7 @@ final class OwnerMappingTests extends BaseTestCase
 		Assert::same('5785924c-75a8-42ae-9bdd-a6ce5edbadac', $article->getOwnerId());
 		Assert::same('5785924c-75a8-42ae-9bdd-a6ce5edbadac', (string) $user->getId());
 
-		$request = new ServerRequest(
+		$request = new Http\Message\ServerRequest(
 			RequestMethodInterface::METHOD_GET,
 			'/some/fake/url',
 			[

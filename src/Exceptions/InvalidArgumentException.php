@@ -6,14 +6,14 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Exceptions
  * @since          0.1.0
  *
  * @date           09.07.20
  */
 
-namespace FastyBird\NodeAuth\Exceptions;
+namespace FastyBird\SimpleAuth\Exceptions;
 
 use InvalidArgumentException as PHPInvalidArgumentException;
 

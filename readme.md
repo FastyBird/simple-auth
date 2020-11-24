@@ -1,28 +1,28 @@
 # FastyBird authentication helpers library
 
-[![Build Status](https://img.shields.io/travis/FastyBird/node-auth.svg?style=flat-square)](https://travis-ci.org/FastyBird/node-auth)
-[![Code coverage](https://img.shields.io/coveralls/FastyBird/node-auth.svg?style=flat-square)](https://coveralls.io/r/FastyBird/node-auth)
-![PHP from Travis config](https://img.shields.io/travis/php-v/fastybird/node-auth?style=flat-square)
-[![Licence](https://img.shields.io/packagist/l/FastyBird/node-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-auth)
-[![Downloads total](https://img.shields.io/packagist/dt/FastyBird/node-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-auth)
-[![Latest stable](https://img.shields.io/packagist/v/FastyBird/node-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/node-auth)
+[![Build Status](https://img.shields.io/travis/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.org/FastyBird/simple-auth)
+[![Code coverage](https://img.shields.io/coveralls/FastyBird/simple-auth.svg?style=flat-square)](https://coveralls.io/r/FastyBird/simple-auth)
+![PHP from Travis config](https://img.shields.io/travis/php-v/fastybird/simple-auth?style=flat-square)
+[![Licence](https://img.shields.io/packagist/l/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
+[![Downloads total](https://img.shields.io/packagist/dt/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
+[![Latest stable](https://img.shields.io/packagist/v/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
-## What is FastyBird node authentication library?
+## What is FastyBird simple authentication library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication for [FastyBird](https://fastybird.com) IoT microservices
+This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication
 
 ## Installation
 
-The best way to install **fastybird/node-auth** is using [Composer](http://getcomposer.org/):
+The best way to install **fastybird/simple-auth** is using [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require fastybird/node-auth
+$ composer require fastybird/simple-auth
 ```
 
 ## Documentation
 
-Learn how to use database services in [documentation](https://github.com/FastyBird/node-auth/blob/master/docs/en/index.md).
+Learn how to use database services in [documentation](https://github.com/FastyBird/simple-auth/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://fastybird.com](http://fastybird.com) and repository [https://github.com/FastyBird/node-auth](https://github.com/FastyBird/node-auth).
+Homepage [http://fastybird.com](http://fastybird.com) and repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).

@@ -6,25 +6,25 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Subscribers
  * @since          0.1.0
  *
  * @date           14.07.20
  */
 
-namespace FastyBird\NodeAuth\Subscribers;
+namespace FastyBird\SimpleAuth\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
-use FastyBird\NodeAuth\Mapping;
-use FastyBird\NodeAuth\Security;
+use FastyBird\SimpleAuth\Mapping;
+use FastyBird\SimpleAuth\Security;
 use Nette;
 
 /**
  * Doctrine entities events
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

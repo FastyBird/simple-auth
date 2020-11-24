@@ -6,24 +6,24 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     common
  * @since          0.1.0
  *
  * @date           09.07.20
  */
 
-namespace FastyBird\NodeAuth;
+namespace FastyBird\SimpleAuth;
 
-use FastyBird\NodeAuth\Exceptions as NodeAuthExceptions;
-use FastyBird\NodeAuth\Security as NodeAuthSecurity;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Nette;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Authentication service
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     common
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -33,19 +33,19 @@ final class Auth
 
 	use Nette\SmartObject;
 
-	/** @var NodeAuthSecurity\TokenReader */
+	/** @var SimpleAuthSecurity\TokenReader */
 	private $tokenReader;
 
-	/** @var NodeAuthSecurity\IIdentityFactory */
+	/** @var SimpleAuthSecurity\IIdentityFactory */
 	private $identityFactory;
 
-	/** @var NodeAuthSecurity\User */
+	/** @var SimpleAuthSecurity\User */
 	private $user;
 
 	public function __construct(
-		NodeAuthSecurity\TokenReader $tokenReader,
-		NodeAuthSecurity\IIdentityFactory $identityFactory,
-		NodeAuthSecurity\User $user
+		SimpleAuthSecurity\TokenReader $tokenReader,
+		SimpleAuthSecurity\IIdentityFactory $identityFactory,
+		SimpleAuthSecurity\User $user
 	) {
 		$this->tokenReader = $tokenReader;
 		$this->identityFactory = $identityFactory;
@@ -58,7 +58,7 @@ final class Auth
 	 *
 	 * @return void
 	 *
-	 * @throws NodeAuthExceptions\AuthenticationException
+	 * @throws SimpleAuthExceptions\AuthenticationException
 	 */
 	public function login(ServerRequestInterface $request): void
 	{

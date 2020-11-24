@@ -6,22 +6,22 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Entities
  * @since          0.1.0
  *
  * @date           15.07.20
  */
 
-namespace FastyBird\NodeAuth\Entities\Tokens;
+namespace FastyBird\SimpleAuth\Entities\Tokens;
 
-use FastyBird\NodeAuth\Types;
+use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineCrud;
 
 /**
  * Security token entity interface
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

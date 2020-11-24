@@ -6,17 +6,17 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Middleware
  * @since          0.1.0
  *
  * @date           09.07.20
  */
 
-namespace FastyBird\NodeAuth\Middleware;
+namespace FastyBird\SimpleAuth\Middleware;
 
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Exceptions;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,7 +25,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * User login middleware
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Middleware
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -33,11 +33,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class UserMiddleware implements MiddlewareInterface
 {
 
-	/** @var NodeAuth\Auth */
+	/** @var SimpleAuth\Auth */
 	private $auth;
 
 	public function __construct(
-		NodeAuth\Auth $auth
+		SimpleAuth\Auth $auth
 	) {
 		$this->auth = $auth;
 	}

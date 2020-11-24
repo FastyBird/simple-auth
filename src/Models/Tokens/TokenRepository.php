@@ -6,27 +6,27 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
  * @since          0.1.0
  *
  * @date           30.03.20
  */
 
-namespace FastyBird\NodeAuth\Models\Tokens;
+namespace FastyBird\SimpleAuth\Models\Tokens;
 
 use Doctrine\Common;
 use Doctrine\Persistence;
-use FastyBird\NodeAuth\Entities;
-use FastyBird\NodeAuth\Queries;
-use FastyBird\NodeAuth\Types;
+use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Queries;
+use FastyBird\SimpleAuth\Types;
 use Nette;
 use Ramsey\Uuid;
 
 /**
  * Security token repository
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

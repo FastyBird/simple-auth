@@ -6,18 +6,18 @@
  * @license        More in license.md
  * @copyright      https://fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  * @since          0.1.0
  *
  * @date           31.03.20
  */
 
-namespace FastyBird\NodeAuth\Security;
+namespace FastyBird\SimpleAuth\Security;
 
 use FastyBird\DateTimeFactory;
-use FastyBird\NodeAuth;
-use FastyBird\NodeAuth\Exceptions;
+use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
@@ -26,7 +26,7 @@ use Throwable;
 /**
  * JW token validator
  *
- * @package        FastyBird:NodeAuth!
+ * @package        FastyBird:SimpleAuth!
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -74,9 +74,9 @@ final class TokenValidator
 			if (
 				$token->validate($validationData)
 				&& $token->verify($this->signer, $this->tokenSignature)
-				&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_USER)
-				&& $token->hasClaim(NodeAuth\Constants::TOKEN_CLAIM_ROLES)
-				&& Uuid\Uuid::isValid($token->getClaim(NodeAuth\Constants::TOKEN_CLAIM_USER))
+				&& $token->hasClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER)
+				&& $token->hasClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
+				&& Uuid\Uuid::isValid($token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER))
 			) {
 				return $token;
 			}
