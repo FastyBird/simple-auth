@@ -25,4 +25,4 @@ $ composer require fastybird/simple-auth
 Learn how to use database services in [documentation](https://github.com/FastyBird/simple-auth/blob/master/docs/en/index.md).
 
 ***
-Homepage [http://fastybird.com](http://fastybird.com) and repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).
+Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).
