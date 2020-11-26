@@ -40,6 +40,18 @@ final class TokenValidatorTest extends BaseTestCase
 		Assert::null($token);
 	}
 
+	public function testValidateExpiredToken(): void
+	{
+		/** @var Security\TokenValidator $tokenValidator */
+		$tokenValidator = $this->container->getByType(Security\TokenValidator::class);
+
+		$tokenString = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJmYl90ZXN0ZXIiLCJqdGkiOiJhMTAzZmRlYi0xOTI1LTQ3NDItYTQ0Zi1kYWYzZWNmMTY4YmIiLCJpYXQiOjE1ODMwNjQwMDAsImV4cCI6MTU4MzA3MTIwMCwidXNlciI6ImU4MWQzYTE1LTAyZDctNDljMy04MjVjLTc5YzVkMDExZDQ1MiIsInJvbGVzIjpbImFkbWluaXN0cmF0b3IiXX0.t3U1BK38dNEYj0Ah80PwDRfRkvsKxhSY_OuoZO7m_g0';
+
+		$token = $tokenValidator->validate($tokenString);
+
+		Assert::null($token);
+	}
+
 }
 
 $test_case = new TokenValidatorTest();

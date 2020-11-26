@@ -15,9 +15,11 @@
 
 namespace FastyBird\SimpleAuth\Security;
 
+use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
+use Lcobucci\Clock;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
@@ -39,20 +41,20 @@ final class TokenValidator
 	/** @var string */
 	private $tokenSignature;
 
-	/** @var JWT\Signer */
-	private $signer;
+	/** @var string */
+	private $tokenIssuer;
 
 	/** @var DateTimeFactory\DateTimeFactory */
 	private $dateTimeFactory;
 
 	public function __construct(
 		string $tokenSignature,
-		JWT\Signer $signer,
+		string $tokenIssuer,
 		DateTimeFactory\DateTimeFactory $dateTimeFactory
 	) {
 		$this->tokenSignature = $tokenSignature;
+		$this->tokenIssuer = $tokenIssuer;
 
-		$this->signer = $signer;
 		$this->dateTimeFactory = $dateTimeFactory;
 	}
 
@@ -64,21 +66,34 @@ final class TokenValidator
 	public function validate(
 		string $token
 	): ?JWT\Token {
-		$jwtParser = new JWT\Parser();
+		$configuration = JWT\Configuration::forSymmetricSigner(
+			new JWT\Signer\Hmac\Sha256(),
+			JWT\Signer\Key\InMemory::plainText($this->tokenSignature)
+		);
+
+		/** @var DateTimeImmutable $now */
+		$now = $this->dateTimeFactory->getNow();
+
+		$configuration->setValidationConstraints(
+			new JWT\Validation\Constraint\IssuedBy($this->tokenIssuer),
+			new JWT\Validation\Constraint\ValidAt(new Clock\FrozenClock($now)),
+			new JWT\Validation\Constraint\SignedWith($configuration->signer(), JWT\Signer\Key\InMemory::plainText($this->tokenSignature))
+		);
 
 		try {
-			$token = $jwtParser->parse($token);
+			$jwtToken = $configuration->parser()->parse($token);
 
-			$validationData = new JWT\ValidationData($this->dateTimeFactory->getNow()->getTimestamp());
+			$constraints = $configuration->validationConstraints();
+
+			$claims = $jwtToken->claims();
 
 			if (
-				$token->validate($validationData)
-				&& $token->verify($this->signer, $this->tokenSignature)
-				&& $token->hasClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER)
-				&& $token->hasClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
-				&& Uuid\Uuid::isValid($token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER))
+				$configuration->validator()->validate($jwtToken, ...$constraints)
+				&& $claims->has(SimpleAuth\Constants::TOKEN_CLAIM_USER)
+				&& $claims->has(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
+				&& Uuid\Uuid::isValid($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER))
 			) {
-				return $token;
+				return $jwtToken;
 			}
 
 		} catch (Throwable $ex) {

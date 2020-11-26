@@ -15,7 +15,7 @@
 
 namespace FastyBird\SimpleAuth\Security;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\SimpleAuth;
 use Lcobucci\JWT;
@@ -42,29 +42,24 @@ final class TokenBuilder
 	/** @var string */
 	private $tokenIssuer;
 
-	/** @var JWT\Signer */
-	private $signer;
-
 	/** @var DateTimeFactory\DateTimeFactory */
 	private $dateTimeFactory;
 
 	public function __construct(
 		string $tokenSignature,
 		string $tokenIssuer,
-		JWT\Signer $signer,
 		DateTimeFactory\DateTimeFactory $dateTimeFactory
 	) {
 		$this->tokenSignature = $tokenSignature;
 		$this->tokenIssuer = $tokenIssuer;
 
-		$this->signer = $signer;
 		$this->dateTimeFactory = $dateTimeFactory;
 	}
 
 	/**
 	 * @param string $userId
 	 * @param string[] $roles
-	 * @param DateTimeInterface|null $expiration
+	 * @param DateTimeImmutable|null $expiration
 	 *
 	 * @return JWT\Token
 	 *
@@ -73,23 +68,30 @@ final class TokenBuilder
 	public function build(
 		string $userId,
 		array $roles,
-		?DateTimeInterface $expiration = null
+		?DateTimeImmutable $expiration = null
 	): JWT\Token {
-		$timestamp = $this->dateTimeFactory->getNow()->getTimestamp();
+		$configuration = JWT\Configuration::forSymmetricSigner(
+			new JWT\Signer\Hmac\Sha256(),
+			JWT\Signer\Key\InMemory::plainText($this->tokenSignature)
+		);
 
-		$jwtBuilder = new JWT\Builder();
-		$jwtBuilder->identifiedBy(Uuid\Uuid::uuid4()->toString());
+		/** @var DateTimeImmutable $now */
+		$now = $this->dateTimeFactory->getNow();
+
+		$jwtBuilder = $configuration->builder();
+
 		$jwtBuilder->issuedBy($this->tokenIssuer);
-		$jwtBuilder->issuedAt($timestamp);
+		$jwtBuilder->identifiedBy(Uuid\Uuid::uuid4()->toString());
+		$jwtBuilder->issuedAt($now);
 
 		if ($expiration !== null) {
-			$jwtBuilder->expiresAt($expiration->getTimestamp());
+			$jwtBuilder->expiresAt($expiration);
 		}
 
 		$jwtBuilder->withClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER, $userId);
 		$jwtBuilder->withClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES, $roles);
 
-		return $jwtBuilder->getToken($this->signer, new JWT\Signer\Key($this->tokenSignature));
+		return $jwtBuilder->getToken($configuration->signer(), $configuration->signingKey());
 	}
 
 }

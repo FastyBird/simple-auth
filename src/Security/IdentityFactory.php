@@ -34,9 +34,11 @@ class IdentityFactory implements IIdentityFactory
 	 */
 	public function create(JWT\Token $token): ?IIdentity
 	{
+		$claims = $token->claims();
+
 		return new PlainIdentity(
-			$token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER),
-			$token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
+			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER),
+			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
 		);
 	}
 

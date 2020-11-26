@@ -22,7 +22,6 @@ use FastyBird\SimpleAuth\Middleware;
 use FastyBird\SimpleAuth\Security;
 use FastyBird\SimpleAuth\Subscribers;
 use IPub\DoctrineCrud;
-use Lcobucci;
 use Nette;
 use Nette\DI;
 use Nette\PhpGenerator;
@@ -89,7 +88,8 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('token.validator'))
 			->setType(Security\TokenValidator::class)
-			->setArgument('tokenSignature', $configuration->token->signature);
+			->setArgument('tokenSignature', $configuration->token->signature)
+			->setArgument('tokenIssuer', $configuration->token->issuer);
 
 		/**
 		 * User security
@@ -140,16 +140,6 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				->setType(SimpleAuth\Models\Tokens\TokensManager::class)
 				->setArgument('entityCrud', '__placeholder__');
 		}
-
-		/**
-		 * JWT services
-		 */
-
-		$builder->addDefinition($this->prefix('jwt.signer'))
-			->setType(Lcobucci\JWT\Signer\Hmac\Sha256::class);
-
-		$builder->addDefinition($this->prefix('jwt.parser'))
-			->setType(Lcobucci\JWT\Parser::class);
 	}
 
 	/**
