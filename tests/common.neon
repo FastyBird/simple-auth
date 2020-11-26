@@ -60,12 +60,9 @@ nettrineOrm:
 		proxyDir	: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
-	namespaces:
-		- Tests\Cases\Models
-		- FastyBird\SimpleAuth\Entities
-	paths:
-		- %appDir%libs/models
-		- %appDir%../src/Entities
+	mapping: [
+		Tests\Cases\Models: %appDir%libs/models
+	]
 
 fbSimpleAuth:
 	token:
