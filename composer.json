@@ -32,7 +32,7 @@
   "minimum-stability" : "dev",
 
   "require" : {
-    "php" : ">=7.3.0",
+    "php" : ">=7.4.0",
     "ext-openssl" : "*",
     "fastybird/datetime-factory" : "@dev",
     "ipub/doctrine-consistence" : "^0.3",
