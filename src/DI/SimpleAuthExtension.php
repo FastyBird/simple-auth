@@ -113,12 +113,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				->setType(Middleware\Route\AccessMiddleware::class);
 
 			$builder->addDefinition($this->prefix('middleware.user'))
-				->setType(Middleware\UserMiddleware::class)
-				->setTags([
-					'middleware' => [
-						'priority' => 30,
-					],
-				]);
+				->setType(Middleware\UserMiddleware::class);
 		}
 
 		/**
