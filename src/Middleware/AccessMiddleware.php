@@ -13,7 +13,7 @@
  * @date           01.04.20
  */
 
-namespace FastyBird\SimpleAuth\Middleware\Route;
+namespace FastyBird\SimpleAuth\Middleware;
 
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Security;

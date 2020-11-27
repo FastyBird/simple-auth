@@ -110,7 +110,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 		if ($configuration->enable->middleware) {
 			$builder->addDefinition($this->prefix('middleware.access'))
-				->setType(Middleware\Route\AccessMiddleware::class);
+				->setType(Middleware\AccessMiddleware::class);
 
 			$builder->addDefinition($this->prefix('middleware.user'))
 				->setType(Middleware\UserMiddleware::class);

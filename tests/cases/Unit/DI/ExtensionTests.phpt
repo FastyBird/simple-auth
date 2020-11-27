@@ -22,7 +22,7 @@ final class ExtensionTests extends BaseTestCase
 		$container = $this->createContainer();
 
 		Assert::notNull($container->getByType(Middleware\UserMiddleware::class));
-		Assert::notNull($container->getByType(Middleware\Route\AccessMiddleware::class));
+		Assert::notNull($container->getByType(Middleware\AccessMiddleware::class));
 
 		Assert::notNull($container->getByType(Subscribers\UserSubscriber::class));
 

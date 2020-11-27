@@ -60,30 +60,14 @@ final class UserMiddlewareTest extends BaseTestCase
 
 		$router = new SlimRouter\Routing\Router();
 
-		$router
+		$route = $router
 			->group('/v1', function (SlimRouter\Routing\RouteCollector $group) use ($controller): void {
 				$group->get('/testing-endpoint', [$controller, 'read']);
 				$group->patch('/testing-endpoint', [$controller, 'update']);
-			})
-			->addMiddleware($this->container->getByType(Middleware\Route\AccessMiddleware::class));
+			});
 
-		$middlewareServices = $this->container->findByTag('middleware');
-
-		// Sort by priority
-		uasort($middlewareServices, function (array $a, array $b): int {
-			$p1 = $a['priority'] ?? 10;
-			$p2 = $b['priority'] ?? 10;
-
-			if ($p1 === $p2) {
-				return 0;
-			}
-
-			return ($p1 < $p2) ? -1 : 1;
-		});
-
-		foreach ($middlewareServices as $middlewareService => $middlewareServiceTags) {
-			$router->addMiddleware($this->container->getService($middlewareService));
-		}
+		$route->addMiddleware($this->container->getByType(Middleware\AccessMiddleware::class));
+		$route->addMiddleware($this->container->getByType(Middleware\UserMiddleware::class));
 
 		return $router;
 	}
