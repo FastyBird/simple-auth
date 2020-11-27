@@ -1,6 +1,6 @@
 # FastyBird simple authentication library
 
-[![Build Status](https://img.shields.io/travis/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.org/FastyBird/simple-auth)
+[![Build Status](https://img.shields.io/travis/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.com/FastyBird/simple-auth)
 [![Code coverage](https://img.shields.io/coveralls/FastyBird/simple-auth.svg?style=flat-square)](https://coveralls.io/r/FastyBird/simple-auth)
 ![PHP from Travis config](https://img.shields.io/travis/php-v/fastybird/simple-auth?style=flat-square)
 [![Licence](https://img.shields.io/packagist/l/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
@@ -10,7 +10,7 @@
 
 ## What is FastyBird simple authentication library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication
+This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication for [FastyBird](https://www.fastybird.com) modules
 
 ## Installation
 
