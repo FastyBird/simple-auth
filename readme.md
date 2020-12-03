@@ -1,8 +1,8 @@
 # FastyBird simple authentication library
 
-[![Build Status](https://img.shields.io/travis/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.com/FastyBird/simple-auth)
+[![Build Status](https://img.shields.io/travis/com/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.com/FastyBird/simple-auth)
 [![Code coverage](https://img.shields.io/coveralls/FastyBird/simple-auth.svg?style=flat-square)](https://coveralls.io/r/FastyBird/simple-auth)
-![PHP from Travis config](https://img.shields.io/travis/php-v/fastybird/simple-auth?style=flat-square)
+![PHP](https://img.shields.io/packagist/php-v/fastybird/simple-auth?style=flat-square)
 [![Licence](https://img.shields.io/packagist/l/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
 [![Downloads total](https://img.shields.io/packagist/dt/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
 [![Latest stable](https://img.shields.io/packagist/v/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
