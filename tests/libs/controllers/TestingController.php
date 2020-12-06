@@ -2,7 +2,7 @@
 
 namespace Tests\Cases\Controllers;
 
-use FastyBird\NodeWebServer\Http;
+use FastyBird\WebServer\Http;
 use IPub\SlimRouter;
 use Psr\Http\Message;
 
