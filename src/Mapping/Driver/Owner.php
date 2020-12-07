@@ -54,6 +54,74 @@ final class Owner
 	];
 
 	/**
+	 * Get the configuration for specific object class
+	 * if cache driver is present it scans it also
+	 *
+	 * @param Persistence\ObjectManager $objectManager
+	 * @param string $class
+	 *
+	 * @return mixed[]
+	 *
+	 * @throws Common\Annotations\AnnotationException
+	 * @throws ORM\Mapping\MappingException
+	 */
+	public function getObjectConfigurations(Persistence\ObjectManager $objectManager, string $class): array
+	{
+		$config = [];
+
+		if (isset(self::$objectConfigurations[$class])) {
+			$config = self::$objectConfigurations[$class];
+
+		} else {
+			/** @var ORM\Mapping\ClassMetadataFactory $metadataFactory */
+			$metadataFactory = $objectManager->getMetadataFactory();
+
+			/** @var Common\Cache\Cache|null $cacheDriver */
+			$cacheDriver = $metadataFactory->getCacheDriver();
+
+			if ($cacheDriver !== null) {
+				$cacheId = self::getCacheId($class);
+
+				if (($cached = $cacheDriver->fetch($cacheId)) !== false) {
+					self::$objectConfigurations[$class] = $cached;
+					$config = $cached;
+
+				} else {
+					/** @var ORM\Mapping\ClassMetadata $classMetadata */
+					$classMetadata = $metadataFactory->getMetadataFor($class);
+
+					// Re-generate metadata on cache miss
+					$this->loadMetadataForObjectClass($objectManager, $classMetadata);
+
+					if (isset(self::$objectConfigurations[$class])) {
+						$config = self::$objectConfigurations[$class];
+					}
+				}
+
+				$objectClass = $config['useObjectClass'] ?? $class;
+
+				if ($objectClass !== $class) {
+					$this->getObjectConfigurations($objectManager, $objectClass);
+				}
+			}
+		}
+
+		return $config;
+	}
+
+	/**
+	 * Get the cache id
+	 *
+	 * @param string $className
+	 *
+	 * @return string
+	 */
+	private static function getCacheId(string $className): string
+	{
+		return $className . '\\$' . strtoupper(str_replace('\\', '_', __NAMESPACE__)) . '_CLASSMETADATA';
+	}
+
+	/**
 	 * @param Persistence\ObjectManager $objectManager
 	 * @param ORM\Mapping\ClassMetadata $classMetadata
 	 *
@@ -185,62 +253,6 @@ final class Owner
 	}
 
 	/**
-	 * Get the configuration for specific object class
-	 * if cache driver is present it scans it also
-	 *
-	 * @param Persistence\ObjectManager $objectManager
-	 * @param string $class
-	 *
-	 * @return mixed[]
-	 *
-	 * @throws Common\Annotations\AnnotationException
-	 * @throws ORM\Mapping\MappingException
-	 */
-	public function getObjectConfigurations(Persistence\ObjectManager $objectManager, string $class): array
-	{
-		$config = [];
-
-		if (isset(self::$objectConfigurations[$class])) {
-			$config = self::$objectConfigurations[$class];
-
-		} else {
-			/** @var ORM\Mapping\ClassMetadataFactory $metadataFactory */
-			$metadataFactory = $objectManager->getMetadataFactory();
-
-			/** @var Common\Cache\Cache|null $cacheDriver */
-			$cacheDriver = $metadataFactory->getCacheDriver();
-
-			if ($cacheDriver !== null) {
-				$cacheId = self::getCacheId($class);
-
-				if (($cached = $cacheDriver->fetch($cacheId)) !== false) {
-					self::$objectConfigurations[$class] = $cached;
-					$config = $cached;
-
-				} else {
-					/** @var ORM\Mapping\ClassMetadata $classMetadata */
-					$classMetadata = $metadataFactory->getMetadataFor($class);
-
-					// Re-generate metadata on cache miss
-					$this->loadMetadataForObjectClass($objectManager, $classMetadata);
-
-					if (isset(self::$objectConfigurations[$class])) {
-						$config = self::$objectConfigurations[$class];
-					}
-				}
-
-				$objectClass = $config['useObjectClass'] ?? $class;
-
-				if ($objectClass !== $class) {
-					$this->getObjectConfigurations($objectManager, $objectClass);
-				}
-			}
-		}
-
-		return $config;
-	}
-
-	/**
 	 * Create default annotation reader for extensions
 	 *
 	 * @return Common\Annotations\CachedReader
@@ -267,18 +279,6 @@ final class Owner
 		$mapping = $meta->getFieldMapping($field);
 
 		return $mapping !== [] && in_array($mapping['type'], $this->validTypes, true);
-	}
-
-	/**
-	 * Get the cache id
-	 *
-	 * @param string $className
-	 *
-	 * @return string
-	 */
-	private static function getCacheId(string $className): string
-	{
-		return $className . '\\$' . strtoupper(str_replace('\\', '_', __NAMESPACE__)) . '_CLASSMETADATA';
 	}
 
 }

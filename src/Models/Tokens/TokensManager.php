@@ -67,7 +67,8 @@ class TokensManager implements ITokensManager
 		Utils\ArrayHash $values
 	): Entities\Tokens\IToken {
 		/** @var Entities\Tokens\IToken $entity */
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->entityCrud->getEntityUpdater()
+			->update($values, $entity);
 
 		return $entity;
 	}
@@ -79,7 +80,8 @@ class TokensManager implements ITokensManager
 		Entities\Tokens\IToken $entity
 	): bool {
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->entityCrud->getEntityDeleter()
+			->delete($entity);
 	}
 
 }

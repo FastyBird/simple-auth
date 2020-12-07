@@ -64,20 +64,6 @@ final class TokenRepository implements ITokenRepository
 	/**
 	 * {@inheritDoc}
 	 */
-	public function findOneByToken(
-		string $token,
-		string $type = Entities\Tokens\Token::class
-	): ?Entities\Tokens\IToken {
-		$findQuery = new Queries\FindTokensQuery();
-		$findQuery->byToken($token);
-		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
-
-		return $this->findOneBy($findQuery, $type);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function findOneBy(
 		Queries\FindTokensQuery $queryObject,
 		string $type = Entities\Tokens\Token::class
@@ -103,6 +89,20 @@ final class TokenRepository implements ITokenRepository
 		}
 
 		return $this->repository[$type];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function findOneByToken(
+		string $token,
+		string $type = Entities\Tokens\Token::class
+	): ?Entities\Tokens\IToken {
+		$findQuery = new Queries\FindTokensQuery();
+		$findQuery->byToken($token);
+		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
+
+		return $this->findOneBy($findQuery, $type);
 	}
 
 }

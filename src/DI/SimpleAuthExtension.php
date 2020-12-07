@@ -41,13 +41,28 @@ class SimpleAuthExtension extends DI\CompilerExtension
 {
 
 	/**
+	 * @param Nette\Configurator $config
+	 * @param string $extensionName
+	 *
+	 * @return void
+	 */
+	public static function register(
+		Nette\Configurator $config,
+		string $extensionName = 'fbSimpleAuth'
+	): void {
+		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName): void {
+			$compiler->addExtension($extensionName, new SimpleAuthExtension());
+		};
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
 			'token'    => Schema\Expect::structure([
-				'issuer'    => Schema\Expect::string(),
+				'issuer' => Schema\Expect::string(),
 				'signature' => Schema\Expect::string('g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='),
 			]),
 			'enable'   => Schema\Expect::structure([
@@ -172,7 +187,10 @@ class SimpleAuthExtension extends DI\CompilerExtension
 			$ormAnnotationDriverChainService = $builder->getDefinitionByType(Persistence\Mapping\Driver\MappingDriverChain::class);
 
 			if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-				$ormAnnotationDriverChainService->addSetup('addDriver', [$ormAnnotationDriverService, 'FastyBird\SimpleAuth\Entities']);
+				$ormAnnotationDriverChainService->addSetup('addDriver', [
+					$ormAnnotationDriverService,
+					'FastyBird\SimpleAuth\Entities',
+				]);
 			}
 		}
 	}
@@ -193,21 +211,6 @@ class SimpleAuthExtension extends DI\CompilerExtension
 			$tokensManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__doctrine__tokensManager');
 			$tokensManagerService->setBody('return new ' . SimpleAuth\Models\Tokens\TokensManager::class . '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));');
 		}
-	}
-
-	/**
-	 * @param Nette\Configurator $config
-	 * @param string $extensionName
-	 *
-	 * @return void
-	 */
-	public static function register(
-		Nette\Configurator $config,
-		string $extensionName = 'fbSimpleAuth'
-	): void {
-		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName): void {
-			$compiler->addExtension($extensionName, new SimpleAuthExtension());
-		};
 	}
 
 }

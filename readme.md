@@ -10,7 +10,7 @@
 
 ## What is FastyBird simple authentication library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication for [FastyBird](https://www.fastybird.com) modules
+This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication for [FastyBird](https://www.fastybird.com) IoT services
 
 ## Installation
 
