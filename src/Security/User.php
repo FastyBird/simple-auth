@@ -39,16 +39,16 @@ class User
 	use Nette\SmartObject;
 
 	/** @var Closure[] */
-	public $onLoggedIn = [];
+	public array $onLoggedIn = [];
 
 	/** @var Closure[] */
-	public $onLoggedOut = [];
+	public array $onLoggedOut = [];
 
 	/** @var Security\IUserStorage */
-	private $storage;
+	private IUserStorage $storage;
 
 	/** @var Security\IAuthenticator|null */
-	private $authenticator;
+	private ?IAuthenticator $authenticator;
 
 	public function __construct(
 		Security\IUserStorage $storage,

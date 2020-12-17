@@ -35,7 +35,7 @@ final class TokenReader
 	use Nette\SmartObject;
 
 	/** @var TokenValidator */
-	private $tokenValidator;
+	private TokenValidator $tokenValidator;
 
 	public function __construct(
 		TokenValidator $tokenValidator

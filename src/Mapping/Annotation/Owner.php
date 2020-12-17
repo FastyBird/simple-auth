@@ -32,7 +32,7 @@ final class Owner extends Annotation
 {
 
 	/** @var string */
-	public $on = 'create';
+	public string $on = 'create';
 
 	/** @var string|string[] */
 	public $field;

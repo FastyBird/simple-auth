@@ -34,13 +34,13 @@ final class Auth
 	use Nette\SmartObject;
 
 	/** @var SimpleAuthSecurity\TokenReader */
-	private $tokenReader;
+	private Security\TokenReader $tokenReader;
 
 	/** @var SimpleAuthSecurity\IIdentityFactory */
-	private $identityFactory;
+	private Security\IIdentityFactory $identityFactory;
 
 	/** @var SimpleAuthSecurity\User */
-	private $user;
+	private Security\User $user;
 
 	public function __construct(
 		SimpleAuthSecurity\TokenReader $tokenReader,

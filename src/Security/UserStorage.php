@@ -29,7 +29,7 @@ class UserStorage implements Security\IUserStorage
 {
 
 	/** @var Security\IIdentity|null */
-	private $identity = null;
+	private ?IIdentity $identity = null;
 
 	/**
 	 * {@inheritDoc}

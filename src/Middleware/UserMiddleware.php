@@ -34,7 +34,7 @@ final class UserMiddleware implements MiddlewareInterface
 {
 
 	/** @var SimpleAuth\Auth */
-	private $auth;
+	private SimpleAuth\Auth $auth;
 
 	public function __construct(
 		SimpleAuth\Auth $auth

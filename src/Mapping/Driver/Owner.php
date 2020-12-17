@@ -42,14 +42,14 @@ final class Owner
 	 *
 	 * @var mixed[]
 	 */
-	private static $objectConfigurations = [];
+	private static array $objectConfigurations = [];
 
 	/**
 	 * List of types which are valid for blame
 	 *
 	 * @var string[]
 	 */
-	private $validTypes = [
+	private array $validTypes = [
 		'string',
 	];
 
@@ -148,8 +148,14 @@ final class Owner
 		/** @var ORM\Mapping\ClassMetadataFactory $metadataFactory */
 		$metadataFactory = $objectManager->getMetadataFactory();
 
+		$classParents = class_parents($classMetadata->getName());
+
+		if ($classParents === false) {
+			return;
+		}
+
 		// Collect metadata from inherited classes
-		foreach (array_reverse(class_parents($classMetadata->getName())) as $parentClass) {
+		foreach (array_reverse($classParents) as $parentClass) {
 			// Read only inherited mapped classes
 			if ($metadataFactory->hasMetadataFor($parentClass)) {
 				/** @var ORM\Mapping\ClassMetadata $parentClassMetadata */

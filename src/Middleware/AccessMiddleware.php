@@ -38,7 +38,7 @@ final class AccessMiddleware implements MiddlewareInterface
 {
 
 	/** @var Security\User */
-	private $user;
+	private Security\User $user;
 
 	public function __construct(
 		Security\User $user

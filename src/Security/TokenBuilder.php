@@ -37,13 +37,13 @@ final class TokenBuilder
 	use Nette\SmartObject;
 
 	/** @var string */
-	private $tokenSignature;
+	private string $tokenSignature;
 
 	/** @var string */
-	private $tokenIssuer;
+	private string $tokenIssuer;
 
 	/** @var DateTimeFactory\DateTimeFactory */
-	private $dateTimeFactory;
+	private DateTimeFactory\DateTimeFactory $dateTimeFactory;
 
 	public function __construct(
 		string $tokenSignature,

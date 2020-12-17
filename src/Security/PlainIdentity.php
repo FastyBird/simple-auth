@@ -34,10 +34,10 @@ class PlainIdentity implements Security\IIdentity
 	use Nette\SmartObject;
 
 	/** @var Uuid\UuidInterface */
-	private $id;
+	private Uuid\UuidInterface $id;
 
 	/** @var string[] */
-	private $roles;
+	private array $roles;
 
 	/**
 	 * @param string $id

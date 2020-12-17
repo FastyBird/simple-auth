@@ -35,10 +35,10 @@ final class UserSubscriber implements Common\EventSubscriber
 	use Nette\SmartObject;
 
 	/** @var Security\User */
-	private $user;
+	private Security\User $user;
 
 	/** @var Mapping\Driver\Owner */
-	private $driver;
+	private Mapping\Driver\Owner $driver;
 
 	/**
 	 * Register events
