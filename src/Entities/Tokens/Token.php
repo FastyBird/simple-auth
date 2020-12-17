@@ -62,7 +62,7 @@ abstract class Token implements IToken
 	 * @ORM\ManyToOne(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", inversedBy="children")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="token_id", nullable=true, onDelete="set null")
 	 */
-	protected ?IToken $parent;
+	protected ?IToken $parent = null;
 
 	/**
 	 * @var Common\Collections\Collection<int, IToken>
@@ -86,7 +86,7 @@ abstract class Token implements IToken
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="string_enum", name="token_state", nullable=false, options={"default": "active"})
 	 */
-	protected Types\TokenStateType $state;
+	protected $state;
 
 	/**
 	 * @param string $token
