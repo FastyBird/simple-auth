@@ -34,7 +34,7 @@
   "require" : {
     "php" : ">=7.4.0",
     "ext-openssl" : "*",
-    "fastybird/datetime-factory" : "@dev",
+    "fastybird/datetime-factory" : "^0.1",
     "ipub/doctrine-consistence" : "^0.3",
     "ipub/doctrine-crud" : "^2.3",
     "ipub/doctrine-dynamic-discriminator-map" : "^1.3",
