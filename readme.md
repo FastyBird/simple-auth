@@ -1,11 +1,11 @@
 # FastyBird simple authentication library
 
-[![Build Status](https://img.shields.io/travis/com/FastyBird/simple-auth.svg?style=flat-square)](https://travis-ci.com/FastyBird/simple-auth)
-[![Code coverage](https://img.shields.io/coveralls/FastyBird/simple-auth.svg?style=flat-square)](https://coveralls.io/r/FastyBird/simple-auth)
-![PHP](https://img.shields.io/packagist/php-v/fastybird/simple-auth?style=flat-square)
-[![Licence](https://img.shields.io/packagist/l/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
-[![Downloads total](https://img.shields.io/packagist/dt/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
-[![Latest stable](https://img.shields.io/packagist/v/FastyBird/simple-auth.svg?style=flat-square)](https://packagist.org/packages/FastyBird/simple-auth)
+[![Build Status](https://badgen.net/github/checks/FastyBird/simple-auth/master?cache=300&style=flast-square)](https://travis-ci.com/FastyBird/simple-auth)
+[![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/simple-auth?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/simple-auth)
+![PHP](https://badgen.net/packagist/php/FastyBird/simple-auth?cache=300&style=flast-square)
+[![Licence](https://badgen.net/packagist/license/FastyBird/simple-auth?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/simple-auth)
+[![Downloads total](https://badgen.net/packagist/dt/FastyBird/simple-auth?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/simple-auth)
+[![Latest stable](https://badgen.net/packagist/v/FastyBird/simple-auth/latest?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/simple-auth)
 [![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
 
 ## What is FastyBird simple authentication library?
