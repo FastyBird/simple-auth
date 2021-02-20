@@ -14,6 +14,7 @@ php:
 	date.timezone: Europe/Prague
 
 extensions:
+	contributteEvents			: Contributte\EventDispatcher\DI\EventDispatcherExtension
 	contributteConsole			: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
 	nettrineAnnotations			: Nettrine\Annotations\DI\AnnotationsExtension
 	nettrineCache				: Nettrine\Cache\DI\CacheExtension
