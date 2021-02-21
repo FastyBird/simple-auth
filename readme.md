@@ -1,6 +1,6 @@
 # FastyBird simple authentication library
 
-[![Build Status](https://badgen.net/github/checks/FastyBird/simple-auth/master?cache=300&style=flast-square)](https://travis-ci.com/FastyBird/simple-auth)
+[![Build Status](https://badgen.net/github/checks/FastyBird/simple-auth/master?cache=300&style=flast-square)](https://github.com/FastyBird/simple-auth/actions)
 [![Code coverage](https://badgen.net/coveralls/c/github/FastyBird/simple-auth?cache=300&style=flast-square)](https://coveralls.io/r/FastyBird/simple-auth)
 ![PHP](https://badgen.net/packagist/php/FastyBird/simple-auth?cache=300&style=flast-square)
 [![Licence](https://badgen.net/packagist/license/FastyBird/simple-auth?cache=300&style=flast-square)](https://packagist.org/packages/FastyBird/simple-auth)
