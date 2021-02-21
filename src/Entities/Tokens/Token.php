@@ -36,7 +36,7 @@ use Throwable;
  *       @ORM\Index(name="token_state_idx", columns={"token_state"})
  *     }
  * )
- * @ORM\InheritanceType("JOINED")
+ * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="token_type", type="string", length=20)
  * @ORM\DiscriminatorMap({
  *      "token" = "FastyBird\SimpleAuth\Entities\Tokens\Token"
