@@ -261,13 +261,11 @@ final class Owner
 	/**
 	 * Create default annotation reader for extensions
 	 *
-	 * @return Common\Annotations\CachedReader
+	 * @return Common\Annotations\Reader
 	 */
-	private function getDefaultAnnotationReader(): Common\Annotations\CachedReader
+	private function getDefaultAnnotationReader(): Common\Annotations\Reader
 	{
-		$reader = new Common\Annotations\AnnotationReader();
-
-		return new Common\Annotations\CachedReader($reader, new Common\Cache\ArrayCache());
+		return new Common\Annotations\AnnotationReader();
 	}
 
 	/**
