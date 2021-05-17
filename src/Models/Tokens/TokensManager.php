@@ -28,15 +28,26 @@ use Nette\Utils;
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @phpstan-template TEntityClass of Entities\Tokens\Token
  */
 class TokensManager implements ITokensManager
 {
 
 	use Nette\SmartObject;
 
-	/** @var Crud\IEntityCrud */
+	/**
+	 * @var Crud\IEntityCrud
+	 *
+	 * @phpstan-var Crud\IEntityCrud<TEntityClass>
+	 */
 	private Crud\IEntityCrud $entityCrud;
 
+	/**
+	 * @param Crud\IEntityCrud $entityCrud
+	 *
+	 * @phpstan-param Crud\IEntityCrud<TEntityClass> $entityCrud
+	 */
 	public function __construct(
 		Crud\IEntityCrud $entityCrud
 	) {

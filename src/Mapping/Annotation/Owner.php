@@ -41,6 +41,6 @@ final class Owner extends Annotation
 	public $value;
 
 	/** @var mixed[]|null */
-	public $association;
+	public ?array $association = null;
 
 }

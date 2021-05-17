@@ -53,6 +53,22 @@ final class Owner
 		'string',
 	];
 
+	/** @var Common\Annotations\Reader */
+	private Common\Annotations\Reader $annotationReader;
+
+	/** @var Common\Cache\Cache */
+	private Common\Cache\Cache $cacheDriver;
+
+	public function __construct(
+		Common\Cache\Cache $cache
+	) {
+		$this->cacheDriver = $cache;
+		$this->annotationReader = new Common\Annotations\PsrCachedReader(
+			new Common\Annotations\AnnotationReader(),
+			Common\Cache\Psr6\CacheAdapter::wrap($cache)
+		);
+	}
+
 	/**
 	 * Get the configuration for specific object class
 	 * if cache driver is present it scans it also
@@ -76,33 +92,28 @@ final class Owner
 			/** @var ORM\Mapping\ClassMetadataFactory $metadataFactory */
 			$metadataFactory = $objectManager->getMetadataFactory();
 
-			/** @var Common\Cache\Cache|null $cacheDriver */
-			$cacheDriver = $metadataFactory->getCacheDriver();
+			$cacheId = self::getCacheId($class);
 
-			if ($cacheDriver !== null) {
-				$cacheId = self::getCacheId($class);
+			if (($cached = $this->cacheDriver->fetch($cacheId)) !== false) {
+				self::$objectConfigurations[$class] = $cached;
+				$config = $cached;
 
-				if (($cached = $cacheDriver->fetch($cacheId)) !== false) {
-					self::$objectConfigurations[$class] = $cached;
-					$config = $cached;
+			} else {
+				/** @var ORM\Mapping\ClassMetadata $classMetadata */
+				$classMetadata = $metadataFactory->getMetadataFor($class);
 
-				} else {
-					/** @var ORM\Mapping\ClassMetadata $classMetadata */
-					$classMetadata = $metadataFactory->getMetadataFor($class);
+				// Re-generate metadata on cache miss
+				$this->loadMetadataForObjectClass($objectManager, $classMetadata);
 
-					// Re-generate metadata on cache miss
-					$this->loadMetadataForObjectClass($objectManager, $classMetadata);
-
-					if (isset(self::$objectConfigurations[$class])) {
-						$config = self::$objectConfigurations[$class];
-					}
+				if (isset(self::$objectConfigurations[$class])) {
+					$config = self::$objectConfigurations[$class];
 				}
+			}
 
-				$objectClass = $config['useObjectClass'] ?? $class;
+			$objectClass = $config['useObjectClass'] ?? $class;
 
-				if ($objectClass !== $class) {
-					$this->getObjectConfigurations($objectManager, $objectClass);
-				}
+			if ($objectClass !== $class) {
+				$this->getObjectConfigurations($objectManager, $objectClass);
 			}
 		}
 
@@ -183,11 +194,7 @@ final class Owner
 		// Caching empty metadata will prevent re-parsing non-existent annotations
 		$cacheId = self::getCacheId($classMetadata->getName());
 
-		$cacheDriver = $metadataFactory->getCacheDriver();
-
-		if ($cacheDriver !== null) {
-			$cacheDriver->save($cacheId, $config);
-		}
+		$this->cacheDriver->save($cacheId, $config);
 
 		self::$objectConfigurations[$classMetadata->getName()] = $config;
 	}
@@ -204,9 +211,6 @@ final class Owner
 	{
 		$class = $metadata->getReflectionClass();
 
-		// Create doctrine annotation reader
-		$reader = $this->getDefaultAnnotationReader();
-
 		// Property annotations
 		foreach ($class->getProperties() as $property) {
 			if ($metadata->isMappedSuperclass && $property->isPrivate() === false ||
@@ -216,7 +220,7 @@ final class Owner
 				continue;
 			}
 
-			$owner = $reader->getPropertyAnnotation($property, self::EXTENSION_ANNOTATION);
+			$owner = $this->annotationReader->getPropertyAnnotation($property, self::EXTENSION_ANNOTATION);
 
 			if ($owner instanceof Mapping\Annotation\Owner) {
 				$field = $property->getName();
@@ -256,16 +260,6 @@ final class Owner
 		}
 
 		return $config;
-	}
-
-	/**
-	 * Create default annotation reader for extensions
-	 *
-	 * @return Common\Annotations\Reader
-	 */
-	private function getDefaultAnnotationReader(): Common\Annotations\Reader
-	{
-		return new Common\Annotations\AnnotationReader();
 	}
 
 	/**

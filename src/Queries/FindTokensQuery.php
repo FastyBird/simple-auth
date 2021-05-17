@@ -86,7 +86,7 @@ class FindTokensQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository<Entities\Tokens\Token> $repository
+	 * @param ORM\EntityRepository $repository
 	 *
 	 * @return ORM\QueryBuilder
 	 *
@@ -98,7 +98,7 @@ class FindTokensQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository<Entities\Tokens\Token> $repository
+	 * @param ORM\EntityRepository $repository
 	 *
 	 * @return ORM\QueryBuilder
 	 *
@@ -110,7 +110,7 @@ class FindTokensQuery extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @param ORM\EntityRepository<Entities\Tokens\Token> $repository
+	 * @param ORM\EntityRepository $repository
 	 *
 	 * @return ORM\QueryBuilder
 	 *

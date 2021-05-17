@@ -15,7 +15,7 @@
 
 namespace FastyBird\SimpleAuth\Models\Tokens;
 
-use Doctrine\Common;
+use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Queries;
@@ -30,19 +30,26 @@ use Ramsey\Uuid;
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @phpstan-template    TEntityClass of Entities\Tokens\Token
+ * @phpstan-implements  ITokenRepository<TEntityClass>
  */
 final class TokenRepository implements ITokenRepository
 {
 
 	use Nette\SmartObject;
 
-	/** @var Common\Persistence\ManagerRegistry */
-	private Common\Persistence\ManagerRegistry $managerRegistry;
+	/** @var Persistence\ManagerRegistry */
+	private Persistence\ManagerRegistry $managerRegistry;
 
-	/** @var Persistence\ObjectRepository<Entities\Tokens\Token>[] */
+	/**
+	 * @var ORM\EntityRepository[]
+	 *
+	 * @phpstan-var ORM\EntityRepository<TEntityClass>[]
+	 */
 	private array $repository = [];
 
-	public function __construct(Common\Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(Persistence\ManagerRegistry $managerRegistry)
 	{
 		$this->managerRegistry = $managerRegistry;
 	}
@@ -64,6 +71,22 @@ final class TokenRepository implements ITokenRepository
 	/**
 	 * {@inheritDoc}
 	 */
+	public function findOneByToken(
+		string $token,
+		string $type = Entities\Tokens\Token::class
+	): ?Entities\Tokens\IToken {
+		$findQuery = new Queries\FindTokensQuery();
+		$findQuery->byToken($token);
+		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
+
+		return $this->findOneBy($findQuery, $type);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @phpstan-param Queries\FindTokensQuery<Entities\Tokens\Token> $queryObject
+	 */
 	public function findOneBy(
 		Queries\FindTokensQuery $queryObject,
 		string $type = Entities\Tokens\Token::class
@@ -77,32 +100,19 @@ final class TokenRepository implements ITokenRepository
 	/**
 	 * @param string $type
 	 *
-	 * @return Persistence\ObjectRepository<Entities\Tokens\Token>
+	 * @return ORM\EntityRepository
 	 *
-	 * @phpstan-template T of Entities\Tokens\Token
-	 * @phpstan-param    class-string<T> $type
+	 * @phpstan-param class-string<TEntityClass> $type
+	 *
+	 * @phpstan-return ORM\EntityRepository<TEntityClass>
 	 */
-	private function getRepository(string $type): Persistence\ObjectRepository
+	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
 			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
 		return $this->repository[$type];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function findOneByToken(
-		string $token,
-		string $type = Entities\Tokens\Token::class
-	): ?Entities\Tokens\IToken {
-		$findQuery = new Queries\FindTokensQuery();
-		$findQuery->byToken($token);
-		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
-
-		return $this->findOneBy($findQuery, $type);
 	}
 
 }

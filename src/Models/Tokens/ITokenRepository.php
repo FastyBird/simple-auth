@@ -26,19 +26,19 @@ use FastyBird\SimpleAuth\Queries;
  * @subpackage     Models
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @phpstan-template TEntityClass of Entities\Tokens\Token
  */
 interface ITokenRepository
 {
 
 	/**
 	 * @param string $identifier
-	 * @param string|null $type
+	 * @param string $type
 	 *
 	 * @return Entities\Tokens\IToken|null
 	 *
-	 * @phpstan-template T of Entities\Tokens\Token
-	 * @phpstan-param    string $identifier
-	 * @phpstan-param    class-string<T> $type
+	 * @phpstan-param class-string<TEntityClass> $type
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
@@ -47,13 +47,11 @@ interface ITokenRepository
 
 	/**
 	 * @param string $token
-	 * @param string|null $type
+	 * @param string $type
 	 *
 	 * @return Entities\Tokens\IToken|null
 	 *
-	 * @phpstan-template T of Entities\Tokens\Token
-	 * @phpstan-param    string $token
-	 * @phpstan-param    class-string<T> $type
+	 * @phpstan-param class-string<TEntityClass> $type
 	 */
 	public function findOneByToken(
 		string $token,
@@ -62,13 +60,12 @@ interface ITokenRepository
 
 	/**
 	 * @param Queries\FindTokensQuery $queryObject
-	 * @param string|null $type
+	 * @param string $type
 	 *
 	 * @return Entities\Tokens\IToken|null
 	 *
-	 * @phpstan-template T of Entities\Tokens\Token
-	 * @phpstan-param    Queries\FindTokensQuery<T> $queryObject
-	 * @phpstan-param    class-string<T> $type
+	 * @phpstan-param Queries\FindTokensQuery<TEntityClass> $queryObject
+	 * @phpstan-param class-string<TEntityClass> $type
 	 */
 	public function findOneBy(
 		Queries\FindTokensQuery $queryObject,
