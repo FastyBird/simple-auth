@@ -17,6 +17,19 @@ extensions:
     fbSimpleAuth: FastyBird\SimpleAuth\DI\SimpleAuthExtension
 ```
 
+This extension is dependent on other extensions, and they have to be registered too
+
+```neon
+extensions:
+    ....
+    ipubDoctrineCrud : IPub\DoctrineCrud\DI\DoctrineCrudExtension
+    ipubDoctrineConsistence : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
+    ipubDynamicDiscriminatorMap : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
+    fbDateTimeFactory : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+```
+
+> For information how to configure this extensions please visit their doc pages
+
 ## Configuration
 
 This extension has some configuration options:
