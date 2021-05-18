@@ -10,14 +10,21 @@
 
 ## What is FastyBird simple authentication library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication for [FastyBird](https://www.fastybird.com) IoT services
+This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication.
+
+### Features:
+
+- Access tokens manager for Doctrine2
+- PSR-7 middleware for validating access to resources
+- Doctrine2 entity owner mapping
+- PHPDoc access validation for controllers
 
 ## Installation
 
 The best way to install **fastybird/simple-auth** is using [Composer](http://getcomposer.org/):
 
 ```sh
-$ composer require fastybird/simple-auth
+composer require fastybird/simple-auth
 ```
 
 ## Documentation
