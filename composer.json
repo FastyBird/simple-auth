@@ -1,7 +1,7 @@
 {
   "name" : "fastybird/simple-auth",
   "type" : "library",
-  "description" : "FastyBird authentication & authorization utils",
+  "description" : "FastyBird PSR-7 authentication & authorization utils",
   "keywords" : [
     "fastybird",
     "fb",
