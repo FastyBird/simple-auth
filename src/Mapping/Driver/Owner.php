@@ -29,6 +29,8 @@ use Nette;
  * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @template T of object
  */
 final class Owner
 {
@@ -99,7 +101,7 @@ final class Owner
 				$config = $cached;
 
 			} else {
-				/** @var ORM\Mapping\ClassMetadata $classMetadata */
+				/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
 				$classMetadata = $metadataFactory->getMetadataFor($class);
 
 				// Re-generate metadata on cache miss
@@ -139,6 +141,8 @@ final class Owner
 	 * @return void
 	 *
 	 * @throws ORM\Mapping\MappingException
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	public function loadMetadataForObjectClass(
 		Persistence\ObjectManager $objectManager,
@@ -169,7 +173,7 @@ final class Owner
 		foreach (array_reverse($classParents) as $parentClass) {
 			// Read only inherited mapped classes
 			if ($metadataFactory->hasMetadataFor($parentClass)) {
-				/** @var ORM\Mapping\ClassMetadata $parentClassMetadata */
+				/** @phpstan-var ORM\Mapping\ClassMetadata<T> $parentClassMetadata */
 				$parentClassMetadata = $objectManager->getClassMetadata($parentClass);
 
 				$config = $this->readExtendedMetadata($parentClassMetadata, $config);
@@ -200,22 +204,24 @@ final class Owner
 	}
 
 	/**
-	 * @param ORM\Mapping\ClassMetadata $metadata
+	 * @param ORM\Mapping\ClassMetadata $classMetadata
 	 * @param mixed[] $config
 	 *
 	 * @return mixed[]
 	 *
 	 * @throws ORM\Mapping\MappingException
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
-	private function readExtendedMetadata(ORM\Mapping\ClassMetadata $metadata, array $config): array
+	private function readExtendedMetadata(ORM\Mapping\ClassMetadata $classMetadata, array $config): array
 	{
-		$class = $metadata->getReflectionClass();
+		$class = $classMetadata->getReflectionClass();
 
 		// Property annotations
 		foreach ($class->getProperties() as $property) {
-			if ($metadata->isMappedSuperclass && $property->isPrivate() === false ||
-				$metadata->isInheritedField($property->getName()) ||
-				isset($metadata->associationMappings[$property->getName()]['inherited'])
+			if ($classMetadata->isMappedSuperclass && $property->isPrivate() === false ||
+				$classMetadata->isInheritedField($property->getName()) ||
+				isset($classMetadata->associationMappings[$property->getName()]['inherited'])
 			) {
 				continue;
 			}
@@ -227,31 +233,31 @@ final class Owner
 
 				// No map field nor association
 				if (
-					$metadata->hasField($field) === false
-					&& $metadata->hasAssociation($field) === false
+					$classMetadata->hasField($field) === false
+					&& $classMetadata->hasAssociation($field) === false
 				) {
-					$metadata->mapField([
+					$classMetadata->mapField([
 						'fieldName' => $field,
 						'type'      => 'string',
 						'nullable'  => true,
 					]);
 				}
 
-				if ($metadata->hasField($field) && $this->isValidField($metadata, $field) === false) {
+				if ($classMetadata->hasField($field) && $this->isValidField($classMetadata, $field) === false) {
 					throw new Exceptions\InvalidMappingException(
-						sprintf('Field - [%s] type is not valid and must be "string" in class - %s', $field, $metadata->getName())
+						sprintf('Field - [%s] type is not valid and must be "string" in class - %s', $field, $classMetadata->getName())
 					);
 
-				} elseif ($metadata->hasAssociation($field) && $metadata->isSingleValuedAssociation($field) === false) {
+				} elseif ($classMetadata->hasAssociation($field) && $classMetadata->isSingleValuedAssociation($field) === false) {
 					throw new Exceptions\InvalidMappingException(
-						sprintf('Association - [%s] is not valid, it must be a string field - %s', $field, $metadata->getName())
+						sprintf('Association - [%s] is not valid, it must be a string field - %s', $field, $classMetadata->getName())
 					);
 				}
 
 				// Check for valid events
 				if (!in_array($owner->on, ['create'], true)) {
 					throw new Exceptions\InvalidMappingException(
-						sprintf('Field - [%s] trigger "on" is not one of [create] in class - %s', $field, $metadata->getName())
+						sprintf('Field - [%s] trigger "on" is not one of [create] in class - %s', $field, $classMetadata->getName())
 					);
 				}
 
@@ -265,16 +271,18 @@ final class Owner
 	/**
 	 * Checks if $field type is valid
 	 *
-	 * @param ORM\Mapping\ClassMetadata $meta
+	 * @param ORM\Mapping\ClassMetadata $classMetadata
 	 * @param string $field
 	 *
 	 * @return bool
 	 *
 	 * @throws ORM\Mapping\MappingException
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
-	private function isValidField(ORM\Mapping\ClassMetadata $meta, string $field): bool
+	private function isValidField(ORM\Mapping\ClassMetadata $classMetadata, string $field): bool
 	{
-		$mapping = $meta->getFieldMapping($field);
+		$mapping = $classMetadata->getFieldMapping($field);
 
 		return $mapping !== [] && in_array($mapping['type'], $this->validTypes, true);
 	}

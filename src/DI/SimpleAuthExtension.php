@@ -119,6 +119,9 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('security.userStorage'))
 			->setType(Security\UserStorage::class);
 
+		$builder->addDefinition($this->prefix('security.annotationChecker'))
+			->setType(Security\AnnotationChecker::class);
+
 		/**
 		 * Web server extension
 		 */

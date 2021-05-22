@@ -28,6 +28,8 @@ use Nette;
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @template T of object
  */
 final class UserSubscriber implements Common\EventSubscriber
 {
@@ -37,7 +39,11 @@ final class UserSubscriber implements Common\EventSubscriber
 	/** @var Security\User */
 	private Security\User $user;
 
-	/** @var Mapping\Driver\Owner */
+	/**
+	 * @var Mapping\Driver\Owner
+	 *
+	 * @phpstan-var Mapping\Driver\Owner<T>
+	 */
 	private Mapping\Driver\Owner $driver;
 
 	/**
@@ -53,6 +59,12 @@ final class UserSubscriber implements Common\EventSubscriber
 		];
 	}
 
+	/**
+	 * @param Mapping\Driver\Owner $driver
+	 * @param Security\User $user
+	 *
+	 * @phpstan-param Mapping\Driver\Owner<T> $driver
+	 */
 	public function __construct(
 		Mapping\Driver\Owner $driver,
 		Security\User $user
@@ -96,6 +108,7 @@ final class UserSubscriber implements Common\EventSubscriber
 
 		// Check all scheduled updates
 		foreach ($uow->getScheduledEntityUpdates() as $object) {
+			/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
 			$classMetadata = $em->getClassMetadata(get_class($object));
 
 			$config = $this->driver->getObjectConfigurations($em, $classMetadata->getName());
@@ -138,6 +151,7 @@ final class UserSubscriber implements Common\EventSubscriber
 	): void {
 		$em = $eventArgs->getEntityManager();
 		$uow = $em->getUnitOfWork();
+		/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
 		$classMetadata = $em->getClassMetadata(get_class($entity));
 
 		$config = $this->driver->getObjectConfigurations($em, $classMetadata->getName());
@@ -158,6 +172,8 @@ final class UserSubscriber implements Common\EventSubscriber
 	 * @param ORM\Mapping\ClassMetadata $classMetadata
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function updateFields(
 		array $fields,
@@ -181,6 +197,8 @@ final class UserSubscriber implements Common\EventSubscriber
 	 * @param string $field
 	 *
 	 * @return void
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function updateField(
 		ORM\UnitOfWork $uow,
@@ -208,6 +226,8 @@ final class UserSubscriber implements Common\EventSubscriber
 	 * @return void
 	 *
 	 * @throws ORM\Mapping\MappingException
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function registerEvent(
 		ORM\Mapping\ClassMetadata $classMetadata,
@@ -224,6 +244,8 @@ final class UserSubscriber implements Common\EventSubscriber
 	 * @param string $listenerClass
 	 *
 	 * @return bool
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function hasRegisteredListener(
 		ORM\Mapping\ClassMetadata $classMetadata,

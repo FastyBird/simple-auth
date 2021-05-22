@@ -14,10 +14,11 @@ This is a [Nette framework](https://nette.org) extension which is implementing [
 
 ### Features:
 
-- Access tokens manager for Doctrine2
-- PSR-7 middleware for validating access to resources
-- Doctrine2 entity owner mapping
-- PHPDoc access validation for controllers
+- Access tokens manager for [Doctrine2](https://www.doctrine-project.org)
+- [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware for authentication
+- [PSR-7](http://www.php-fig.org/psr/psr-7/) middleware for authorization
+- [Doctrine2](https://www.doctrine-project.org) entity owner mapping
+- [PHPDoc](https://en.wikipedia.org/wiki/PHPDoc) access validation for controllers
 
 ## Installation
 
@@ -29,7 +30,7 @@ composer require fastybird/simple-auth
 
 ## Documentation
 
-Learn how to use database services in [documentation](https://github.com/FastyBird/simple-auth/blob/master/docs/en/index.md).
+Learn how to use build JWT tokens and handle access to you resources in [documentation](https://github.com/FastyBird/simple-auth/blob/master/docs/en/index.md).
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).
