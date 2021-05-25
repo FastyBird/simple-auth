@@ -39,15 +39,15 @@ final class TokenRepository implements ITokenRepository
 
 	use Nette\SmartObject;
 
-	/** @var Persistence\ManagerRegistry */
-	private Persistence\ManagerRegistry $managerRegistry;
-
 	/**
 	 * @var ORM\EntityRepository[]
 	 *
 	 * @phpstan-var ORM\EntityRepository<TEntityClass>[]
 	 */
 	private array $repository = [];
+
+	/** @var Persistence\ManagerRegistry */
+	private Persistence\ManagerRegistry $managerRegistry;
 
 	public function __construct(Persistence\ManagerRegistry $managerRegistry)
 	{
@@ -102,7 +102,7 @@ final class TokenRepository implements ITokenRepository
 	 *
 	 * @return ORM\EntityRepository
 	 *
-	 * @phpstan-param class-string<TEntityClass> $type
+	 * @phpstan-param class-string $type
 	 *
 	 * @phpstan-return ORM\EntityRepository<TEntityClass>
 	 */

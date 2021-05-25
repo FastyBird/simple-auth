@@ -38,7 +38,7 @@ interface ITokenRepository
 	 *
 	 * @return Entities\Tokens\IToken|null
 	 *
-	 * @phpstan-param class-string<TEntityClass> $type
+	 * @phpstan-param class-string $type
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
@@ -51,7 +51,7 @@ interface ITokenRepository
 	 *
 	 * @return Entities\Tokens\IToken|null
 	 *
-	 * @phpstan-param class-string<TEntityClass> $type
+	 * @phpstan-param class-string $type
 	 */
 	public function findOneByToken(
 		string $token,
@@ -64,8 +64,8 @@ interface ITokenRepository
 	 *
 	 * @return Entities\Tokens\IToken|null
 	 *
-	 * @phpstan-param Queries\FindTokensQuery<TEntityClass> $queryObject
-	 * @phpstan-param class-string<TEntityClass> $type
+	 * @phpstan-param  Queries\FindTokensQuery<TEntityClass> $queryObject
+	 * @phpstan-param  class-string $type
 	 */
 	public function findOneBy(
 		Queries\FindTokensQuery $queryObject,
