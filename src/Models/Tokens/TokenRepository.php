@@ -18,6 +18,7 @@ namespace FastyBird\SimpleAuth\Models\Tokens;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Queries;
 use FastyBird\SimpleAuth\Types;
 use Nette;
@@ -109,7 +110,13 @@ final class TokenRepository implements ITokenRepository
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			$this->repository[$type] = $this->managerRegistry->getRepository($type);
+			$repository = $this->managerRegistry->getRepository($type);
+
+			if (!$repository instanceof ORM\EntityRepository) {
+				throw new Exceptions\InvalidStateException('Entity repository could not be loaded');
+			}
+
+			$this->repository[$type] = $repository;
 		}
 
 		return $this->repository[$type];
