@@ -284,7 +284,7 @@ final class Owner
 	{
 		$mapping = $classMetadata->getFieldMapping($field);
 
-		return $mapping !== [] && in_array($mapping['type'], $this->validTypes, true);
+		return in_array($mapping['type'], $this->validTypes, true);
 	}
 
 }

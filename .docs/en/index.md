@@ -10,7 +10,7 @@ The best way to install **fastybird/simple-auth** is using [Composer](http://get
 composer require fastybird/simple-auth
 ```
 
-After that you have to register extension in *config.neon*.
+After that, you have to register extension in *config.neon*.
 
 ```neon
 extensions:
