@@ -95,7 +95,6 @@ final class TokenValidator
 			) {
 				return $jwtToken;
 			}
-
 		} catch (Throwable $ex) {
 			throw new Exceptions\UnauthorizedAccessException('Token is not valid JWToken');
 		}

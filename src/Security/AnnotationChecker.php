@@ -55,7 +55,6 @@ class AnnotationChecker
 					}
 				}
 			}
-
 		} catch (ReflectionException $ex) {
 			return false;
 		}
