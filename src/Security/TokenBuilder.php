@@ -62,7 +62,7 @@ final class TokenBuilder
 	 * @param string[] $roles
 	 * @param DateTimeImmutable|null $expiration
 	 *
-	 * @return JWT\Token
+	 * @return JWT\UnencryptedToken
 	 *
 	 * @throws Throwable
 	 */
