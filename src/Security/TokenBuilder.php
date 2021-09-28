@@ -70,7 +70,7 @@ final class TokenBuilder
 		string $userId,
 		array $roles,
 		?DateTimeImmutable $expiration = null
-	): JWT\Token {
+	): JWT\UnencryptedToken {
 		array_walk($roles, function ($item): void {
 			if (!is_scalar($item)) {
 				throw new Exceptions\InvalidArgumentException('Provided roles array is not valid array of strings');

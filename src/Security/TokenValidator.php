@@ -61,7 +61,7 @@ final class TokenValidator
 	/**
 	 * @param string $token
 	 *
-	 * @return JWT\Token|null
+	 * @return JWT\UnencryptedToken|null
 	 */
 	public function validate(
 		string $token
@@ -76,12 +76,13 @@ final class TokenValidator
 
 		$configuration->setValidationConstraints(
 			new JWT\Validation\Constraint\IssuedBy($this->tokenIssuer),
-			new JWT\Validation\Constraint\ValidAt(new Clock\FrozenClock($now)),
+			new JWT\Validation\Constraint\LooseValidAt(new Clock\FrozenClock($now)),
 			new JWT\Validation\Constraint\SignedWith($configuration->signer(), JWT\Signer\Key\InMemory::plainText($this->tokenSignature))
 		);
 
 		try {
 			$jwtToken = $configuration->parser()->parse($token);
+			assert($jwtToken instanceof JWT\UnencryptedToken);
 
 			$constraints = $configuration->validationConstraints();
 

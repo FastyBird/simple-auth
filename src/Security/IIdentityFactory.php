@@ -29,10 +29,10 @@ interface IIdentityFactory
 {
 
 	/**
-	 * @param JWT\Token $token
+	 * @param JWT\UnencryptedToken $token
 	 *
 	 * @return IIdentity|null
 	 */
-	public function create(JWT\Token $token): ?IIdentity;
+	public function create(JWT\UnencryptedToken $token): ?IIdentity;
 
 }

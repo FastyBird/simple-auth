@@ -32,7 +32,7 @@ class IdentityFactory implements IIdentityFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function create(JWT\Token $token): ?IIdentity
+	public function create(JWT\UnencryptedToken $token): ?IIdentity
 	{
 		$claims = $token->claims();
 

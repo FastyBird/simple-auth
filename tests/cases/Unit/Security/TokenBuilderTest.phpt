@@ -30,10 +30,10 @@ final class TokenBuilderTest extends BaseTestCase
 
 		$token = $tokenBuilder->build($userId, $roles);
 
-		Assert::same($userId, $token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_USER));
+		Assert::same($userId, $token->claims()->get(SimpleAuth\Constants::TOKEN_CLAIM_USER));
 		Assert::same([
 			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
-		], $token->getClaim(SimpleAuth\Constants::TOKEN_CLAIM_ROLES));
+		], $token->claims()->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES));
 	}
 
 }

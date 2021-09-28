@@ -46,9 +46,9 @@ final class TokenReader
 	/**
 	 * @param ServerRequestInterface $request
 	 *
-	 * @return JWT\Token|null
+	 * @return JWT\UnencryptedToken|null
 	 */
-	public function read(ServerRequestInterface $request): ?JWT\Token
+	public function read(ServerRequestInterface $request): ?JWT\UnencryptedToken
 	{
 		$headerJWT = $request->hasHeader(SimpleAuth\Constants::TOKEN_HEADER_NAME) ?
 			$request->getHeader(SimpleAuth\Constants::TOKEN_HEADER_NAME) : null;
