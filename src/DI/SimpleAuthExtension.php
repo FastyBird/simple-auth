@@ -87,22 +87,22 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
 
-		$builder->addDefinition($this->prefix('auth'))
+		$builder->addDefinition($this->prefix('auth'), new DI\Definitions\ServiceDefinition())
 			->setType(SimpleAuth\Auth::class);
 
 		/**
 		 * Token utilities
 		 */
 
-		$builder->addDefinition($this->prefix('token.builder'))
+		$builder->addDefinition($this->prefix('token.builder'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\TokenBuilder::class)
 			->setArgument('tokenSignature', $configuration->token->signature)
 			->setArgument('tokenIssuer', $configuration->token->issuer);
 
-		$builder->addDefinition($this->prefix('token.reader'))
+		$builder->addDefinition($this->prefix('token.reader'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\TokenReader::class);
 
-		$builder->addDefinition($this->prefix('token.validator'))
+		$builder->addDefinition($this->prefix('token.validator'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\TokenValidator::class)
 			->setArgument('tokenSignature', $configuration->token->signature)
 			->setArgument('tokenIssuer', $configuration->token->issuer);
@@ -112,14 +112,14 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		 */
 
 		if ($configuration->services->identity) {
-			$builder->addDefinition($this->prefix('security.identityFactory'))
+			$builder->addDefinition($this->prefix('security.identityFactory'), new DI\Definitions\ServiceDefinition())
 				->setType(Security\IdentityFactory::class);
 		}
 
-		$builder->addDefinition($this->prefix('security.userStorage'))
+		$builder->addDefinition($this->prefix('security.userStorage'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\UserStorage::class);
 
-		$builder->addDefinition($this->prefix('security.annotationChecker'))
+		$builder->addDefinition($this->prefix('security.annotationChecker'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\AnnotationChecker::class);
 
 		/**
@@ -127,10 +127,10 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		 */
 
 		if ($configuration->enable->middleware) {
-			$builder->addDefinition($this->prefix('middleware.access'))
+			$builder->addDefinition($this->prefix('middleware.access'), new DI\Definitions\ServiceDefinition())
 				->setType(Middleware\AccessMiddleware::class);
 
-			$builder->addDefinition($this->prefix('middleware.user'))
+			$builder->addDefinition($this->prefix('middleware.user'), new DI\Definitions\ServiceDefinition())
 				->setType(Middleware\UserMiddleware::class);
 		}
 
@@ -139,18 +139,18 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		 */
 
 		if ($configuration->enable->doctrine->mapping) {
-			$builder->addDefinition($this->prefix('doctrine.driver'))
+			$builder->addDefinition($this->prefix('doctrine.driver'), new DI\Definitions\ServiceDefinition())
 				->setType(Mapping\Driver\Owner::class);
 
-			$builder->addDefinition($this->prefix('doctrine.subscriber'))
+			$builder->addDefinition($this->prefix('doctrine.subscriber'), new DI\Definitions\ServiceDefinition())
 				->setType(Subscribers\UserSubscriber::class);
 		}
 
 		if ($configuration->enable->doctrine->models) {
-			$builder->addDefinition($this->prefix('doctrine.tokenRepository'))
+			$builder->addDefinition($this->prefix('doctrine.tokenRepository'), new DI\Definitions\ServiceDefinition())
 				->setType(SimpleAuth\Models\Tokens\TokenRepository::class);
 
-			$builder->addDefinition($this->prefix('doctrine.tokensManager'))
+			$builder->addDefinition($this->prefix('doctrine.tokensManager'), new DI\Definitions\ServiceDefinition())
 				->setType(SimpleAuth\Models\Tokens\TokensManager::class)
 				->setArgument('entityCrud', '__placeholder__');
 		}
