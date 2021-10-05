@@ -49,7 +49,7 @@
 
   "require-dev" : {
     "contributte/console" : "^0.9",
-    "fastybird/web-server" : "^0.1",
+    "fastybird/web-server" : "^0.3",
     "mockery/mockery" : "^1.4",
     "nettrine/cache" : "^0.3",
     "nettrine/orm" : "^0.8",
