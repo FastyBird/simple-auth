@@ -176,7 +176,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 
 		if ($userContext === null) {
-			$builder->addDefinition($this->prefix('security.user'))
+			$builder->addDefinition($this->prefix('security.user'), new DI\Definitions\ServiceDefinition())
 				->setType(Security\User::class);
 		}
 
