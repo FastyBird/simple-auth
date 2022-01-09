@@ -11,68 +11,59 @@
 # @date			16.07.20
 
 php:
-	date.timezone: Europe/Prague
+    date.timezone: Europe/Prague
 
 extensions:
-	contributteEvents			: Contributte\EventDispatcher\DI\EventDispatcherExtension
-	contributteConsole			: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-	nettrineAnnotations			: Nettrine\Annotations\DI\AnnotationsExtension
-	nettrineCache				: Nettrine\Cache\DI\CacheExtension
-	nettrineDbal				: Nettrine\DBAL\DI\DbalExtension
-	nettrineOrm					: Nettrine\ORM\DI\OrmExtension
-	nettrineOrmAnnotations		: Nettrine\ORM\DI\OrmAnnotationsExtension
-	nettrineOrmConsole			: Nettrine\ORM\DI\OrmConsoleExtension
-	nettrineOrmCache			: Nettrine\ORM\DI\OrmCacheExtension
-	ipubDoctrineCrud			: IPub\DoctrineCrud\DI\DoctrineCrudExtension
-	ipubDoctrineConsistence		: IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
-	ipubDynamicDiscriminatorMap	: IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
-	fbDateTimeFactory			: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-	fbWebServer					: FastyBird\WebServer\DI\WebServerExtension(%consoleMode%)
+    nettrineAnnotations         : Nettrine\Annotations\DI\AnnotationsExtension
+    nettrineCache               : Nettrine\Cache\DI\CacheExtension
+    nettrineDbal                : Nettrine\DBAL\DI\DbalExtension
+    nettrineOrm                 : Nettrine\ORM\DI\OrmExtension
+    nettrineOrmAnnotations      : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmConsole          : Nettrine\ORM\DI\OrmConsoleExtension
+    nettrineOrmCache            : Nettrine\ORM\DI\OrmCacheExtension
+    ipubDoctrineCrud            : IPub\DoctrineCrud\DI\DoctrineCrudExtension
+    ipubDoctrineConsistence     : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
+    ipubDynamicDiscriminatorMap : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
+    fbDateTimeFactory           : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    fbSocketServerFactory       : FastyBird\SocketServerFactory\DI\SocketServerFactoryExtension
+    fbWebServer                 : FastyBird\WebServer\DI\WebServerExtension(%consoleMode%)
 
-contributteConsole:
-	name: FastyBird:Libraries!
-	version: '1.0'
-	catchExceptions: true
-	autoExit: true
-	url: http://example.com
-	lazy: false
-	helperSet: \Symfony\Component\Console\Helper\HelperSet
-	helpers: []
+services:
+    - {factory: Symfony\Component\Console\Application}
 
 nettrineDbal:
-	connection:
-		host: 127.0.0.1
-		driver: pdo_sqlite
-		memory: true
+    connection:
+        host: 127.0.0.1
+        driver: pdo_sqlite
+        memory: true
 
-		types:
-			uuid_binary:
-				class: Ramsey\Uuid\Doctrine\UuidBinaryType
-				commented: false
+        types:
+            uuid_binary:
+                class: Ramsey\Uuid\Doctrine\UuidBinaryType
+                commented: false
 
-		typesMapping:
-			uuid_binary: binary
+        typesMapping:
+            uuid_binary: binary
 
 nettrineAnnotations:
-	debug: %debugMode%
+    debug: %debugMode%
 
 nettrineOrm:
-	configuration:
-		proxyDir	: %tempDir%/cache/doctrine.proxies
+    configuration:
+        proxyDir	: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
-	mapping: [
-		Tests\Cases\Models: %appDir%libs/models
-	]
+    mapping: [
+        Tests\Cases\Models: %appDir%libs/models
+    ]
 
 fbSimpleAuth:
-	token:
-		issuer: fb_tester
-	enable:
-		middleware: true
-		doctrine:
-			mapping: true
-			models: true
-	services:
-		identity: true
-
+    token:
+        issuer: fb_tester
+    enable:
+        middleware: true
+        doctrine:
+            mapping: true
+            models: true
+    services:
+        identity: true
