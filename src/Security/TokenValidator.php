@@ -92,7 +92,7 @@ final class TokenValidator
 				$configuration->validator()->validate($jwtToken, ...$constraints)
 				&& $claims->has(SimpleAuth\Constants::TOKEN_CLAIM_USER)
 				&& $claims->has(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
-				&& Uuid\Uuid::isValid($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER))
+				&& Uuid\Uuid::isValid(strval($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER)))
 			) {
 				return $jwtToken;
 			}

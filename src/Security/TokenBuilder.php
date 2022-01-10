@@ -18,7 +18,6 @@ namespace FastyBird\SimpleAuth\Security;
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
 use FastyBird\SimpleAuth;
-use FastyBird\SimpleAuth\Exceptions;
 use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
