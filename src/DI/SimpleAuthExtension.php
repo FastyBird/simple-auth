@@ -62,7 +62,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 	{
 		return Schema\Expect::structure([
 			'token'    => Schema\Expect::structure([
-				'issuer' => Schema\Expect::string(),
+				'issuer'    => Schema\Expect::string(),
 				'signature' => Schema\Expect::string('g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='),
 			]),
 			'enable'   => Schema\Expect::structure([

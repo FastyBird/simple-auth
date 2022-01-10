@@ -122,6 +122,16 @@ class User
 	}
 
 	/**
+	 * @param string $role
+	 *
+	 * @return bool
+	 */
+	public function isInRole(string $role): bool
+	{
+		return in_array($role, $this->getRoles(), true);
+	}
+
+	/**
 	 * @return string[]
 	 */
 	public function getRoles(): array
@@ -133,16 +143,6 @@ class User
 		$identity = $this->getIdentity();
 
 		return $identity !== null && $identity->getRoles() !== [] ? $identity->getRoles() : [SimpleAuth\Constants::ROLE_USER];
-	}
-
-	/**
-	 * @param string $role
-	 *
-	 * @return bool
-	 */
-	public function isInRole(string $role): bool
-	{
-		return in_array($role, $this->getRoles(), true);
 	}
 
 }

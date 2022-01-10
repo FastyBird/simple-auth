@@ -50,20 +50,24 @@ fbSimpleAuth:
 
 Where:
 
-- `token -> issuer` is string representation of your organisation or application and will be inserted into generated token
+- `token -> issuer` is string representation of your organisation or application and will be inserted into generated
+  token
 - `token -> signature` is secret string used for hashing tokens
 
 
 - `enable -> middleware` enable or disable extension middlewares
 - `enable -> doctrine -> mapping` enable or disable Doctrine2 owner field mapping to your entities
-- `enable -> doctrine -> models` enable or disable Doctrine2 models services for reading, creating, updating and deleting tokens
+- `enable -> doctrine -> models` enable or disable Doctrine2 models services for reading, creating, updating and
+  deleting tokens
 
 
 - `services -> identity` enable or disable simple identity factory
 
 ## Application user & identity
 
-Everything is about user and its identity. This extension is registering service `FastyBirdy\SimpleAuth\Security\User` which handle state of user: logged-in or guest and this service could be used to determine user state and get user identity.
+Everything is about user and its identity. This extension is registering service `FastyBirdy\SimpleAuth\Security\User`
+which handle state of user: logged-in or guest and this service could be used to determine user state and get user
+identity.
 
 User service need your implementation of Authenticator, so you have to create your own authenticator service:
 
@@ -92,17 +96,21 @@ services:
     - {type: Your\CoolApp\Security\Authenticator}
 ```
 
-> Built-in user service could be extended with you own implementation. All what you have to do is to extend base use class `FastyBirdy\SimpleAuth\Security\User` and register it as a service 
+> Built-in user service could be extended with you own implementation. All what you have to do is to extend base use class `FastyBirdy\SimpleAuth\Security\User` and register it as a service
+
 ### User identity
 
-This extension has built-in plain identity and identity factory. Identity factory `FastyBird\SimpleAuth\Security\IdentityFactory` will extract claims from JWT token and create plain identity `FastyBird\SimpleAuth\Security\PlainIdentity`
+This extension has built-in plain identity and identity factory. Identity
+factory `FastyBird\SimpleAuth\Security\IdentityFactory` will extract claims from JWT token and create plain
+identity `FastyBird\SimpleAuth\Security\PlainIdentity`
 
 > If you want your own implementation of Identity and identity factory you could disable built-in solution via config and implement it your way.
 
 ## Access token entity
 
-Token is used for user authorization. This extension has base token entity structure and you have to extend it with you specific implementation.
-You could simply create you own access token entity by extending `FastyBird\SimpleAuth\Entities\Token` entity class 
+Token is used for user authorization. This extension has base token entity structure and you have to extend it with you
+specific implementation. You could simply create you own access token entity by
+extending `FastyBird\SimpleAuth\Entities\Token` entity class
 
 ```php
 namespace Your\CoolApp\Entities;
@@ -133,7 +141,8 @@ And now this entity have to be registered with you Doctrine2 implementation.
 
 ## Create access token for user - user authentication
 
-In your controller you could use `FastyBird\SimpleAuth\Security\User` service for obtaining user identity and create and return user granted token:
+In your controller you could use `FastyBird\SimpleAuth\Security\User` service for obtaining user identity and create and
+return user granted token:
 
 ```php
 namespace Your\CoolApp\Controllers;
@@ -195,7 +204,8 @@ Where:
 
 - `$userdId` - is user identifier
 - `$rolesArray` - is an array of roles names or identifiers, it has to be a scalar array
-- `$expiration` - is optional parameter which accept `\DateTime` object which is defining expiration date of the generated token. After this date token will be invalid and can no longer be used for authorization
+- `$expiration` - is optional parameter which accept `\DateTime` object which is defining expiration date of the
+  generated token. After this date token will be invalid and can no longer be used for authorization
 
 ## User authorization
 
@@ -203,17 +213,22 @@ This extension has two middleware. One for user token validation and second for 
 
 ### User token validation
 
-Middleware `FastyBird\SimpleAuth\Middleware\UserMiddleware` will take incoming request and try to find a specific header `authorization` where should be placed user acess token.
+Middleware `FastyBird\SimpleAuth\Middleware\UserMiddleware` will take incoming request and try to find a specific
+header `authorization` where should be placed user acess token.
 
 This token is validated with your token secret signature and if is valid, application user instance is created.
 
 ### User authorization
 
-The second middleware `FastyBird\SimpleAuth\Middleware\AccessMiddleware` is here to check user if has enough access right to access requested resources.
+The second middleware `FastyBird\SimpleAuth\Middleware\AccessMiddleware` is here to check user if has enough access
+right to access requested resources.
 
-This middleware is using [ipub/slim-router](https://github.com/ipublikuj/slim-router) package. It check incoming request if it has route object in attribute and if is present, try to check configured permissions with logged-in user.
+This middleware is using [ipub/slim-router](https://github.com/ipublikuj/slim-router) package. It check incoming request
+if it has route object in attribute and if is present, try to check configured permissions with logged-in user.
 
-The core of this middleware is in annotation checker service `FastyBird\SimpleAuth\Security\AnnotationChecker`. This service take controller class as a second parameter and controller method as third parameter. It tries to read security annotations and decide if user has or has not access to resources. 
+The core of this middleware is in annotation checker service `FastyBird\SimpleAuth\Security\AnnotationChecker`. This
+service take controller class as a second parameter and controller method as third parameter. It tries to read security
+annotations and decide if user has or has not access to resources.
 
 ## Restrict access to resources
 
@@ -247,13 +262,16 @@ Restriction is configured with attributes:
 
 `@Secured(guest)` - user have to be anonymous
 
-`@Secured\Role(roleName)` - Access middleware is going to check if logged-in user has configured role. Role could be single or multiple separated with commas
+`@Secured\Role(roleName)` - Access middleware is going to check if logged-in user has configured role. Role could be
+single or multiple separated with commas
 
 Annotation could be combined or only on signle place. You could restrict whole controller or only specific methods.
 
 # Tip
 
-We recommend using this extension with [fastybird/web-server](https://github.com/FastyBird/web-server) package. This package will solve for you whole php server setup and will fully cooperate with this security extension.
+We recommend using this extension with [fastybird/web-server](https://github.com/FastyBird/web-server) package. This
+package will solve for you whole php server setup and will fully cooperate with this security extension.
 
 ***
-Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).
+Homepage [https://www.fastybird.com](https://www.fastybird.com) and
+repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).

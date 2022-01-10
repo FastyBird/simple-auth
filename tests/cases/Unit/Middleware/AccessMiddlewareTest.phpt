@@ -39,6 +39,27 @@ final class AccessMiddlewareTest extends BaseTestCase
 	}
 
 	/**
+	 * @return SlimRouter\Routing\Router
+	 */
+	protected function createRouter(): SlimRouter\Routing\Router
+	{
+		$controller = new Controllers\TestingController();
+
+		$router = new SlimRouter\Routing\Router();
+
+		$route = $router
+			->group('/v1', function (SlimRouter\Routing\RouteCollector $group) use ($controller): void {
+				$group->get('/testing-endpoint', [$controller, 'read']);
+				$group->patch('/testing-endpoint', [$controller, 'update']);
+			});
+
+		$route->addMiddleware($this->container->getByType(Middleware\AccessMiddleware::class));
+		$route->addMiddleware($this->container->getByType(Middleware\UserMiddleware::class));
+
+		return $router;
+	}
+
+	/**
 	 * @param string $url
 	 * @param string $method
 	 * @param string $token
@@ -47,8 +68,13 @@ final class AccessMiddlewareTest extends BaseTestCase
 	 *
 	 * @dataProvider ./../../../fixtures/Middleware/allowedPermission.php
 	 */
-	public function testAllowedPermission(string $url, string $method, string $token, string $body, int $statusCode): void
-	{
+	public function testAllowedPermission(
+		string $url,
+		string $method,
+		string $token,
+		string $body,
+		int $statusCode
+	): void {
 		$router = $this->createRouter();
 
 		$request = new Http\Message\ServerRequest(
@@ -90,27 +116,6 @@ final class AccessMiddlewareTest extends BaseTestCase
 		);
 
 		$router->handle($request);
-	}
-
-	/**
-	 * @return SlimRouter\Routing\Router
-	 */
-	protected function createRouter(): SlimRouter\Routing\Router
-	{
-		$controller = new Controllers\TestingController();
-
-		$router = new SlimRouter\Routing\Router();
-
-		$route = $router
-			->group('/v1', function (SlimRouter\Routing\RouteCollector $group) use ($controller): void {
-				$group->get('/testing-endpoint', [$controller, 'read']);
-				$group->patch('/testing-endpoint', [$controller, 'update']);
-			});
-
-		$route->addMiddleware($this->container->getByType(Middleware\AccessMiddleware::class));
-		$route->addMiddleware($this->container->getByType(Middleware\UserMiddleware::class));
-
-		return $router;
 	}
 
 }

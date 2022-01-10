@@ -47,19 +47,6 @@ final class UserSubscriber implements Common\EventSubscriber
 	private Mapping\Driver\Owner $driver;
 
 	/**
-	 * Register events
-	 *
-	 * @return string[]
-	 */
-	public function getSubscribedEvents(): array
-	{
-		return [
-			ORM\Events::loadClassMetadata,
-			ORM\Events::onFlush,
-		];
-	}
-
-	/**
 	 * @param Mapping\Driver\Owner $driver
 	 * @param Security\User $user
 	 *
@@ -71,6 +58,19 @@ final class UserSubscriber implements Common\EventSubscriber
 	) {
 		$this->driver = $driver;
 		$this->user = $user;
+	}
+
+	/**
+	 * Register events
+	 *
+	 * @return string[]
+	 */
+	public function getSubscribedEvents(): array
+	{
+		return [
+			ORM\Events::loadClassMetadata,
+			ORM\Events::onFlush,
+		];
 	}
 
 	/**
@@ -90,6 +90,52 @@ final class UserSubscriber implements Common\EventSubscriber
 
 		// Register pre persist event
 		$this->registerEvent($classMetadata, ORM\Events::prePersist);
+	}
+
+	/**
+	 * @param ORM\Mapping\ClassMetadata $classMetadata
+	 * @param string $eventName
+	 *
+	 * @return void
+	 *
+	 * @throws ORM\Mapping\MappingException
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 */
+	private function registerEvent(
+		ORM\Mapping\ClassMetadata $classMetadata,
+		string $eventName
+	): void {
+		if (!$this->hasRegisteredListener($classMetadata, $eventName, self::class)) {
+			$classMetadata->addEntityListener($eventName, self::class, $eventName);
+		}
+	}
+
+	/**
+	 * @param ORM\Mapping\ClassMetadata $classMetadata
+	 * @param string $eventName
+	 * @param string $listenerClass
+	 *
+	 * @return bool
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 */
+	private function hasRegisteredListener(
+		ORM\Mapping\ClassMetadata $classMetadata,
+		string $eventName,
+		string $listenerClass
+	): bool {
+		if (!isset($classMetadata->entityListeners[$eventName])) {
+			return false;
+		}
+
+		foreach ($classMetadata->entityListeners[$eventName] as $listener) {
+			if ($listener['class'] === $listenerClass && $listener['method'] === $eventName) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -134,6 +180,37 @@ final class UserSubscriber implements Common\EventSubscriber
 				}
 			}
 		}
+	}
+
+	/**
+	 * Updates a field
+	 *
+	 * @param ORM\UnitOfWork $uow
+	 * @param mixed $object
+	 * @param ORM\Mapping\ClassMetadata $classMetadata
+	 * @param string $field
+	 *
+	 * @return void
+	 *
+	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 */
+	private function updateField(
+		ORM\UnitOfWork $uow,
+		$object,
+		ORM\Mapping\ClassMetadata $classMetadata,
+		string $field
+	): void {
+		$property = $classMetadata->getReflectionProperty($field);
+
+		$oldValue = $property->getValue($object);
+		$newValue = $this->user->getId() !== null ? $this->user->getId()->toString() : null;
+
+		$property->setValue($object, $newValue);
+
+		$uow->propertyChanged($object, $field, $oldValue, $newValue);
+		$uow->scheduleExtraUpdate($object, [
+			$field => [$oldValue, $newValue],
+		]);
 	}
 
 	/**
@@ -186,83 +263,6 @@ final class UserSubscriber implements Common\EventSubscriber
 				$this->updateField($uow, $object, $classMetadata, $field);
 			}
 		}
-	}
-
-	/**
-	 * Updates a field
-	 *
-	 * @param ORM\UnitOfWork $uow
-	 * @param mixed $object
-	 * @param ORM\Mapping\ClassMetadata $classMetadata
-	 * @param string $field
-	 *
-	 * @return void
-	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
-	 */
-	private function updateField(
-		ORM\UnitOfWork $uow,
-		$object,
-		ORM\Mapping\ClassMetadata $classMetadata,
-		string $field
-	): void {
-		$property = $classMetadata->getReflectionProperty($field);
-
-		$oldValue = $property->getValue($object);
-		$newValue = $this->user->getId() !== null ? $this->user->getId()->toString() : null;
-
-		$property->setValue($object, $newValue);
-
-		$uow->propertyChanged($object, $field, $oldValue, $newValue);
-		$uow->scheduleExtraUpdate($object, [
-			$field => [$oldValue, $newValue],
-		]);
-	}
-
-	/**
-	 * @param ORM\Mapping\ClassMetadata $classMetadata
-	 * @param string $eventName
-	 *
-	 * @return void
-	 *
-	 * @throws ORM\Mapping\MappingException
-	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
-	 */
-	private function registerEvent(
-		ORM\Mapping\ClassMetadata $classMetadata,
-		string $eventName
-	): void {
-		if (!$this->hasRegisteredListener($classMetadata, $eventName, self::class)) {
-			$classMetadata->addEntityListener($eventName, self::class, $eventName);
-		}
-	}
-
-	/**
-	 * @param ORM\Mapping\ClassMetadata $classMetadata
-	 * @param string $eventName
-	 * @param string $listenerClass
-	 *
-	 * @return bool
-	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
-	 */
-	private function hasRegisteredListener(
-		ORM\Mapping\ClassMetadata $classMetadata,
-		string $eventName,
-		string $listenerClass
-	): bool {
-		if (!isset($classMetadata->entityListeners[$eventName])) {
-			return false;
-		}
-
-		foreach ($classMetadata->entityListeners[$eventName] as $listener) {
-			if ($listener['class'] === $listenerClass && $listener['method'] === $eventName) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 }

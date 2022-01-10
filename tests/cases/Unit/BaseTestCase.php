@@ -43,15 +43,6 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 	}
 
 	/**
-	 * @return void
-	 */
-	protected function generateDbSchema(): void
-	{
-		$schema = new ORM\Tools\SchemaTool($this->em);
-		$schema->createSchema($this->em->getMetadataFactory()->getAllMetadata());
-	}
-
-	/**
 	 * @param string|null $additionalConfig
 	 *
 	 * @return Nette\DI\Container
@@ -104,6 +95,15 @@ abstract class BaseTestCase extends BaseMockeryTestCase
 	{
 		$this->container->removeService($serviceName);
 		$this->container->addService($serviceName, $service);
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function generateDbSchema(): void
+	{
+		$schema = new ORM\Tools\SchemaTool($this->em);
+		$schema->createSchema($this->em->getMetadataFactory()->getAllMetadata());
 	}
 
 }

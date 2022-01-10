@@ -40,19 +40,19 @@ class UserStorage implements Security\IUserStorage
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public function setIdentity(?Security\IIdentity $identity = null): void
-	{
-		$this->identity = $identity;
-	}
-
-	/**
 	 * @return Security\IIdentity|null
 	 */
 	public function getIdentity(): ?Security\IIdentity
 	{
 		return $this->identity;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setIdentity(?Security\IIdentity $identity = null): void
+	{
+		$this->identity = $identity;
 	}
 
 }

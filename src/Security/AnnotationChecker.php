@@ -80,76 +80,6 @@ class AnnotationChecker
 	}
 
 	/**
-	 * @param User $user
-	 * @param Reflector $element
-	 *
-	 * @return bool
-	 *
-	 * @throws Exceptions\InvalidArgumentException
-	 */
-	private function checkUser(User $user, Reflector $element): bool
-	{
-		// Check if element has @Secured\User annotation
-		if ($this->parseAnnotation($element, 'Secured\User') !== null) {
-			// Get user annotation
-			$result = $this->parseAnnotation($element, 'Secured\User');
-
-			if (count($result) > 0) {
-				$userAnnotation = end($result);
-
-				// Annotation is single string
-				if (in_array($userAnnotation, ['loggedIn', 'guest'], true)) {
-					// User have to be logged in and is not
-					if ($userAnnotation === 'loggedIn' && $user->isLoggedIn() === false) {
-						return false;
-
-						// User have to be logged out and is logged in
-					} elseif ($userAnnotation === 'guest' && $user->isLoggedIn() === true) {
-						return false;
-					}
-
-				// Annotation have wrong definition
-				} else {
-					throw new Exceptions\InvalidArgumentException('In @Security\User annotation is allowed only one from two strings: \'loggedIn\' & \'guest\'');
-				}
-			}
-
-			return true;
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param User $user
-	 * @param Reflector $element
-	 *
-	 * @return bool
-	 */
-	private function checkRoles(User $user, Reflector $element): bool
-	{
-		// Check if element has @Secured\Role annotation
-		if ($this->parseAnnotation($element, 'Secured\Role') !== null) {
-			$rolesAnnotation = $this->parseAnnotation($element, 'Secured\Role');
-
-			foreach ($rolesAnnotation as $role) {
-				// Check if role name is defined
-				if (is_bool($role) || $role === null) {
-					continue;
-				}
-
-				if ($user->isInRole($role)) {
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	 * @param Reflector $ref
 	 * @param string $name
 	 *
@@ -190,6 +120,76 @@ class AnnotationChecker
 		}
 
 		return $res;
+	}
+
+	/**
+	 * @param User $user
+	 * @param Reflector $element
+	 *
+	 * @return bool
+	 *
+	 * @throws Exceptions\InvalidArgumentException
+	 */
+	private function checkUser(User $user, Reflector $element): bool
+	{
+		// Check if element has @Secured\User annotation
+		if ($this->parseAnnotation($element, 'Secured\User') !== null) {
+			// Get user annotation
+			$result = $this->parseAnnotation($element, 'Secured\User');
+
+			if (count($result) > 0) {
+				$userAnnotation = end($result);
+
+				// Annotation is single string
+				if (in_array($userAnnotation, ['loggedIn', 'guest'], true)) {
+					// User have to be logged in and is not
+					if ($userAnnotation === 'loggedIn' && $user->isLoggedIn() === false) {
+						return false;
+
+						// User have to be logged out and is logged in
+					} elseif ($userAnnotation === 'guest' && $user->isLoggedIn() === true) {
+						return false;
+					}
+
+					// Annotation have wrong definition
+				} else {
+					throw new Exceptions\InvalidArgumentException('In @Security\User annotation is allowed only one from two strings: \'loggedIn\' & \'guest\'');
+				}
+			}
+
+			return true;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param User $user
+	 * @param Reflector $element
+	 *
+	 * @return bool
+	 */
+	private function checkRoles(User $user, Reflector $element): bool
+	{
+		// Check if element has @Secured\Role annotation
+		if ($this->parseAnnotation($element, 'Secured\Role') !== null) {
+			$rolesAnnotation = $this->parseAnnotation($element, 'Secured\Role');
+
+			foreach ($rolesAnnotation as $role) {
+				// Check if role name is defined
+				if (is_bool($role) || $role === null) {
+					continue;
+				}
+
+				if ($user->isInRole($role)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		return true;
 	}
 
 }

@@ -11,7 +11,8 @@
 
 ## What is FastyBird simple authentication library?
 
-This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic user authentication.
+This is a [Nette framework](https://nette.org) extension which is implementing [JWT](https://jwt.io/) services & basic
+user authentication.
 
 ### Features:
 
@@ -31,7 +32,9 @@ composer require fastybird/simple-auth
 
 ## Documentation
 
-Learn how to use build JWT tokens and handle access to you resources in [documentation](https://github.com/FastyBird/simple-auth/blob/master/.docs/en/index.md).
+Learn how to use build JWT tokens and handle access to you resources
+in [documentation](https://github.com/FastyBird/simple-auth/blob/master/.docs/en/index.md).
 
 ***
-Homepage [https://www.fastybird.com](https://www.fastybird.com) and repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).
+Homepage [https://www.fastybird.com](https://www.fastybird.com) and
+repository [https://github.com/FastyBird/simple-auth](https://github.com/FastyBird/simple-auth).

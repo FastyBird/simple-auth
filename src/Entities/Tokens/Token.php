@@ -109,6 +109,14 @@ abstract class Token implements IToken
 	/**
 	 * {@inheritDoc}
 	 */
+	public function getParent(): ?IToken
+	{
+		return $this->parent;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setParent(IToken $token): void
 	{
 		$this->parent = $token;
@@ -119,9 +127,13 @@ abstract class Token implements IToken
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getParent(): ?IToken
+	public function addChild(IToken $child): void
 	{
-		return $this->parent;
+		// Check if collection does not contain inserting entity
+		if (!$this->children->contains($child)) {
+			// ...and assign it to collection
+			$this->children->add($child);
+		}
 	}
 
 	/**
@@ -130,6 +142,14 @@ abstract class Token implements IToken
 	public function removeParent(): void
 	{
 		$this->parent = null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getChildren(): array
+	{
+		return $this->children->toArray();
 	}
 
 	/**
@@ -152,26 +172,6 @@ abstract class Token implements IToken
 	/**
 	 * {@inheritDoc}
 	 */
-	public function addChild(IToken $child): void
-	{
-		// Check if collection does not contain inserting entity
-		if (!$this->children->contains($child)) {
-			// ...and assign it to collection
-			$this->children->add($child);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getChildren(): array
-	{
-		return $this->children->toArray();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function removeChild(IToken $child): void
 	{
 		// Check if collection contain removing entity...
@@ -184,9 +184,9 @@ abstract class Token implements IToken
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getToken(): string
+	public function getState(): Types\TokenStateType
 	{
-		return $this->token;
+		return $this->state;
 	}
 
 	/**
@@ -195,14 +195,6 @@ abstract class Token implements IToken
 	public function setState(Types\TokenStateType $state): void
 	{
 		$this->state = $state;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getState(): Types\TokenStateType
-	{
-		return $this->state;
 	}
 
 	/**
@@ -235,6 +227,14 @@ abstract class Token implements IToken
 	public function __toString(): string
 	{
 		return $this->getToken();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getToken(): string
+	{
+		return $this->token;
 	}
 
 }
