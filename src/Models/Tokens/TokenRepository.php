@@ -98,13 +98,16 @@ final class TokenRepository implements ITokenRepository
 		if (!isset($this->repository[$type])) {
 			$repository = $this->managerRegistry->getRepository($type);
 
+			// @phpstan-ignore-next-line
 			if (!$repository instanceof ORM\EntityRepository) {
 				throw new Exceptions\InvalidStateException('Entity repository could not be loaded');
 			}
 
+			// @phpstan-ignore-next-line
 			$this->repository[$type] = $repository;
 		}
 
+		// @phpstan-ignore-next-line
 		return $this->repository[$type];
 	}
 

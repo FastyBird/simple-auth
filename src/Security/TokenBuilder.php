@@ -71,12 +71,6 @@ final class TokenBuilder
 		array $roles,
 		?DateTimeImmutable $expiration = null
 	): JWT\UnencryptedToken {
-		array_walk($roles, function ($item): void {
-			if (!is_scalar($item)) {
-				throw new Exceptions\InvalidArgumentException('Provided roles array is not valid array of strings');
-			}
-		});
-
 		$configuration = JWT\Configuration::forSymmetricSigner(
 			new JWT\Signer\Hmac\Sha256(),
 			JWT\Signer\Key\InMemory::plainText($this->tokenSignature)

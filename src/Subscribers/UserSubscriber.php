@@ -164,12 +164,15 @@ final class UserSubscriber implements Common\EventSubscriber
 				$needChanges = false;
 
 				if ($uow->isScheduledForInsert($object) && isset($config['create'])) {
+					// @phpstan-ignore-next-line
 					foreach ($config['create'] as $field) {
 						// Field can not exist in change set, when persisting embedded document without parent for example
+						// @phpstan-ignore-next-line
 						$new = array_key_exists($field, $changeSet) ? $changeSet[$field][1] : false;
 
 						if ($new === null) { // let manual values
 							$needChanges = true;
+							// @phpstan-ignore-next-line
 							$this->updateField($uow, $object, $classMetadata, $field);
 						}
 					}
@@ -202,12 +205,16 @@ final class UserSubscriber implements Common\EventSubscriber
 	): void {
 		$property = $classMetadata->getReflectionProperty($field);
 
+		// @phpstan-ignore-next-line
 		$oldValue = $property->getValue($object);
 		$newValue = $this->user->getId() !== null ? $this->user->getId()->toString() : null;
 
+		// @phpstan-ignore-next-line
 		$property->setValue($object, $newValue);
 
+		// @phpstan-ignore-next-line
 		$uow->propertyChanged($object, $field, $oldValue, $newValue);
+		// @phpstan-ignore-next-line
 		$uow->scheduleExtraUpdate($object, [
 			$field => [$oldValue, $newValue],
 		]);
@@ -229,13 +236,14 @@ final class UserSubscriber implements Common\EventSubscriber
 		$em = $eventArgs->getEntityManager();
 		$uow = $em->getUnitOfWork();
 		/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
-		$classMetadata = $em->getClassMetadata(get_class($entity));
+		$classMetadata = $em->getClassMetadata(get_class($entity)); // @phpstan-ignore-line
 
 		$config = $this->driver->getObjectConfigurations($em, $classMetadata->getName());
 
 		if ($config !== []) {
 			foreach (['create'] as $event) {
 				if (isset($config[$event])) {
+					// @phpstan-ignore-next-line
 					$this->updateFields($config[$event], $uow, $entity, $classMetadata);
 				}
 			}
@@ -259,6 +267,7 @@ final class UserSubscriber implements Common\EventSubscriber
 		ORM\Mapping\ClassMetadata $classMetadata
 	): void {
 		foreach ($fields as $field) {
+			// @phpstan-ignore-next-line
 			if ($classMetadata->getReflectionProperty($field)->getValue($object) === null) { // let manual values
 				$this->updateField($uow, $object, $classMetadata, $field);
 			}

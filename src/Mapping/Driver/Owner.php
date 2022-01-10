@@ -112,13 +112,16 @@ final class Owner
 				}
 			}
 
+			// @phpstan-ignore-next-line
 			$objectClass = $config['useObjectClass'] ?? $class;
 
 			if ($objectClass !== $class) {
+				// @phpstan-ignore-next-line
 				$this->getObjectConfigurations($objectManager, $objectClass);
 			}
 		}
 
+		// @phpstan-ignore-next-line
 		return $config;
 	}
 
@@ -261,6 +264,7 @@ final class Owner
 					);
 				}
 
+				// @phpstan-ignore-next-line
 				$config[$owner->on][] = $field;
 			}
 		}

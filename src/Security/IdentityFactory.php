@@ -37,7 +37,8 @@ class IdentityFactory implements IIdentityFactory
 		$claims = $token->claims();
 
 		return new PlainIdentity(
-			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER),
+			strval($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER)),
+			// @phpstan-ignore-next-line
 			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
 		);
 	}

@@ -95,7 +95,7 @@ class AnnotationChecker
 
 		$result = preg_match_all(
 			'#[\s*]@' . preg_quote($name, '#') . '(?:\(\s*([^)]*)\s*\)|\s|$)#',
-			(string) call_user_func($callable),
+			strval(call_user_func($callable)),
 			$m
 		);
 
@@ -181,7 +181,7 @@ class AnnotationChecker
 					continue;
 				}
 
-				if ($user->isInRole($role)) {
+				if ($user->isInRole(strval($role))) {
 					return true;
 				}
 			}
