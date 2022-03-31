@@ -41,7 +41,7 @@
     "php": ">=7.4.0|>=8.0.0",
     "ext-openssl": "*",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/datetime-factory": "^0.3",
+    "fastybird/datetime-factory": "^0.4",
     "ipub/doctrine-consistence": "^0.4",
     "ipub/doctrine-crud": "^3.0",
     "ipub/doctrine-dynamic-discriminator-map": "^1.4",
@@ -55,7 +55,7 @@
   },
 
   "require-dev": {
-    "fastybird/web-server": "^0.5",
+    "fastybird/web-server": "^0.8",
     "mockery/mockery": "^1.4",
     "nettrine/cache": "^0.3",
     "nettrine/orm": "^0.8",
@@ -92,7 +92,7 @@
   "extra": {
     "patches": {
       "nette/utils": {
-        "Bug: Offset check with null support": "patches/nette.array.offsetCheck.diff"
+        "Bug: Offset check with null support" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nette.array.offsetCheck.diff"
       }
     }
   }
