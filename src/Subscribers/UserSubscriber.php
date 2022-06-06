@@ -84,6 +84,7 @@ final class UserSubscriber implements Common\EventSubscriber
 	public function loadClassMetadata(
 		ORM\Event\LoadClassMetadataEventArgs $eventArgs
 	): void {
+		/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
 		$classMetadata = $eventArgs->getClassMetadata();
 
 		$this->driver->loadMetadataForObjectClass($eventArgs->getObjectManager(), $classMetadata);

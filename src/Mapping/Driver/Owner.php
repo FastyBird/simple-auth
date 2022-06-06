@@ -82,6 +82,8 @@ final class Owner
 	 *
 	 * @throws Common\Annotations\AnnotationException
 	 * @throws ORM\Mapping\MappingException
+	 *
+	 * @phpstan-param class-string $class
 	 */
 	public function getObjectConfigurations(Persistence\ObjectManager $objectManager, string $class): array
 	{
