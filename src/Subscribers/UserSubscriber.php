@@ -150,15 +150,15 @@ final class UserSubscriber implements Common\EventSubscriber
 	public function onFlush(
 		ORM\Event\OnFlushEventArgs $eventArgs
 	): void {
-		$em = $eventArgs->getEntityManager();
-		$uow = $em->getUnitOfWork();
+		$manager = $eventArgs->getObjectManager();
+		$uow = $manager->getUnitOfWork();
 
 		// Check all scheduled updates
 		foreach ($uow->getScheduledEntityUpdates() as $object) {
 			/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
-			$classMetadata = $em->getClassMetadata(get_class($object));
+			$classMetadata = $manager->getClassMetadata(get_class($object));
 
-			$config = $this->driver->getObjectConfigurations($em, $classMetadata->getName());
+			$config = $this->driver->getObjectConfigurations($manager, $classMetadata->getName());
 
 			if ($config !== []) {
 				$changeSet = $uow->getEntityChangeSet($object);
@@ -234,12 +234,12 @@ final class UserSubscriber implements Common\EventSubscriber
 		$entity,
 		ORM\Event\LifecycleEventArgs $eventArgs
 	): void {
-		$em = $eventArgs->getEntityManager();
-		$uow = $em->getUnitOfWork();
+		$manager = $eventArgs->getObjectManager();
+		$uow = $manager->getUnitOfWork();
 		/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
-		$classMetadata = $em->getClassMetadata(get_class($entity)); // @phpstan-ignore-line
+		$classMetadata = $manager->getClassMetadata(get_class($entity)); // @phpstan-ignore-line
 
-		$config = $this->driver->getObjectConfigurations($em, $classMetadata->getName());
+		$config = $this->driver->getObjectConfigurations($manager, $classMetadata->getName());
 
 		if ($config !== []) {
 			foreach (['create'] as $event) {
