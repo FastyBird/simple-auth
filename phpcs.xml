@@ -16,8 +16,7 @@
             <property name="rootNamespaces" type="array">
                 <element key="src" value="FastyBird\SimpleAuth"/>
                 <element key="tests/cases/unit" value="Tests\Cases\Unit"/>
-                <element key="tests/tools" value="Tests\Tools"/>
-                <element key="tests/libs" value="Tests\Libs"/>
+                <element key="tests/fixtures" value="Tests\Fixtures"/>
             </property>
         </properties>
     </rule>

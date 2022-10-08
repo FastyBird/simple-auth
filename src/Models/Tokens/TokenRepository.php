@@ -45,7 +45,7 @@ final class TokenRepository
 	 */
 	private array $repository = [];
 
-	public function __construct(private Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
 	{
 	}
 
@@ -65,8 +65,8 @@ final class TokenRepository
 	}
 
 	/**
-	 * @param Queries\FindTokens<Entities\Tokens\Token> $queryObject
-	 * @param class-string $type
+	 * @phpstan-param Queries\FindTokens<Entities\Tokens\Token> $queryObject
+	 * @phpstan-param class-string $type
 	 */
 	public function findOneBy(
 		Queries\FindTokens $queryObject,
@@ -77,7 +77,7 @@ final class TokenRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @phpstan-param class-string $type
 	 */
 	public function findOneByToken(
 		string $token,

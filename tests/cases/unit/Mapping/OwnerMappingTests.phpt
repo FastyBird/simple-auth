@@ -7,12 +7,12 @@ use FastyBird\SimpleAuth\Security;
 use Fig\Http\Message\RequestMethodInterface;
 use React\Http;
 use Tester\Assert;
-use Tests\Libs;
+use Tests\Fixtures;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 require_once __DIR__ . '/../BaseTestCase.php';
 
-require_once __DIR__ . '/../../../libs/ArticleEntity.php';
+require_once __DIR__ . '/../../../fixtures/Entities/ArticleEntity.php';
 
 /**
  * @testCase
@@ -40,7 +40,7 @@ final class OwnerMappingTests extends BaseTestCase
 
 		$auth->login($request);
 
-		$article = new Libs\ArticleEntity();
+		$article = new Fixtures\ArticleEntity();
 
 		$this->em->persist($article);
 		$this->em->flush();

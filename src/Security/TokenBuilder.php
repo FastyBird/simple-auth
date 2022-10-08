@@ -44,7 +44,7 @@ final class TokenBuilder
 	public function __construct(
 		private readonly string $tokenSignature,
 		private readonly string $tokenIssuer,
-		private DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
 	}

@@ -38,7 +38,7 @@ class PlainIdentity implements Security\IIdentity
 	/**
 	 * @param array<string> $roles
 	 */
-	public function __construct(string $id, private array $roles = [])
+	public function __construct(string $id, private readonly array $roles = [])
 	{
 		if (!Uuid\Uuid::isValid($id)) {
 			throw new Exceptions\InvalidArgument('User identifier have to be valid UUID string');

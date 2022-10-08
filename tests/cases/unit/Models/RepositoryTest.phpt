@@ -6,12 +6,12 @@ use FastyBird\SimpleAuth\Models;
 use FastyBird\SimpleAuth\Queries;
 use Nette\Utils;
 use Tester\Assert;
-use Tests\Libs;
+use Tests\Fixtures;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 require_once __DIR__ . '/../BaseTestCase.php';
 
-require_once __DIR__ . '/../../../libs/TestTokenEntity.php';
+require_once __DIR__ . '/../../../fixtures/Entities/TestTokenEntity.php';
 
 /**
  * @testCase
@@ -30,12 +30,12 @@ final class RepositoryTest extends BaseTestCase
 		$repository = $this->container->getByType(Models\Tokens\TokenRepository::class);
 
 		$tokenEntity = $manager->create(Utils\ArrayHash::from([
-			'entity'  => Libs\TestTokenEntity::class,
+			'entity'  => Fixtures\TestTokenEntity::class,
 			'content' => 'Testing content',
 			'token'   => 'tokenString',
 		]));
 
-		Assert::type(Libs\TestTokenEntity::class, $tokenEntity);
+		Assert::type(Fixtures\TestTokenEntity::class, $tokenEntity);
 		Assert::same('tokenString', $tokenEntity->getToken());
 		Assert::same('Testing content', $tokenEntity->getContent());
 
@@ -44,7 +44,7 @@ final class RepositoryTest extends BaseTestCase
 
 		$foundToken = $repository->findOneBy($findToken);
 
-		Assert::type(Libs\TestTokenEntity::class, $foundToken);
+		Assert::type(Fixtures\TestTokenEntity::class, $foundToken);
 		Assert::same('tokenString', $foundToken->getToken());
 
 		$updatedTokenEntity = $manager->update($tokenEntity, Utils\ArrayHash::from([
@@ -52,7 +52,7 @@ final class RepositoryTest extends BaseTestCase
 			'token'   => 'newTokenString',
 		]));
 
-		Assert::type(Libs\TestTokenEntity::class, $updatedTokenEntity);
+		Assert::type(Fixtures\TestTokenEntity::class, $updatedTokenEntity);
 		Assert::same('tokenString', $updatedTokenEntity->getToken());
 		Assert::same('Updated content', $updatedTokenEntity->getContent());
 

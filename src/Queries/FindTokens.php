@@ -26,8 +26,8 @@ use Ramsey\Uuid;
 /**
  * Find tokens entities query
  *
- * @phpstan-template T of Entities\Tokens\Token
- * @phpstan-extends  DoctrineOrmQuery\QueryObject<T>
+ * @template T of Entities\Tokens\Token
+ * @extends  DoctrineOrmQuery\QueryObject<T>
  *
  * @package          FastyBird:SimpleAuth!
  * @subpackage       Queries

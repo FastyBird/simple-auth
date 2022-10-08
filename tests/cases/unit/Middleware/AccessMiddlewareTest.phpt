@@ -6,12 +6,12 @@ use FastyBird\SimpleAuth\Middleware;
 use IPub\SlimRouter;
 use React\Http;
 use Tester\Assert;
-use Tests\Libs;
+use Tests\Fixtures;
 
 require_once __DIR__ . '/../../../bootstrap.php';
 require_once __DIR__ . '/../BaseTestCase.php';
 
-require_once __DIR__ . '/../../../libs/TestingController.php';
+require_once __DIR__ . '/../../../fixtures/Controllers/TestingController.php';
 
 /**
  * @testCase
@@ -44,7 +44,7 @@ final class AccessMiddlewareTest extends BaseTestCase
 	 */
 	protected function createRouter(): SlimRouter\Routing\Router
 	{
-		$controller = new Libs\TestingController();
+		$controller = new Fixtures\TestingController();
 
 		$router = new SlimRouter\Routing\Router();
 

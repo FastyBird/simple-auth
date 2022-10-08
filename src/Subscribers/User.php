@@ -17,10 +17,13 @@ namespace FastyBird\SimpleAuth\Subscribers;
 
 use Doctrine\Common;
 use Doctrine\ORM;
+use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Mapping;
 use FastyBird\SimpleAuth\Security;
 use Nette;
+use ReflectionException;
 use function array_key_exists;
+use function is_array;
 
 /**
  * Doctrine entities events
@@ -36,18 +39,14 @@ final class User implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var Mapping\Driver\Owner<T> */
-	private Mapping\Driver\Owner $driver;
-
 	/**
 	 * @phpstan-param Mapping\Driver\Owner<T> $driver
 	 */
 	public function __construct(
-		Mapping\Driver\Owner $driver,
-		private Security\User $user,
+		private readonly Mapping\Driver\Owner $driver,
+		private readonly Security\User $user,
 	)
 	{
-		$this->driver = $driver;
 	}
 
 	/**
@@ -118,8 +117,9 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Common\Annotations\AnnotationException
 	 * @throws ORM\Mapping\MappingException
+	 * @throws Persistence\Mapping\MappingException
+	 * @throws ReflectionException
 	 */
 	public function onFlush(ORM\Event\OnFlushEventArgs $eventArgs): void
 	{
@@ -189,8 +189,9 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Common\Annotations\AnnotationException
 	 * @throws ORM\Mapping\MappingException
+	 * @throws Persistence\Mapping\MappingException
+	 * @throws ReflectionException
 	 */
 	public function prePersist(
 		mixed $entity,
@@ -205,10 +206,8 @@ final class User implements Common\EventSubscriber
 		$config = $this->driver->getObjectConfigurations($manager, $classMetadata->getName());
 
 		if ($config !== []) {
-			foreach (['create'] as $event) {
-				if (isset($config[$event])) {
-					$this->updateFields($config[$event], $uow, $entity, $classMetadata);
-				}
+			if (isset($config['create']) && is_array($config['create'])) {
+				$this->updateFields($config['create'], $uow, $entity, $classMetadata);
 			}
 		}
 	}

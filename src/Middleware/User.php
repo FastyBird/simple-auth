@@ -33,7 +33,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class User implements MiddlewareInterface
 {
 
-	public function __construct(private SimpleAuth\Auth $auth)
+	public function __construct(private readonly SimpleAuth\Auth $auth)
 	{
 	}
 

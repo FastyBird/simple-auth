@@ -2,6 +2,8 @@
 
 This extension adds support for user access handling for PSR-7 applications.
 
+***
+
 ## Installation
 
 The best way to install **fastybird/simple-auth** is using [Composer](http://getcomposer.org/):
