@@ -25,7 +25,7 @@ use function assert;
 /**
  * Security tokens entities manager
  *
- * @phpstan-template TEntityClass of Entities\Tokens\Token
+ * @template TEntityClass of Entities\Tokens\Token
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models

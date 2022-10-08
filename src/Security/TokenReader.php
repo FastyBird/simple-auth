@@ -39,7 +39,7 @@ final class TokenReader
 
 	use Nette\SmartObject;
 
-	public function __construct(private TokenValidator $tokenValidator)
+	public function __construct(private readonly TokenValidator $tokenValidator)
 	{
 	}
 

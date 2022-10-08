@@ -1,8 +1,7 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Libs;
+namespace Tests\Fixtures;
 
-use FastyBird\WebServer\Http;
 use IPub\SlimRouter;
 use Psr\Http\Message;
 
@@ -10,7 +9,7 @@ class TestingController
 {
 
 	/**
-	 * @return Http\Response
+	 * @return SlimRouter\Http\Response
 	 *
 	 * @Secured
 	 * @Secured\User(loggedIn)
@@ -24,7 +23,7 @@ class TestingController
 	}
 
 	/**
-	 * @return Http\Response
+	 * @return SlimRouter\Http\Response
 	 *
 	 * @Secured
 	 * @Secured\Role(administrator)

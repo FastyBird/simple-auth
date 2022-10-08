@@ -21,6 +21,7 @@ use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Mapping;
 use Nette;
+use ReflectionException;
 use function array_reverse;
 use function assert;
 use function class_parents;
@@ -78,12 +79,13 @@ final class Owner
 	 * Get the configuration for specific object class
 	 * if cache driver is present it scans it also
 	 *
-	 * @return array<mixed>
-	 *
-	 * @throws Common\Annotations\AnnotationException
-	 * @throws ORM\Mapping\MappingException
-	 *
 	 * @phpstan-param class-string $class
+	 *
+	 * @phpstan-return array<mixed>
+	 *
+	 * @throws ORM\Mapping\MappingException
+	 * @throws Persistence\Mapping\MappingException
+	 * @throws ReflectionException
 	 */
 	public function getObjectConfigurations(Persistence\ObjectManager $objectManager, string $class): array
 	{
@@ -263,7 +265,7 @@ final class Owner
 				}
 
 				// Check for valid events
-				if (!in_array($owner->on, ['create'], true)) {
+				if ($owner->on !== 'create') {
 					throw new Exceptions\InvalidMapping(
 						sprintf(
 							'Field - [%s] trigger "on" is not one of [create] in class - %s',

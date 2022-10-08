@@ -41,8 +41,8 @@ final class Access implements MiddlewareInterface
 {
 
 	public function __construct(
-		private Security\User $user,
-		private Security\AnnotationChecker $annotationChecker,
+		private readonly Security\User $user,
+		private readonly Security\AnnotationChecker $annotationChecker,
 	)
 	{
 	}
