@@ -21,16 +21,22 @@ use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Mapping;
 use Nette;
+use function array_reverse;
+use function assert;
+use function class_parents;
+use function in_array;
+use function sprintf;
+use function str_replace;
+use function strtoupper;
 
 /**
  * Doctrine owner annotation driver
  *
+ * @template T of object
+ *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Mapping
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @template T of object
  */
 final class Owner
 {
@@ -42,32 +48,29 @@ final class Owner
 	/**
 	 * List of cached object configurations
 	 *
-	 * @var mixed[]
+	 * @var array<mixed>
 	 */
 	private static array $objectConfigurations = [];
 
 	/**
 	 * List of types which are valid for blame
 	 *
-	 * @var string[]
+	 * @var array<string>
 	 */
 	private array $validTypes = [
 		'string',
 	];
 
-	/** @var Common\Annotations\Reader */
 	private Common\Annotations\Reader $annotationReader;
 
-	/** @var Common\Cache\Cache */
 	private Common\Cache\Cache $cacheDriver;
 
-	public function __construct(
-		Common\Cache\Cache $cache
-	) {
+	public function __construct(Common\Cache\Cache $cache)
+	{
 		$this->cacheDriver = $cache;
 		$this->annotationReader = new Common\Annotations\PsrCachedReader(
 			new Common\Annotations\AnnotationReader(),
-			Common\Cache\Psr6\CacheAdapter::wrap($cache)
+			Common\Cache\Psr6\CacheAdapter::wrap($cache),
 		);
 	}
 
@@ -75,10 +78,7 @@ final class Owner
 	 * Get the configuration for specific object class
 	 * if cache driver is present it scans it also
 	 *
-	 * @param Persistence\ObjectManager $objectManager
-	 * @param string $class
-	 *
-	 * @return mixed[]
+	 * @return array<mixed>
 	 *
 	 * @throws Common\Annotations\AnnotationException
 	 * @throws ORM\Mapping\MappingException
@@ -93,8 +93,8 @@ final class Owner
 			$config = self::$objectConfigurations[$class];
 
 		} else {
-			/** @var ORM\Mapping\ClassMetadataFactory $metadataFactory */
 			$metadataFactory = $objectManager->getMetadataFactory();
+			assert($metadataFactory instanceof ORM\Mapping\ClassMetadataFactory);
 
 			$cacheId = self::getCacheId($class);
 
@@ -129,10 +129,6 @@ final class Owner
 
 	/**
 	 * Get the cache id
-	 *
-	 * @param string $className
-	 *
-	 * @return string
 	 */
 	private static function getCacheId(string $className): string
 	{
@@ -140,19 +136,15 @@ final class Owner
 	}
 
 	/**
-	 * @param Persistence\ObjectManager $objectManager
-	 * @param ORM\Mapping\ClassMetadata $classMetadata
-	 *
-	 * @return void
-	 *
 	 * @throws ORM\Mapping\MappingException
 	 *
 	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	public function loadMetadataForObjectClass(
 		Persistence\ObjectManager $objectManager,
-		ORM\Mapping\ClassMetadata $classMetadata
-	): void {
+		ORM\Mapping\ClassMetadata $classMetadata,
+	): void
+	{
 		if ($classMetadata->isMappedSuperclass) {
 			return; // Ignore mappedSuperclasses for now
 		}
@@ -165,8 +157,8 @@ final class Owner
 
 		$useObjectName = $classMetadata->getName();
 
-		/** @var ORM\Mapping\ClassMetadataFactory $metadataFactory */
 		$metadataFactory = $objectManager->getMetadataFactory();
+		assert($metadataFactory instanceof ORM\Mapping\ClassMetadataFactory);
 
 		$classParents = class_parents($classMetadata->getName());
 
@@ -209,10 +201,9 @@ final class Owner
 	}
 
 	/**
-	 * @param ORM\Mapping\ClassMetadata $classMetadata
-	 * @param mixed[] $config
+	 * @param array<mixed> $config
 	 *
-	 * @return mixed[]
+	 * @return array<mixed>
 	 *
 	 * @throws ORM\Mapping\MappingException
 	 *
@@ -243,26 +234,42 @@ final class Owner
 				) {
 					$classMetadata->mapField([
 						'fieldName' => $field,
-						'type'      => 'string',
-						'nullable'  => true,
+						'type' => 'string',
+						'nullable' => true,
 					]);
 				}
 
 				if ($classMetadata->hasField($field) && $this->isValidField($classMetadata, $field) === false) {
-					throw new Exceptions\InvalidMappingException(
-						sprintf('Field - [%s] type is not valid and must be "string" in class - %s', $field, $classMetadata->getName())
+					throw new Exceptions\InvalidMapping(
+						sprintf(
+							'Field - [%s] type is not valid and must be "string" in class - %s',
+							$field,
+							$classMetadata->getName(),
+						),
 					);
-
-				} elseif ($classMetadata->hasAssociation($field) && $classMetadata->isSingleValuedAssociation($field) === false) {
-					throw new Exceptions\InvalidMappingException(
-						sprintf('Association - [%s] is not valid, it must be a string field - %s', $field, $classMetadata->getName())
+				} elseif (
+					$classMetadata->hasAssociation($field)
+					&& $classMetadata->isSingleValuedAssociation(
+						$field,
+					) === false
+				) {
+					throw new Exceptions\InvalidMapping(
+						sprintf(
+							'Association - [%s] is not valid, it must be a string field - %s',
+							$field,
+							$classMetadata->getName(),
+						),
 					);
 				}
 
 				// Check for valid events
 				if (!in_array($owner->on, ['create'], true)) {
-					throw new Exceptions\InvalidMappingException(
-						sprintf('Field - [%s] trigger "on" is not one of [create] in class - %s', $field, $classMetadata->getName())
+					throw new Exceptions\InvalidMapping(
+						sprintf(
+							'Field - [%s] trigger "on" is not one of [create] in class - %s',
+							$field,
+							$classMetadata->getName(),
+						),
 					);
 				}
 
@@ -276,11 +283,6 @@ final class Owner
 
 	/**
 	 * Checks if $field type is valid
-	 *
-	 * @param ORM\Mapping\ClassMetadata $classMetadata
-	 * @param string $field
-	 *
-	 * @return bool
 	 *
 	 * @throws ORM\Mapping\MappingException
 	 *

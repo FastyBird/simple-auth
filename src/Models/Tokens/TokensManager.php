@@ -20,76 +20,59 @@ use FastyBird\SimpleAuth\Models;
 use IPub\DoctrineCrud\Crud;
 use Nette;
 use Nette\Utils;
+use function assert;
 
 /**
  * Security tokens entities manager
  *
+ * @phpstan-template TEntityClass of Entities\Tokens\Token
+ *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template TEntityClass of Entities\Tokens\Token
  */
-class TokensManager implements ITokensManager
+class TokensManager
 {
 
 	use Nette\SmartObject;
 
-	/**
-	 * @var Crud\IEntityCrud
-	 *
-	 * @phpstan-var Crud\IEntityCrud<TEntityClass>
-	 */
+	/** @phpstan-var Crud\IEntityCrud<TEntityClass> */
 	private Crud\IEntityCrud $entityCrud;
 
 	/**
-	 * @param Crud\IEntityCrud $entityCrud
-	 *
 	 * @phpstan-param Crud\IEntityCrud<TEntityClass> $entityCrud
 	 */
-	public function __construct(
-		Crud\IEntityCrud $entityCrud
-	) {
+	public function __construct(Crud\IEntityCrud $entityCrud)
+	{
 		// Entity CRUD for handling entities
 		$this->entityCrud = $entityCrud;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function create(
-		Utils\ArrayHash $values
-	): Entities\Tokens\IToken {
+	public function create(Utils\ArrayHash $values): Entities\Tokens\Token
+	{
 		// Get entity creator
 		$creator = $this->entityCrud->getEntityCreator();
 
-		/** @var Entities\Tokens\IToken $entity */
 		$entity = $creator->create($values);
+		assert($entity instanceof Entities\Tokens\Token);
 
 		return $entity;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function update(
-		Entities\Tokens\IToken $entity,
-		Utils\ArrayHash $values
-	): Entities\Tokens\IToken {
-		/** @var Entities\Tokens\IToken $entity */
+		Entities\Tokens\Token $entity,
+		Utils\ArrayHash $values,
+	): Entities\Tokens\Token
+	{
 		$entity = $this->entityCrud->getEntityUpdater()
 			->update($values, $entity);
+		assert($entity instanceof Entities\Tokens\Token);
 
 		return $entity;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function delete(
-		Entities\Tokens\IToken $entity
-	): bool {
+	public function delete(Entities\Tokens\Token $entity): bool
+	{
 		// Delete entity from database
 		return $this->entityCrud->getEntityDeleter()
 			->delete($entity);

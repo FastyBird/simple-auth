@@ -17,6 +17,7 @@ namespace FastyBird\SimpleAuth\Security;
 
 use FastyBird\SimpleAuth;
 use Lcobucci\JWT;
+use function strval;
 
 /**
  * Application plain identity factory
@@ -29,17 +30,14 @@ use Lcobucci\JWT;
 class IdentityFactory implements IIdentityFactory
 {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function create(JWT\UnencryptedToken $token): ?IIdentity
+	public function create(JWT\UnencryptedToken $token): IIdentity|null
 	{
 		$claims = $token->claims();
 
 		return new PlainIdentity(
 			strval($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER)),
 			// @phpstan-ignore-next-line
-			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
+			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES),
 		);
 	}
 

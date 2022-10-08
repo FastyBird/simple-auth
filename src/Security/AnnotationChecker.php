@@ -19,6 +19,20 @@ use FastyBird\SimpleAuth\Exceptions;
 use ReflectionClass;
 use ReflectionException;
 use Reflector;
+use function array_key_exists;
+use function call_user_func;
+use function class_exists;
+use function count;
+use function end;
+use function in_array;
+use function is_bool;
+use function is_callable;
+use function preg_match_all;
+use function preg_quote;
+use function preg_split;
+use function strtolower;
+use function strval;
+use const PREG_SPLIT_NO_EMPTY;
 
 /**
  * Class security annotation checker
@@ -32,19 +46,14 @@ class AnnotationChecker
 {
 
 	/**
-	 * @param User $user
-	 * @param string $controllerClass
-	 * @param string $controllerMethod
-	 *
-	 * @return bool
-	 *
 	 * @phpstan-param class-string $controllerClass
 	 */
 	public function checkAccess(
 		User $user,
 		string $controllerClass,
-		string $controllerMethod
-	): bool {
+		string $controllerMethod,
+	): bool
+	{
 		try {
 			if (class_exists($controllerClass)) {
 				$reflection = new ReflectionClass($controllerClass);
@@ -55,37 +64,28 @@ class AnnotationChecker
 					}
 				}
 			}
-		} catch (ReflectionException $ex) {
+		} catch (ReflectionException) {
 			return false;
 		}
 
 		return true;
 	}
 
-	/**
-	 * @param User $user
-	 * @param Reflector $element
-	 *
-	 * @return bool
-	 */
 	private function isAllowed(User $user, Reflector $element): bool
 	{
 		// Check annotations only if element have to be secured
-		if ($this->parseAnnotation($element, 'Secured') !== null) {
-			return $this->checkUser($user, $element) && $this->checkRoles($user, $element);
-
-		} else {
-			return true;
-		}
+		return $this->parseAnnotation($element, 'Secured') !== null
+			? $this->checkUser($user, $element) && $this->checkRoles(
+				$user,
+				$element,
+			)
+			: true;
 	}
 
 	/**
-	 * @param Reflector $ref
-	 * @param string $name
-	 *
-	 * @return mixed[]|null
+	 * @return array<mixed>|null
 	 */
-	private function parseAnnotation(Reflector $ref, string $name): ?array
+	private function parseAnnotation(Reflector $ref, string $name): array|null
 	{
 		$callable = [$ref, 'getDocComment'];
 
@@ -96,7 +96,7 @@ class AnnotationChecker
 		$result = preg_match_all(
 			'#[\s*]@' . preg_quote($name, '#') . '(?:\(\s*([^)]*)\s*\)|\s|$)#',
 			strval(call_user_func($callable)),
-			$m
+			$m,
 		);
 
 		if ($result === false || $result === 0) {
@@ -123,12 +123,7 @@ class AnnotationChecker
 	}
 
 	/**
-	 * @param User $user
-	 * @param Reflector $element
-	 *
-	 * @return bool
-	 *
-	 * @throws Exceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function checkUser(User $user, Reflector $element): bool
 	{
@@ -153,7 +148,9 @@ class AnnotationChecker
 
 					// Annotation have wrong definition
 				} else {
-					throw new Exceptions\InvalidArgumentException('In @Security\User annotation is allowed only one from two strings: \'loggedIn\' & \'guest\'');
+					throw new Exceptions\InvalidArgument(
+						'In @Security\User annotation is allowed only one from two strings: \'loggedIn\' & \'guest\'',
+					);
 				}
 			}
 
@@ -163,12 +160,6 @@ class AnnotationChecker
 		return true;
 	}
 
-	/**
-	 * @param User $user
-	 * @param Reflector $element
-	 *
-	 * @return bool
-	 */
 	private function checkRoles(User $user, Reflector $element): bool
 	{
 		// Check if element has @Secured\Role annotation

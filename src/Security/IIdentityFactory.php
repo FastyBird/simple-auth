@@ -28,11 +28,6 @@ use Lcobucci\JWT;
 interface IIdentityFactory
 {
 
-	/**
-	 * @param JWT\UnencryptedToken $token
-	 *
-	 * @return IIdentity|null
-	 */
-	public function create(JWT\UnencryptedToken $token): ?IIdentity;
+	public function create(JWT\UnencryptedToken $token): IIdentity|null;
 
 }

@@ -21,6 +21,8 @@ use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Security;
 use Nette;
 use Ramsey\Uuid;
+use function func_get_args;
+use function in_array;
 
 /**
  * Application user
@@ -38,59 +40,49 @@ class User
 
 	use Nette\SmartObject;
 
-	/** @var Closure[] */
+	/** @var array<Closure> */
 	public array $onLoggedIn = [];
 
-	/** @var Closure[] */
+	/** @var array<Closure> */
 	public array $onLoggedOut = [];
 
-	/** @var Security\IUserStorage */
 	private IUserStorage $storage;
 
-	/** @var Security\IAuthenticator|null */
-	private ?IAuthenticator $authenticator;
+	private IAuthenticator|null $authenticator;
 
 	public function __construct(
 		Security\IUserStorage $storage,
-		?Security\IAuthenticator $authenticator = null
-	) {
+		Security\IAuthenticator|null $authenticator = null,
+	)
+	{
 		$this->storage = $storage;
 		$this->authenticator = $authenticator;
 	}
 
-	/**
-	 * @return Uuid\UuidInterface|null
-	 */
-	public function getId(): ?Uuid\UuidInterface
+	public function getId(): Uuid\UuidInterface|null
 	{
 		$identity = $this->getIdentity();
 
-		return $identity !== null ? $identity->getId() : null;
+		return $identity?->getId();
 	}
 
-	/**
-	 * @return Security\IIdentity|null
-	 */
-	public function getIdentity(): ?Security\IIdentity
+	public function getIdentity(): Security\IIdentity|null
 	{
 		return $this->storage->getIdentity();
 	}
 
 	/**
 	 * @param string|Security\IIdentity $user name or instance of Security\IIdentity
-	 * @param string|null $password
 	 *
-	 * @return void
-	 *
-	 * @throws Exceptions\AuthenticationException
+	 * @throws Exceptions\Authentication
 	 */
-	public function login($user, ?string $password = null): void
+	public function login(string|Security\IIdentity $user, string|null $password = null): void
 	{
 		$this->logout();
 
 		if (!$user instanceof Security\IIdentity) {
 			if ($this->authenticator === null) {
-				throw new Exceptions\InvalidStateException('Authenticator is not defined');
+				throw new Exceptions\InvalidState('Authenticator is not defined');
 			}
 
 			$user = $this->authenticator->authenticate(func_get_args());
@@ -101,9 +93,6 @@ class User
 		$this->onLoggedIn($this);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function logout(): void
 	{
 		if ($this->isLoggedIn()) {
@@ -113,26 +102,18 @@ class User
 		$this->storage->setIdentity(null);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isLoggedIn(): bool
 	{
 		return $this->storage->isAuthenticated();
 	}
 
-	/**
-	 * @param string $role
-	 *
-	 * @return bool
-	 */
 	public function isInRole(string $role): bool
 	{
 		return in_array($role, $this->getRoles(), true);
 	}
 
 	/**
-	 * @return string[]
+	 * @return array<string>
 	 */
 	public function getRoles(): array
 	{
@@ -142,7 +123,9 @@ class User
 
 		$identity = $this->getIdentity();
 
-		return $identity !== null && $identity->getRoles() !== [] ? $identity->getRoles() : [SimpleAuth\Constants::ROLE_USER];
+		return $identity !== null && $identity->getRoles() !== []
+			? $identity->getRoles()
+			: [SimpleAuth\Constants::ROLE_USER];
 	}
 
 }

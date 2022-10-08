@@ -28,21 +28,10 @@ use FastyBird\SimpleAuth\Security;
 interface IUserStorage
 {
 
-	/**
-	 * @return bool
-	 */
 	public function isAuthenticated(): bool;
 
-	/**
-	 * @param IIdentity|null $identity
-	 *
-	 * @return void
-	 */
-	public function setIdentity(?Security\IIdentity $identity): void;
+	public function setIdentity(Security\IIdentity|null $identity): void;
 
-	/**
-	 * @return Security\IIdentity|null
-	 */
-	public function getIdentity(): ?Security\IIdentity;
+	public function getIdentity(): Security\IIdentity|null;
 
 }

@@ -24,6 +24,8 @@ use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
 use Throwable;
+use function assert;
+use function strval;
 
 /**
  * JW token validator
@@ -38,46 +40,38 @@ final class TokenValidator
 
 	use Nette\SmartObject;
 
-	/** @var string */
-	private string $tokenSignature;
-
-	/** @var string */
-	private string $tokenIssuer;
-
-	/** @var DateTimeFactory\DateTimeFactory */
-	private DateTimeFactory\DateTimeFactory $dateTimeFactory;
-
+	/**
+	 * @param non-empty-string $tokenSignature
+	 * @param non-empty-string $tokenIssuer
+	 */
 	public function __construct(
-		string $tokenSignature,
-		string $tokenIssuer,
-		DateTimeFactory\DateTimeFactory $dateTimeFactory
-	) {
-		$this->tokenSignature = $tokenSignature;
-		$this->tokenIssuer = $tokenIssuer;
-
-		$this->dateTimeFactory = $dateTimeFactory;
+		private readonly string $tokenSignature,
+		private readonly string $tokenIssuer,
+		private readonly DateTimeFactory\Factory $dateTimeFactory,
+	)
+	{
 	}
 
 	/**
-	 * @param string $token
-	 *
 	 * @return JWT\UnencryptedToken|null
 	 */
-	public function validate(
-		string $token
-	): ?JWT\Token {
+	public function validate(string $token): JWT\Token|null
+	{
 		$configuration = JWT\Configuration::forSymmetricSigner(
 			new JWT\Signer\Hmac\Sha256(),
-			JWT\Signer\Key\InMemory::plainText($this->tokenSignature)
+			JWT\Signer\Key\InMemory::plainText($this->tokenSignature),
 		);
 
-		/** @var DateTimeImmutable $now */
 		$now = $this->dateTimeFactory->getNow();
+		assert($now instanceof DateTimeImmutable);
 
 		$configuration->setValidationConstraints(
 			new JWT\Validation\Constraint\IssuedBy($this->tokenIssuer),
 			new JWT\Validation\Constraint\LooseValidAt(new Clock\FrozenClock($now)),
-			new JWT\Validation\Constraint\SignedWith($configuration->signer(), JWT\Signer\Key\InMemory::plainText($this->tokenSignature))
+			new JWT\Validation\Constraint\SignedWith(
+				$configuration->signer(),
+				JWT\Signer\Key\InMemory::plainText($this->tokenSignature),
+			),
 		);
 
 		try {
@@ -96,8 +90,8 @@ final class TokenValidator
 			) {
 				return $jwtToken;
 			}
-		} catch (Throwable $ex) {
-			throw new Exceptions\UnauthorizedAccessException('Token is not valid JWToken');
+		} catch (Throwable) {
+			throw new Exceptions\UnauthorizedAccess('Token is not valid JWToken');
 		}
 
 		return null;

@@ -27,71 +27,74 @@ use Ramsey\Uuid;
 /**
  * Security token repository
  *
+ * @template    TEntityClass of Entities\Tokens\Token
+ *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
- *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @phpstan-template    TEntityClass of Entities\Tokens\Token
- * @phpstan-implements  ITokenRepository<TEntityClass>
  */
-final class TokenRepository implements ITokenRepository
+final class TokenRepository
 {
 
 	use Nette\SmartObject;
 
 	/**
-	 * @var ORM\EntityRepository[]
+	 * @var array<ORM\EntityRepository>
 	 *
-	 * @phpstan-var ORM\EntityRepository<TEntityClass>[]
+	 * @phpstan-var array<ORM\EntityRepository<TEntityClass>>
 	 */
 	private array $repository = [];
 
-	/** @var Persistence\ManagerRegistry */
-	private Persistence\ManagerRegistry $managerRegistry;
-
-	public function __construct(Persistence\ManagerRegistry $managerRegistry)
+	public function __construct(private Persistence\ManagerRegistry $managerRegistry)
 	{
-		$this->managerRegistry = $managerRegistry;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param class-string $type
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
-		string $type = Entities\Tokens\Token::class
-	): ?Entities\Tokens\IToken {
-		$findQuery = new Queries\FindTokensQuery();
+		string $type = Entities\Tokens\Token::class,
+	): Entities\Tokens\Token|null
+	{
+		$findQuery = new Queries\FindTokens();
 		$findQuery->byId(Uuid\Uuid::fromString($identifier));
-		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
+		$findQuery->inState(Types\TokenState::STATE_ACTIVE);
 
 		return $this->findOneBy($findQuery, $type);
 	}
 
 	/**
-	 * {@inheritDoc}
-	 *
-	 * @phpstan-param Queries\FindTokensQuery<Entities\Tokens\Token> $queryObject
+	 * @param Queries\FindTokens<Entities\Tokens\Token> $queryObject
+	 * @param class-string $type
 	 */
 	public function findOneBy(
-		Queries\FindTokensQuery $queryObject,
-		string $type = Entities\Tokens\Token::class
-	): ?Entities\Tokens\IToken {
-		/** @var Entities\Tokens\IToken|null $token */
-		$token = $queryObject->fetchOne($this->getRepository($type));
-
-		return $token;
+		Queries\FindTokens $queryObject,
+		string $type = Entities\Tokens\Token::class,
+	): Entities\Tokens\Token|null
+	{
+		return $queryObject->fetchOne($this->getRepository($type));
 	}
 
 	/**
-	 * @param string $type
+	 * @param class-string $type
+	 */
+	public function findOneByToken(
+		string $token,
+		string $type = Entities\Tokens\Token::class,
+	): Entities\Tokens\Token|null
+	{
+		$findQuery = new Queries\FindTokens();
+		$findQuery->byToken($token);
+		$findQuery->inState(Types\TokenState::STATE_ACTIVE);
+
+		return $this->findOneBy($findQuery, $type);
+	}
+
+	/**
+	 * @param class-string $type
 	 *
-	 * @return ORM\EntityRepository
-	 *
-	 * @phpstan-param class-string $type
-	 *
-	 * @phpstan-return ORM\EntityRepository<TEntityClass>
+	 * @return ORM\EntityRepository<TEntityClass>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
@@ -100,7 +103,7 @@ final class TokenRepository implements ITokenRepository
 
 			// @phpstan-ignore-next-line
 			if (!$repository instanceof ORM\EntityRepository) {
-				throw new Exceptions\InvalidStateException('Entity repository could not be loaded');
+				throw new Exceptions\InvalidState('Entity repository could not be loaded');
 			}
 
 			// @phpstan-ignore-next-line
@@ -109,20 +112,6 @@ final class TokenRepository implements ITokenRepository
 
 		// @phpstan-ignore-next-line
 		return $this->repository[$type];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function findOneByToken(
-		string $token,
-		string $type = Entities\Tokens\Token::class
-	): ?Entities\Tokens\IToken {
-		$findQuery = new Queries\FindTokensQuery();
-		$findQuery->byToken($token);
-		$findQuery->inState(Types\TokenStateType::STATE_ACTIVE);
-
-		return $this->findOneBy($findQuery, $type);
 	}
 
 }

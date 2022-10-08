@@ -28,6 +28,9 @@ use Nette\DI;
 use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
+use function assert;
+use function ucfirst;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Authentication helpers extension container
@@ -40,36 +43,28 @@ use stdClass;
 class SimpleAuthExtension extends DI\CompilerExtension
 {
 
-	/**
-	 * @param Nette\Configurator $config
-	 * @param string $extensionName
-	 *
-	 * @return void
-	 */
 	public static function register(
 		Nette\Configurator $config,
-		string $extensionName = 'fbSimpleAuth'
-	): void {
-		$config->onCompile[] = function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName): void {
+		string $extensionName = 'fbSimpleAuth',
+	): void
+	{
+		$config->onCompile[] = static function (Nette\Configurator $config, DI\Compiler $compiler) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new SimpleAuthExtension());
 		};
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getConfigSchema(): Schema\Schema
 	{
 		return Schema\Expect::structure([
-			'token'    => Schema\Expect::structure([
-				'issuer'    => Schema\Expect::string(),
+			'token' => Schema\Expect::structure([
+				'issuer' => Schema\Expect::string(),
 				'signature' => Schema\Expect::string('g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='),
 			]),
-			'enable'   => Schema\Expect::structure([
+			'enable' => Schema\Expect::structure([
 				'middleware' => Schema\Expect::bool(false),
-				'doctrine'   => Schema\Expect::structure([
+				'doctrine' => Schema\Expect::structure([
 					'mapping' => Schema\Expect::bool(false),
-					'models'  => Schema\Expect::bool(false),
+					'models' => Schema\Expect::bool(false),
 				]),
 			]),
 			'services' => Schema\Expect::structure([
@@ -78,14 +73,11 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		]);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
 
 		$builder->addDefinition($this->prefix('auth'), new DI\Definitions\ServiceDefinition())
 			->setType(SimpleAuth\Auth::class);
@@ -128,10 +120,10 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 		if ($configuration->enable->middleware) {
 			$builder->addDefinition($this->prefix('middleware.access'), new DI\Definitions\ServiceDefinition())
-				->setType(Middleware\AccessMiddleware::class);
+				->setType(Middleware\Access::class);
 
 			$builder->addDefinition($this->prefix('middleware.user'), new DI\Definitions\ServiceDefinition())
-				->setType(Middleware\UserMiddleware::class);
+				->setType(Middleware\User::class);
 		}
 
 		/**
@@ -143,7 +135,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				->setType(Mapping\Driver\Owner::class);
 
 			$builder->addDefinition($this->prefix('doctrine.subscriber'), new DI\Definitions\ServiceDefinition())
-				->setType(Subscribers\UserSubscriber::class);
+				->setType(Subscribers\User::class);
 		}
 
 		if ($configuration->enable->doctrine->models) {
@@ -156,16 +148,13 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
-		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
 
 		$userContextServiceName = $builder->getByType(Security\User::class);
 
@@ -184,10 +173,15 @@ class SimpleAuthExtension extends DI\CompilerExtension
 			$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
 
 			if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-				$ormAnnotationDriverService->addSetup('addPaths', [[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']]);
+				$ormAnnotationDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
 			}
 
-			$ormAnnotationDriverChainService = $builder->getDefinitionByType(Persistence\Mapping\Driver\MappingDriverChain::class);
+			$ormAnnotationDriverChainService = $builder->getDefinitionByType(
+				Persistence\Mapping\Driver\MappingDriverChain::class,
+			);
 
 			if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
 				$ormAnnotationDriverChainService->addSetup('addDriver', [
@@ -198,21 +192,22 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function afterCompile(
-		PhpGenerator\ClassType $class
-	): void {
+	public function afterCompile(PhpGenerator\ClassType $class): void
+	{
 		$builder = $this->getContainerBuilder();
-		/** @var stdClass $configuration */
 		$configuration = $this->getConfig();
+		assert($configuration instanceof stdClass);
 
 		if ($configuration->enable->doctrine->models) {
 			$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
 
-			$tokensManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__doctrine__tokensManager');
-			$tokensManagerService->setBody('return new ' . SimpleAuth\Models\Tokens\TokensManager::class . '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));');
+			$tokensManagerService = $class->getMethod(
+				'createService' . ucfirst($this->name) . '__doctrine__tokensManager',
+			);
+			$tokensManagerService->setBody(
+				'return new ' . SimpleAuth\Models\Tokens\TokensManager::class
+				. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));',
+			);
 		}
 	}
 

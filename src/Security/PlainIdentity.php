@@ -33,36 +33,27 @@ class PlainIdentity implements Security\IIdentity
 
 	use Nette\SmartObject;
 
-	/** @var Uuid\UuidInterface */
 	private Uuid\UuidInterface $id;
 
-	/** @var string[] */
-	private array $roles;
-
 	/**
-	 * @param string $id
-	 * @param string[] $roles
+	 * @param array<string> $roles
 	 */
-	public function __construct(string $id, array $roles = [])
+	public function __construct(string $id, private array $roles = [])
 	{
 		if (!Uuid\Uuid::isValid($id)) {
-			throw new Exceptions\InvalidArgumentException('User identifier have to be valid UUID string');
+			throw new Exceptions\InvalidArgument('User identifier have to be valid UUID string');
 		}
 
 		$this->id = Uuid\Uuid::fromString($id);
-		$this->roles = $roles;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getId(): Uuid\UuidInterface
 	{
 		return $this->id;
 	}
 
 	/**
-	 * @return string[]
+	 * @return array<string>
 	 */
 	public function getRoles(): array
 	{

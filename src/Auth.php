@@ -33,20 +33,18 @@ final class Auth
 
 	use Nette\SmartObject;
 
-	/** @var SimpleAuthSecurity\TokenReader */
 	private Security\TokenReader $tokenReader;
 
-	/** @var SimpleAuthSecurity\IIdentityFactory */
 	private Security\IIdentityFactory $identityFactory;
 
-	/** @var SimpleAuthSecurity\User */
 	private Security\User $user;
 
 	public function __construct(
 		SimpleAuthSecurity\TokenReader $tokenReader,
 		SimpleAuthSecurity\IIdentityFactory $identityFactory,
-		SimpleAuthSecurity\User $user
-	) {
+		SimpleAuthSecurity\User $user,
+	)
+	{
 		$this->tokenReader = $tokenReader;
 		$this->identityFactory = $identityFactory;
 
@@ -54,11 +52,7 @@ final class Auth
 	}
 
 	/**
-	 * @param ServerRequestInterface $request
-	 *
-	 * @return void
-	 *
-	 * @throws SimpleAuthExceptions\AuthenticationException
+	 * @throws SimpleAuthExceptions\Authentication
 	 */
 	public function login(ServerRequestInterface $request): void
 	{

@@ -50,11 +50,11 @@ nettrineAnnotations:
 
 nettrineOrm:
     configuration:
-        proxyDir	: %tempDir%/cache/doctrine.proxies
+        proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
     mapping: [
-        Tests\Cases\Models: %appDir%libs/models
+        Tests\Libs: %appDir%libs
     ]
 
 fbSimpleAuth:

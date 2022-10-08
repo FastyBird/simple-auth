@@ -22,6 +22,7 @@ use Lcobucci\JWT;
 use Nette;
 use Ramsey\Uuid;
 use Throwable;
+use function assert;
 
 /**
  * JW token builder
@@ -36,47 +37,36 @@ final class TokenBuilder
 
 	use Nette\SmartObject;
 
-	/** @var string */
-	private string $tokenSignature;
-
-	/** @var string */
-	private string $tokenIssuer;
-
-	/** @var DateTimeFactory\DateTimeFactory */
-	private DateTimeFactory\DateTimeFactory $dateTimeFactory;
-
+	/**
+	 * @param non-empty-string $tokenSignature
+	 * @param non-empty-string $tokenIssuer
+	 */
 	public function __construct(
-		string $tokenSignature,
-		string $tokenIssuer,
-		DateTimeFactory\DateTimeFactory $dateTimeFactory
-	) {
-		$this->tokenSignature = $tokenSignature;
-		$this->tokenIssuer = $tokenIssuer;
-
-		$this->dateTimeFactory = $dateTimeFactory;
+		private readonly string $tokenSignature,
+		private readonly string $tokenIssuer,
+		private DateTimeFactory\Factory $dateTimeFactory,
+	)
+	{
 	}
 
 	/**
-	 * @param string $userId
-	 * @param string[] $roles
-	 * @param DateTimeImmutable|null $expiration
-	 *
-	 * @return JWT\UnencryptedToken
+	 * @param array<string> $roles
 	 *
 	 * @throws Throwable
 	 */
 	public function build(
 		string $userId,
 		array $roles,
-		?DateTimeImmutable $expiration = null
-	): JWT\UnencryptedToken {
+		DateTimeImmutable|null $expiration = null,
+	): JWT\UnencryptedToken
+	{
 		$configuration = JWT\Configuration::forSymmetricSigner(
 			new JWT\Signer\Hmac\Sha256(),
-			JWT\Signer\Key\InMemory::plainText($this->tokenSignature)
+			JWT\Signer\Key\InMemory::plainText($this->tokenSignature),
 		);
 
-		/** @var DateTimeImmutable $now */
 		$now = $this->dateTimeFactory->getNow();
+		assert($now instanceof DateTimeImmutable);
 
 		$jwtBuilder = $configuration->builder();
 

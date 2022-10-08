@@ -40,9 +40,11 @@ final class Constants
 	public const TOKEN_URI_NAME = 'authorization';
 
 	public const TOKEN_HEADER_NAME = 'authorization';
+
 	public const TOKEN_HEADER_REGEXP = '/Bearer\s+(.*)$/i';
 
 	public const TOKEN_CLAIM_USER = 'user';
+
 	public const TOKEN_CLAIM_ROLES = 'roles';
 
 	/**
@@ -54,8 +56,11 @@ final class Constants
 
 	// Signed in
 	public const ROLE_VISITOR = 'visitor';
+
 	public const ROLE_USER = 'user';
+
 	public const ROLE_MANAGER = 'manager';
+
 	public const ROLE_ADMINISTRATOR = 'administrator';
 
 }

@@ -28,29 +28,19 @@ use FastyBird\SimpleAuth\Security;
 class UserStorage implements Security\IUserStorage
 {
 
-	/** @var Security\IIdentity|null */
-	private ?IIdentity $identity = null;
+	private IIdentity|null $identity = null;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function isAuthenticated(): bool
 	{
 		return $this->getIdentity() !== null;
 	}
 
-	/**
-	 * @return Security\IIdentity|null
-	 */
-	public function getIdentity(): ?Security\IIdentity
+	public function getIdentity(): Security\IIdentity|null
 	{
 		return $this->identity;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setIdentity(?Security\IIdentity $identity = null): void
+	public function setIdentity(Security\IIdentity|null $identity = null): void
 	{
 		$this->identity = $identity;
 	}

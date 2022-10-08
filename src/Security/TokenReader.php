@@ -20,6 +20,11 @@ use FastyBird\SimpleAuth\Exceptions;
 use Lcobucci\JWT;
 use Nette;
 use Psr\Http\Message\ServerRequestInterface;
+use function count;
+use function is_array;
+use function is_string;
+use function preg_match;
+use function reset;
 
 /**
  * JW token reader
@@ -34,21 +39,11 @@ final class TokenReader
 
 	use Nette\SmartObject;
 
-	/** @var TokenValidator */
-	private TokenValidator $tokenValidator;
-
-	public function __construct(
-		TokenValidator $tokenValidator
-	) {
-		$this->tokenValidator = $tokenValidator;
+	public function __construct(private TokenValidator $tokenValidator)
+	{
 	}
 
-	/**
-	 * @param ServerRequestInterface $request
-	 *
-	 * @return JWT\UnencryptedToken|null
-	 */
-	public function read(ServerRequestInterface $request): ?JWT\UnencryptedToken
+	public function read(ServerRequestInterface $request): JWT\UnencryptedToken|null
 	{
 		$headerJWT = $request->hasHeader(SimpleAuth\Constants::TOKEN_HEADER_NAME) ?
 			$request->getHeader(SimpleAuth\Constants::TOKEN_HEADER_NAME) : null;
@@ -63,7 +58,7 @@ final class TokenReader
 			$token = $this->tokenValidator->validate($matches[1]);
 
 			if ($token === null) {
-				throw new Exceptions\UnauthorizedAccessException('Access token is not valid');
+				throw new Exceptions\UnauthorizedAccess('Access token is not valid');
 			}
 
 			return $token;

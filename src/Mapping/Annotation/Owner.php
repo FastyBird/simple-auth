@@ -31,16 +31,15 @@ use Doctrine\Common\Annotations\Annotation;
 final class Owner extends Annotation
 {
 
-	/** @var string */
 	public string $on = 'create';
 
-	/** @var string|string[] */
-	public $field;
+	/** @var string|array<string> */
+	public string|array $field;
 
-	/** @var mixed */
+	/** @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint */
 	public $value;
 
-	/** @var mixed[]|null */
-	public ?array $association = null;
+	/** @var array<mixed>|null */
+	public array|null $association = null;
 
 }

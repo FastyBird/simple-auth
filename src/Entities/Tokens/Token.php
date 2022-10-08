@@ -19,6 +19,7 @@ use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Types;
+use IPub\DoctrineCrud;
 use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
 use Ramsey\Uuid;
 use Throwable;
@@ -43,91 +44,67 @@ use Throwable;
  * })
  * @ORM\MappedSuperclass
  */
-abstract class Token implements IToken
+abstract class Token implements DoctrineCrud\Entities\IEntity
 {
 
 	/**
-	 * @var Uuid\UuidInterface
-	 *
 	 * @ORM\Id
 	 * @ORM\Column(type="uuid_binary", name="token_id")
 	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
 	 */
-	protected $id;
+	protected Uuid\UuidInterface $id;
 
 	/**
-	 * @var IToken|null
-	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\ManyToOne(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", inversedBy="children")
 	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="token_id", nullable=true, onDelete="set null")
 	 */
-	protected ?IToken $parent = null;
+	protected Token|null $parent = null;
 
 	/**
-	 * @var Common\Collections\Collection<int, IToken>
+	 * @var Common\Collections\Collection<int, Token>
 	 *
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\OneToMany(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", mappedBy="parent")
 	 */
 	protected Common\Collections\Collection $children;
 
-	/**
-	 * @var string
-	 *
-	 * @ORM\Column(name="token_token", type="text", nullable=false)
-	 */
+	/** @ORM\Column(name="token_token", type="text", nullable=false) */
 	protected string $token;
 
 	/**
-	 * @var Types\TokenStateType
-	 *
-	 * @Enum(class=Types\TokenStateType::class)
+	 * @Enum(class=Types\TokenState::class)
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="string_enum", name="token_state", nullable=false, options={"default": "active"})
 	 */
-	protected $state;
+	protected Types\TokenState $state;
 
 	/**
-	 * @param string $token
-	 * @param Uuid\UuidInterface|null $id
-	 *
 	 * @throws Throwable
 	 */
-	public function __construct(
-		string $token,
-		?Uuid\UuidInterface $id = null
-	) {
+	public function __construct(string $token, Uuid\UuidInterface|null $id = null)
+	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->token = $token;
-		$this->state = Types\TokenStateType::get(Types\TokenStateType::STATE_ACTIVE);
+		$this->state = Types\TokenState::get(Types\TokenState::STATE_ACTIVE);
 
 		$this->children = new Common\Collections\ArrayCollection();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getParent(): ?IToken
+	public function getParent(): Token|null
 	{
 		return $this->parent;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setParent(IToken $token): void
+	public function setParent(Token $token): void
 	{
 		$this->parent = $token;
 
 		$token->addChild($this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function addChild(IToken $child): void
+	public function addChild(Token $child): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->children->contains($child)) {
@@ -136,16 +113,13 @@ abstract class Token implements IToken
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function removeParent(): void
 	{
 		$this->parent = null;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @return array<Token>
 	 */
 	public function getChildren(): array
 	{
@@ -153,26 +127,19 @@ abstract class Token implements IToken
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param array<Token> $children
 	 */
 	public function setChildren(array $children): void
 	{
 		$this->children = new Common\Collections\ArrayCollection();
 
-		// Process all passed entities...
-		/** @var IToken $entity */
 		foreach ($children as $entity) {
-			if (!$this->children->contains($entity)) {
-				// ...and assign them to collection
-				$this->children->add($entity);
-			}
+			// ...and assign them to collection
+			$this->children->add($entity);
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function removeChild(IToken $child): void
+	public function removeChild(Token $child): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->children->contains($child)) {
@@ -181,60 +148,39 @@ abstract class Token implements IToken
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getState(): Types\TokenStateType
+	public function getState(): Types\TokenState
 	{
 		return $this->state;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setState(Types\TokenStateType $state): void
+	public function setState(Types\TokenState $state): void
 	{
 		$this->state = $state;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function isActive(): bool
 	{
-		return $this->state === Types\TokenStateType::get(Types\TokenStateType::STATE_ACTIVE);
+		return $this->state === Types\TokenState::get(Types\TokenState::STATE_ACTIVE);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function isBlocked(): bool
 	{
-		return $this->state === Types\TokenStateType::get(Types\TokenStateType::STATE_BLOCKED);
+		return $this->state === Types\TokenState::get(Types\TokenState::STATE_BLOCKED);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function isDeleted(): bool
 	{
-		return $this->state === Types\TokenStateType::get(Types\TokenStateType::STATE_DELETED);
+		return $this->state === Types\TokenState::get(Types\TokenState::STATE_DELETED);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function __toString(): string
-	{
-		return $this->getToken();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getToken(): string
 	{
 		return $this->token;
+	}
+
+	public function __toString(): string
+	{
+		return $this->getToken();
 	}
 
 }

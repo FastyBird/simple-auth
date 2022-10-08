@@ -31,20 +31,22 @@ interface IAuthenticator
 
 	// Credential key
 	public const USERNAME = 0;
+
 	public const PASSWORD = 1;
 
 	// Exception error code
 	public const IDENTITY_NOT_FOUND = 1;
+
 	public const INVALID_CREDENTIAL = 2;
+
 	public const FAILURE = 3;
+
 	public const NOT_APPROVED = 4;
 
 	/**
-	 * @param mixed[] $credentials
+	 * @param array<mixed> $credentials
 	 *
-	 * @return Security\IIdentity
-	 *
-	 * @throws Exceptions\AuthenticationException
+	 * @throws Exceptions\Authentication
 	 */
 	public function authenticate(array $credentials): Security\IIdentity;
 
