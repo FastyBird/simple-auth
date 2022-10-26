@@ -52,7 +52,7 @@ final class User implements Common\EventSubscriber
 	/**
 	 * Register events
 	 *
-	 * @return array<string>
+	 * @return Array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{
@@ -213,7 +213,7 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param array<string> $fields
+	 * @param Array<string> $fields
 	 *
 	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */

@@ -36,10 +36,10 @@ use Ramsey\Uuid;
 class FindTokens extends DoctrineOrmQuery\QueryObject
 {
 
-	/** @var array<Closure> */
+	/** @var Array<Closure> */
 	private array $filter = [];
 
-	/** @var array<Closure> */
+	/** @var Array<Closure> */
 	private array $select = [];
 
 	public function byId(Uuid\UuidInterface $id): void

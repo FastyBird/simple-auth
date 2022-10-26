@@ -50,7 +50,7 @@ final class TokenBuilder
 	}
 
 	/**
-	 * @param array<string> $roles
+	 * @param Array<string> $roles
 	 *
 	 * @throws Throwable
 	 */

@@ -123,7 +123,7 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	}
 
 	/**
-	 * @return array<Token>
+	 * @return Array<Token>
 	 */
 	public function getChildren(): array
 	{
@@ -131,7 +131,7 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	}
 
 	/**
-	 * @param array<Token> $children
+	 * @param Array<Token> $children
 	 */
 	public function setChildren(array $children): void
 	{

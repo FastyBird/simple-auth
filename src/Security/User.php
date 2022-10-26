@@ -40,10 +40,10 @@ class User
 
 	use Nette\SmartObject;
 
-	/** @var array<Closure> */
+	/** @var Array<Closure> */
 	public array $onLoggedIn = [];
 
-	/** @var array<Closure> */
+	/** @var Array<Closure> */
 	public array $onLoggedOut = [];
 
 	private IUserStorage $storage;
@@ -113,7 +113,7 @@ class User
 	}
 
 	/**
-	 * @return array<string>
+	 * @return Array<string>
 	 */
 	public function getRoles(): array
 	{

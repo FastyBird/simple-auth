@@ -49,14 +49,14 @@ final class Owner
 	/**
 	 * List of cached object configurations
 	 *
-	 * @var array<mixed>
+	 * @var Array<mixed>
 	 */
 	private static array $objectConfigurations = [];
 
 	/**
 	 * List of types which are valid for blame
 	 *
-	 * @var array<string>
+	 * @var Array<string>
 	 */
 	private array $validTypes = [
 		'string',
@@ -81,7 +81,7 @@ final class Owner
 	 *
 	 * @phpstan-param class-string $class
 	 *
-	 * @phpstan-return array<mixed>
+	 * @phpstan-return Array<mixed>
 	 *
 	 * @throws ORM\Mapping\MappingException
 	 * @throws Persistence\Mapping\MappingException
@@ -203,9 +203,9 @@ final class Owner
 	}
 
 	/**
-	 * @param array<mixed> $config
+	 * @param Array<mixed> $config
 	 *
-	 * @return array<mixed>
+	 * @return Array<mixed>
 	 *
 	 * @throws ORM\Mapping\MappingException
 	 *
@@ -275,7 +275,6 @@ final class Owner
 					);
 				}
 
-				// @phpstan-ignore-next-line
 				$config[$owner->on][] = $field;
 			}
 		}

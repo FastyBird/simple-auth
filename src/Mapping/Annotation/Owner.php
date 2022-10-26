@@ -33,13 +33,13 @@ final class Owner extends Annotation
 
 	public string $on = 'create';
 
-	/** @var string|array<string> */
+	/** @var string|Array<string> */
 	public string|array $field;
 
 	/** @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint */
 	public $value;
 
-	/** @var array<mixed>|null */
+	/** @var Array<mixed>|null */
 	public array|null $association = null;
 
 }

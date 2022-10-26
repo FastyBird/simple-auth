@@ -36,7 +36,7 @@ class PlainIdentity implements Security\IIdentity
 	private Uuid\UuidInterface $id;
 
 	/**
-	 * @param array<string> $roles
+	 * @param Array<string> $roles
 	 */
 	public function __construct(string $id, private readonly array $roles = [])
 	{
@@ -53,7 +53,7 @@ class PlainIdentity implements Security\IIdentity
 	}
 
 	/**
-	 * @return array<string>
+	 * @return Array<string>
 	 */
 	public function getRoles(): array
 	{

@@ -18,7 +18,6 @@ namespace FastyBird\SimpleAuth\Models\Tokens;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Entities;
-use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Queries;
 use FastyBird\SimpleAuth\Types;
 use Nette;
@@ -27,7 +26,7 @@ use Ramsey\Uuid;
 /**
  * Security token repository
  *
- * @template    T of Entities\Tokens\Token
+ * @template T of Entities\Tokens\Token
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
@@ -38,9 +37,7 @@ final class TokenRepository
 
 	use Nette\SmartObject;
 
-	/**
-	 * @var Array<ORM\EntityRepository<T>>
-	 */
+	/** @var Array<ORM\EntityRepository<T>> */
 	private array $repository = [];
 
 	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
@@ -49,6 +46,8 @@ final class TokenRepository
 
 	/**
 	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return T|null
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
@@ -59,23 +58,14 @@ final class TokenRepository
 		$findQuery->byId(Uuid\Uuid::fromString($identifier));
 		$findQuery->inState(Types\TokenState::STATE_ACTIVE);
 
+		// @phpstan-ignore-next-line
 		return $this->findOneBy($findQuery, $type);
 	}
 
 	/**
-	 * @phpstan-param Queries\FindTokens<T> $queryObject
 	 * @phpstan-param class-string<T> $type
-	 */
-	public function findOneBy(
-		Queries\FindTokens $queryObject,
-		string $type = Entities\Tokens\Token::class,
-	): Entities\Tokens\Token|null
-	{
-		return $queryObject->fetchOne($this->getRepository($type));
-	}
-
-	/**
-	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return T|null
 	 */
 	public function findOneByToken(
 		string $token,
@@ -86,7 +76,22 @@ final class TokenRepository
 		$findQuery->byToken($token);
 		$findQuery->inState(Types\TokenState::STATE_ACTIVE);
 
+		// @phpstan-ignore-next-line
 		return $this->findOneBy($findQuery, $type);
+	}
+
+	/**
+	 * @phpstan-param Queries\FindTokens<T> $queryObject
+	 * @phpstan-param class-string<T> $type
+	 *
+	 * @phpstan-return T|null
+	 */
+	public function findOneBy(
+		Queries\FindTokens $queryObject,
+		string $type = Entities\Tokens\Token::class,
+	): Entities\Tokens\Token|null
+	{
+		return $queryObject->fetchOne($this->getRepository($type));
 	}
 
 	/**

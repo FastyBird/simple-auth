@@ -44,7 +44,7 @@ interface IAuthenticator
 	public const NOT_APPROVED = 4;
 
 	/**
-	 * @param array<mixed> $credentials
+	 * @param Array<mixed> $credentials
 	 *
 	 * @throws Exceptions\Authentication
 	 */

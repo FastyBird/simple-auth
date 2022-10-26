@@ -83,7 +83,7 @@ class AnnotationChecker
 	}
 
 	/**
-	 * @return array<mixed>|null
+	 * @return Array<mixed>|null
 	 */
 	private function parseAnnotation(Reflector $ref, string $name): array|null
 	{
