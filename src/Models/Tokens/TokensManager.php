@@ -25,7 +25,7 @@ use function assert;
 /**
  * Security tokens entities manager
  *
- * @template TEntityClass of Entities\Tokens\Token
+ * @template T of Entities\Tokens\Token
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
@@ -36,11 +36,11 @@ class TokensManager
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var Crud\IEntityCrud<TEntityClass> */
+	/** @phpstan-var Crud\IEntityCrud<T> */
 	private Crud\IEntityCrud $entityCrud;
 
 	/**
-	 * @phpstan-param Crud\IEntityCrud<TEntityClass> $entityCrud
+	 * @phpstan-param Crud\IEntityCrud<T> $entityCrud
 	 */
 	public function __construct(Crud\IEntityCrud $entityCrud)
 	{
@@ -50,10 +50,7 @@ class TokensManager
 
 	public function create(Utils\ArrayHash $values): Entities\Tokens\Token
 	{
-		// Get entity creator
-		$creator = $this->entityCrud->getEntityCreator();
-
-		$entity = $creator->create($values);
+		$entity = $this->entityCrud->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Tokens\Token);
 
 		return $entity;
@@ -64,8 +61,7 @@ class TokensManager
 		Utils\ArrayHash $values,
 	): Entities\Tokens\Token
 	{
-		$entity = $this->entityCrud->getEntityUpdater()
-			->update($values, $entity);
+		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Tokens\Token);
 
 		return $entity;
@@ -74,8 +70,7 @@ class TokensManager
 	public function delete(Entities\Tokens\Token $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()
-			->delete($entity);
+		return $this->entityCrud->getEntityDeleter()->delete($entity);
 	}
 
 }

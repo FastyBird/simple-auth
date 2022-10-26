@@ -73,11 +73,15 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	protected string $token;
 
 	/**
+	 * @var Types\TokenState
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+	 *
 	 * @Enum(class=Types\TokenState::class)
 	 * @IPubDoctrine\Crud(is="writable")
 	 * @ORM\Column(type="string_enum", name="token_state", nullable=false, options={"default": "active"})
 	 */
-	protected Types\TokenState $state;
+	protected $state;
 
 	/**
 	 * @throws Throwable

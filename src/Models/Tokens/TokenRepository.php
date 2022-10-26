@@ -27,7 +27,7 @@ use Ramsey\Uuid;
 /**
  * Security token repository
  *
- * @template    TEntityClass of Entities\Tokens\Token
+ * @template    T of Entities\Tokens\Token
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
@@ -39,9 +39,7 @@ final class TokenRepository
 	use Nette\SmartObject;
 
 	/**
-	 * @var array<ORM\EntityRepository>
-	 *
-	 * @phpstan-var array<ORM\EntityRepository<TEntityClass>>
+	 * @var Array<ORM\EntityRepository<T>>
 	 */
 	private array $repository = [];
 
@@ -50,7 +48,7 @@ final class TokenRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @phpstan-param class-string<T> $type
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
@@ -65,8 +63,8 @@ final class TokenRepository
 	}
 
 	/**
-	 * @phpstan-param Queries\FindTokens<Entities\Tokens\Token> $queryObject
-	 * @phpstan-param class-string $type
+	 * @phpstan-param Queries\FindTokens<T> $queryObject
+	 * @phpstan-param class-string<T> $type
 	 */
 	public function findOneBy(
 		Queries\FindTokens $queryObject,
@@ -77,7 +75,7 @@ final class TokenRepository
 	}
 
 	/**
-	 * @phpstan-param class-string $type
+	 * @phpstan-param class-string<T> $type
 	 */
 	public function findOneByToken(
 		string $token,
@@ -92,25 +90,16 @@ final class TokenRepository
 	}
 
 	/**
-	 * @param class-string $type
+	 * @param class-string<T> $type
 	 *
-	 * @return ORM\EntityRepository<TEntityClass>
+	 * @return ORM\EntityRepository<T>
 	 */
 	private function getRepository(string $type): ORM\EntityRepository
 	{
 		if (!isset($this->repository[$type])) {
-			$repository = $this->managerRegistry->getRepository($type);
-
-			// @phpstan-ignore-next-line
-			if (!$repository instanceof ORM\EntityRepository) {
-				throw new Exceptions\InvalidState('Entity repository could not be loaded');
-			}
-
-			// @phpstan-ignore-next-line
-			$this->repository[$type] = $repository;
+			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
-		// @phpstan-ignore-next-line
 		return $this->repository[$type];
 	}
 
