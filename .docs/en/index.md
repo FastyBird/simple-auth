@@ -26,7 +26,6 @@ extensions:
     ....
     ipubDoctrineCrud: IPub\DoctrineCrud\DI\DoctrineCrudExtension
     ipubDoctrineConsistence: IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
-    ipubDynamicDiscriminatorMap: IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
     fbDateTimeFactory: FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 ```
 

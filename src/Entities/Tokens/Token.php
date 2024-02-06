@@ -21,7 +21,6 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineCrud;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
-use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
 use Ramsey\Uuid;
 use Throwable;
 
@@ -40,8 +39,7 @@ use Throwable;
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'token_type', type: 'string', length: 20)]
 #[ORM\MappedSuperclass]
-abstract class Token implements DoctrineCrud\Entities\IEntity,
-	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
+abstract class Token implements DoctrineCrud\Entities\IEntity
 {
 
 	#[ORM\Id]
@@ -71,8 +69,8 @@ abstract class Token implements DoctrineCrud\Entities\IEntity,
 	 */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
-		type: 'string_enum',
 		name: 'token_state',
+		type: 'string_enum',
 		nullable: false,
 		options: ['default' => Types\TokenState::ACTIVE],
 	)]

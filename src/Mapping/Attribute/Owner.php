@@ -19,7 +19,7 @@ use Attribute;
 use Doctrine\ORM\Mapping as ORMMapping;
 
 /**
- * Entity owner annotation for Doctrine2
+ * Entity owner attribute for Doctrine2
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Mapping
