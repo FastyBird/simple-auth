@@ -5,22 +5,18 @@ namespace Tests\Fixtures;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Entities;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class ArticleEntity implements Entities\Owner
 {
 
 	use Entities\TOwner;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="integer")
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer')]
+	#[ORM\GeneratedValue(strategy: 'AUTO')]
 	private int $id;
 
-	/** @ORM\Column(type="string", nullable=true) */
+	#[ORM\Column(type: 'string', nullable: true)]
 	private string $title;
 
 	public function getId(): int

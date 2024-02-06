@@ -27,6 +27,7 @@ use function end;
 use function in_array;
 use function is_bool;
 use function is_callable;
+use function is_string;
 use function preg_match_all;
 use function preg_quote;
 use function preg_split;
@@ -172,7 +173,7 @@ class AnnotationChecker
 					continue;
 				}
 
-				if ($user->isInRole(strval($role))) {
+				if (is_string($role) && $user->isInRole($role)) {
 					return true;
 				}
 			}

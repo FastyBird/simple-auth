@@ -1,2 +1,5 @@
 parameters:
     level: max
+
+    ignoreErrors:
+        - message: '#^Property FastyBird\\SimpleAuth\\Mapping\\Attribute\\Owner::\$value has no type specified.#'

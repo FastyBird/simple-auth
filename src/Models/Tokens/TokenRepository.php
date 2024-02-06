@@ -22,11 +22,10 @@ use FastyBird\SimpleAuth\Queries;
 use FastyBird\SimpleAuth\Types;
 use Nette;
 use Ramsey\Uuid;
+use function assert;
 
 /**
  * Security token repository
- *
- * @template T of Entities\Tokens\Token
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
@@ -37,7 +36,7 @@ final class TokenRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<T>> */
+	/** @var Array<ORM\EntityRepository<Entities\Tokens\Token>> */
 	private array $repository = [];
 
 	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
@@ -45,9 +44,11 @@ final class TokenRepository
 	}
 
 	/**
-	 * @phpstan-param class-string<T> $type
+	 * @template T of Entities\Tokens\Token
 	 *
-	 * @phpstan-return T|null
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
@@ -56,16 +57,20 @@ final class TokenRepository
 	{
 		$findQuery = new Queries\FindTokens();
 		$findQuery->byId(Uuid\Uuid::fromString($identifier));
-		$findQuery->inState(Types\TokenState::STATE_ACTIVE);
+		$findQuery->inState(Types\TokenState::ACTIVE);
 
-		// @phpstan-ignore-next-line
-		return $this->findOneBy($findQuery, $type);
+		$result = $this->findOneBy($findQuery, $type);
+		assert($result instanceof $type);
+
+		return $result;
 	}
 
 	/**
-	 * @phpstan-param class-string<T> $type
+	 * @template T of Entities\Tokens\Token
 	 *
-	 * @phpstan-return T|null
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
 	 */
 	public function findOneByToken(
 		string $token,
@@ -74,17 +79,21 @@ final class TokenRepository
 	{
 		$findQuery = new Queries\FindTokens();
 		$findQuery->byToken($token);
-		$findQuery->inState(Types\TokenState::STATE_ACTIVE);
+		$findQuery->inState(Types\TokenState::ACTIVE);
 
-		// @phpstan-ignore-next-line
-		return $this->findOneBy($findQuery, $type);
+		$result = $this->findOneBy($findQuery, $type);
+		assert($result instanceof $type);
+
+		return $result;
 	}
 
 	/**
-	 * @phpstan-param Queries\FindTokens<T> $queryObject
-	 * @phpstan-param class-string<T> $type
+	 * @template T of Entities\Tokens\Token
 	 *
-	 * @phpstan-return T|null
+	 * @param Queries\FindTokens<T> $queryObject
+	 * @param class-string<T> $type
+	 *
+	 * @return T|null
 	 */
 	public function findOneBy(
 		Queries\FindTokens $queryObject,
@@ -95,6 +104,8 @@ final class TokenRepository
 	}
 
 	/**
+	 * @template T of Entities\Tokens\Token
+	 *
 	 * @param class-string<T> $type
 	 *
 	 * @return ORM\EntityRepository<T>
@@ -105,7 +116,10 @@ final class TokenRepository
 			$this->repository[$type] = $this->managerRegistry->getRepository($type);
 		}
 
-		return $this->repository[$type];
+		/** @var ORM\EntityRepository<T> $repository */
+		$repository = $this->repository[$type];
+
+		return $repository;
 	}
 
 }

@@ -4,26 +4,22 @@ namespace Tests\Fixtures;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_security_tokens_test",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Testing tokens"
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_security_tokens_test',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Testing tokens',
+	],
+)]
 class TestTokenEntity extends Entities\Tokens\Token
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(type: 'string', nullable: true)]
 	private string $content;
 
 	public function getContent(): string

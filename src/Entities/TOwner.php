@@ -15,7 +15,7 @@
 
 namespace FastyBird\SimpleAuth\Entities;
 
-use FastyBird\SimpleAuth\Mapping\Annotation as FB;
+use FastyBird\SimpleAuth\Mapping\Attribute as FB;
 
 /**
  * Entity owner entity
@@ -28,7 +28,7 @@ use FastyBird\SimpleAuth\Mapping\Annotation as FB;
 trait TOwner
 {
 
-	/** @FB\Owner(on="create") */
+	#[FB\Owner(on: 'create')]
 	protected mixed $owner = null;
 
 	public function setOwnerId(string|null $ownerId): void

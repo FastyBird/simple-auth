@@ -16,7 +16,8 @@
 namespace FastyBird\SimpleAuth\Types;
 
 use Consistence;
-use function strval;
+use function assert;
+use function is_string;
 
 /**
  * Doctrine2 DB type for token state column
@@ -32,19 +33,27 @@ class TokenState extends Consistence\Enum\Enum
 	/**
 	 * Define states
 	 */
-	public const STATE_ACTIVE = 'active';
+	public const ACTIVE = 'active';
 
-	public const STATE_BLOCKED = 'blocked';
+	public const BLOCKED = 'blocked';
 
-	public const STATE_DELETED = 'deleted';
+	public const DELETED = 'deleted';
 
-	public const STATE_EXPIRED = 'expired';
+	public const EXPIRED = 'expired';
 
-	public const STATE_REVOKED = 'revoked';
+	public const REVOKED = 'revoked';
+
+	public function getValue(): string
+	{
+		$value = parent::getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
 
 	public function __toString(): string
 	{
-		return strval(self::getValue());
+		return self::getValue();
 	}
 
 }

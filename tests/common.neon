@@ -19,6 +19,7 @@ extensions:
     nettrineDbal                : Nettrine\DBAL\DI\DbalExtension
     nettrineOrm                 : Nettrine\ORM\DI\OrmExtension
     nettrineOrmAnnotations      : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmAttributes       : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole          : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache            : Nettrine\ORM\DI\OrmCacheExtension
     ipubDoctrineCrud            : IPub\DoctrineCrud\DI\DoctrineCrudExtension
@@ -51,6 +52,9 @@ nettrineOrm:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
 nettrineOrmAnnotations:
+    mapping: []
+
+nettrineOrmAttributes:
     mapping: [
         Tests\Fixtures: %appDir%fixtures
     ]

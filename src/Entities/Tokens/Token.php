@@ -20,56 +20,46 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineCrud;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
+use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
 use Ramsey\Uuid;
 use Throwable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_security_tokens",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Security tokens"
- *     },
- *     indexes={
- *       @ORM\Index(name="token_state_idx", columns={"token_state"})
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="token_type", type="string", length=20)
- * @ORM\DiscriminatorMap({
- *      "token" = "FastyBird\SimpleAuth\Entities\Tokens\Token"
- * })
- * @ORM\MappedSuperclass
- */
-abstract class Token implements DoctrineCrud\Entities\IEntity
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_security_tokens',
+	indexes: [
+		new ORM\Index(columns: ['token_state'], name: 'token_state_idx'),
+	],
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'name' => 'Security tokens',
+	],
+)]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'token_type', type: 'string', length: 20)]
+#[ORM\MappedSuperclass]
+abstract class Token implements DoctrineCrud\Entities\IEntity,
+	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
 {
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="token_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(type: Uuid\Doctrine\UuidBinaryType::NAME, name: 'token_id')]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", inversedBy="children")
-	 * @ORM\JoinColumn(name="parent_id", referencedColumnName="token_id", nullable=true, onDelete="set null")
-	 */
-	protected Token|null $parent = null;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+	#[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'token_id', nullable: true, onDelete: 'set null')]
+	protected self|null $parent = null;
 
-	/**
-	 * @var Common\Collections\Collection<int, Token>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\SimpleAuth\Entities\Tokens\Token", mappedBy="parent")
-	 */
+	/** @var Common\Collections\Collection<int, Token> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
 	protected Common\Collections\Collection $children;
 
-	/** @ORM\Column(name="token_token", type="text", nullable=false) */
+	#[ORM\Column(name: 'token_token', type: 'text', nullable: false)]
 	protected string $token;
 
 	/**
@@ -78,9 +68,14 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 	 *
 	 * @Enum(class=Types\TokenState::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="token_state", nullable=false, options={"default": "active"})
 	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		type: 'string_enum',
+		name: 'token_state',
+		nullable: false,
+		options: ['default' => Types\TokenState::ACTIVE],
+	)]
 	protected $state;
 
 	/**
@@ -91,24 +86,24 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->token = $token;
-		$this->state = Types\TokenState::get(Types\TokenState::STATE_ACTIVE);
+		$this->state = Types\TokenState::get(Types\TokenState::ACTIVE);
 
 		$this->children = new Common\Collections\ArrayCollection();
 	}
 
-	public function getParent(): Token|null
+	public function getParent(): self|null
 	{
 		return $this->parent;
 	}
 
-	public function setParent(Token $token): void
+	public function setParent(self $token): void
 	{
 		$this->parent = $token;
 
 		$token->addChild($this);
 	}
 
-	public function addChild(Token $child): void
+	public function addChild(self $child): void
 	{
 		// Check if collection does not contain inserting entity
 		if (!$this->children->contains($child)) {
@@ -143,7 +138,7 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 		}
 	}
 
-	public function removeChild(Token $child): void
+	public function removeChild(self $child): void
 	{
 		// Check if collection contain removing entity...
 		if ($this->children->contains($child)) {
@@ -164,22 +159,27 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 
 	public function isActive(): bool
 	{
-		return $this->state === Types\TokenState::get(Types\TokenState::STATE_ACTIVE);
+		return $this->state === Types\TokenState::get(Types\TokenState::ACTIVE);
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state === Types\TokenState::get(Types\TokenState::STATE_BLOCKED);
+		return $this->state === Types\TokenState::get(Types\TokenState::BLOCKED);
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state === Types\TokenState::get(Types\TokenState::STATE_DELETED);
+		return $this->state === Types\TokenState::get(Types\TokenState::DELETED);
 	}
 
 	public function getToken(): string
 	{
 		return $this->token;
+	}
+
+	public function getDiscriminatorName(): string
+	{
+		return 'token';
 	}
 
 	public function __toString(): string

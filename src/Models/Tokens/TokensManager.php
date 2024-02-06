@@ -36,16 +36,12 @@ class TokensManager
 
 	use Nette\SmartObject;
 
-	/** @phpstan-var Crud\IEntityCrud<T> */
-	private Crud\IEntityCrud $entityCrud;
-
 	/**
 	 * @phpstan-param Crud\IEntityCrud<T> $entityCrud
 	 */
-	public function __construct(Crud\IEntityCrud $entityCrud)
+	public function __construct(private Crud\IEntityCrud $entityCrud)
 	{
 		// Entity CRUD for handling entities
-		$this->entityCrud = $entityCrud;
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Tokens\Token

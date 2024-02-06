@@ -10,12 +10,13 @@
  * @subpackage     Mapping
  * @since          0.1.0
  *
- * @date           15.07.20
+ * @date           05.02.24
  */
 
-namespace FastyBird\SimpleAuth\Mapping\Annotation;
+namespace FastyBird\SimpleAuth\Mapping\Attribute;
 
-use Doctrine\Common\Annotations\Annotation;
+use Attribute;
+use Doctrine\ORM\Mapping as ORMMapping;
 
 /**
  * Entity owner annotation for Doctrine2
@@ -24,14 +25,10 @@ use Doctrine\Common\Annotations\Annotation;
  * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @Annotation
- * @Target({"PROPERTY"})
  */
-final class Owner extends Annotation
+#[Attribute(Attribute::TARGET_PROPERTY)]
+final class Owner implements ORMMapping\MappingAttribute
 {
-
-	public string $on = 'create';
 
 	/** @var string|Array<string> */
 	public string|array $field;
@@ -41,5 +38,9 @@ final class Owner extends Annotation
 
 	/** @var Array<mixed>|null */
 	public array|null $association = null;
+
+	public function __construct(public readonly string $on = 'create')
+	{
+	}
 
 }

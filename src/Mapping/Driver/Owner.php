@@ -22,10 +22,14 @@ use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Mapping;
 use Nette;
 use ReflectionException;
+use function array_key_exists;
 use function array_reverse;
 use function assert;
+use function class_exists;
 use function class_parents;
 use function in_array;
+use function is_array;
+use function is_string;
 use function sprintf;
 use function str_replace;
 use function strtoupper;
@@ -44,8 +48,6 @@ final class Owner
 
 	use Nette\SmartObject;
 
-	private const EXTENSION_ANNOTATION = 'FastyBird\SimpleAuth\Mapping\Annotation\Owner';
-
 	/**
 	 * List of cached object configurations
 	 *
@@ -62,17 +64,11 @@ final class Owner
 		'string',
 	];
 
-	private Common\Annotations\Reader $annotationReader;
-
 	private Common\Cache\Cache $cacheDriver;
 
 	public function __construct(Common\Cache\Cache $cache)
 	{
 		$this->cacheDriver = $cache;
-		$this->annotationReader = new Common\Annotations\PsrCachedReader(
-			new Common\Annotations\AnnotationReader(),
-			Common\Cache\Psr6\CacheAdapter::wrap($cache),
-		);
 	}
 
 	/**
@@ -116,17 +112,18 @@ final class Owner
 				}
 			}
 
-			// @phpstan-ignore-next-line
-			$objectClass = $config['useObjectClass'] ?? $class;
+			$objectClass = is_array($config)
+				&& array_key_exists('useObjectClass', $config)
+				&& is_string($config['useObjectClass'])
+					? $config['useObjectClass']
+					: $class;
 
-			if ($objectClass !== $class) {
-				// @phpstan-ignore-next-line
+			if ($objectClass !== $class && class_exists($objectClass)) {
 				$this->getObjectConfigurations($objectManager, $objectClass);
 			}
 		}
 
-		// @phpstan-ignore-next-line
-		return $config;
+		return is_array($config) ? $config : [];
 	}
 
 	/**
@@ -224,9 +221,11 @@ final class Owner
 				continue;
 			}
 
-			$owner = $this->annotationReader->getPropertyAnnotation($property, self::EXTENSION_ANNOTATION);
+			$attributes = $property->getAttributes(Mapping\Attribute\Owner::class);
 
-			if ($owner instanceof Mapping\Annotation\Owner) {
+			$mapper = $attributes !== [] ? $attributes[0]->newInstance() : null;
+
+			if ($mapper instanceof Mapping\Attribute\Owner) {
 				$field = $property->getName();
 
 				// No map field nor association
@@ -265,7 +264,7 @@ final class Owner
 				}
 
 				// Check for valid events
-				if ($owner->on !== 'create') {
+				if ($mapper->on !== 'create') {
 					throw new Exceptions\InvalidMapping(
 						sprintf(
 							'Field - [%s] trigger "on" is not one of [create] in class - %s',
@@ -275,7 +274,7 @@ final class Owner
 					);
 				}
 
-				$config[$owner->on][] = $field;
+				$config[$mapper->on][] = $field;
 			}
 		}
 

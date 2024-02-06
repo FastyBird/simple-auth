@@ -25,7 +25,7 @@ use Nette;
 use Ramsey\Uuid;
 use Throwable;
 use function assert;
-use function strval;
+use function is_string;
 
 /**
  * JW token validator
@@ -86,7 +86,8 @@ final class TokenValidator
 				$configuration->validator()->validate($jwtToken, ...$constraints)
 				&& $claims->has(SimpleAuth\Constants::TOKEN_CLAIM_USER)
 				&& $claims->has(SimpleAuth\Constants::TOKEN_CLAIM_ROLES)
-				&& Uuid\Uuid::isValid(strval($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER)))
+				&& is_string($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER))
+				&& Uuid\Uuid::isValid($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER))
 			) {
 				return $jwtToken;
 			}

@@ -195,7 +195,7 @@ final class User implements Common\EventSubscriber
 	 */
 	public function prePersist(
 		mixed $entity,
-		ORM\Event\LifecycleEventArgs $eventArgs,
+		ORM\Event\PrePersistEventArgs $eventArgs,
 	): void
 	{
 		$manager = $eventArgs->getObjectManager();

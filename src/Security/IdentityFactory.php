@@ -17,7 +17,8 @@ namespace FastyBird\SimpleAuth\Security;
 
 use FastyBird\SimpleAuth;
 use Lcobucci\JWT;
-use function strval;
+use function is_array;
+use function is_string;
 
 /**
  * Application plain identity factory
@@ -34,11 +35,13 @@ class IdentityFactory implements IIdentityFactory
 	{
 		$claims = $token->claims();
 
-		return new PlainIdentity(
-			strval($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER)),
-			// @phpstan-ignore-next-line
-			$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES),
-		);
+		return is_string($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER))
+		&& is_array($claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES))
+			? new PlainIdentity(
+				$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_USER),
+				$claims->get(SimpleAuth\Constants::TOKEN_CLAIM_ROLES),
+			)
+			: null;
 	}
 
 }
