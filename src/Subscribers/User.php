@@ -18,6 +18,7 @@ namespace FastyBird\SimpleAuth\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Mapping;
 use FastyBird\SimpleAuth\Security;
 use Nette;
@@ -40,7 +41,7 @@ final class User implements Common\EventSubscriber
 	use Nette\SmartObject;
 
 	/**
-	 * @phpstan-param Mapping\Driver\Owner<T> $driver
+	 * @param Mapping\Driver\Owner<T> $driver
 	 */
 	public function __construct(
 		private readonly Mapping\Driver\Owner $driver,
@@ -52,7 +53,7 @@ final class User implements Common\EventSubscriber
 	/**
 	 * Register events
 	 *
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getSubscribedEvents(): array
 	{
@@ -63,14 +64,14 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws Common\Annotations\AnnotationException
+	 * @throws Exceptions\InvalidMapping
 	 * @throws ORM\Mapping\MappingException
 	 */
 	public function loadClassMetadata(
 		ORM\Event\LoadClassMetadataEventArgs $eventArgs,
 	): void
 	{
-		/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
+		/** @var ORM\Mapping\ClassMetadata<T> $classMetadata */
 		$classMetadata = $eventArgs->getClassMetadata();
 
 		$this->driver->loadMetadataForObjectClass($eventArgs->getObjectManager(), $classMetadata);
@@ -80,9 +81,9 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws ORM\Mapping\MappingException
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @throws ORM\Mapping\MappingException
 	 */
 	private function registerEvent(
 		ORM\Mapping\ClassMetadata $classMetadata,
@@ -95,7 +96,7 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function hasRegisteredListener(
 		ORM\Mapping\ClassMetadata $classMetadata,
@@ -117,7 +118,9 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws Exceptions\InvalidMapping
 	 * @throws ORM\Mapping\MappingException
+	 * @throws ORM\ORMInvalidArgumentException
 	 * @throws Persistence\Mapping\MappingException
 	 * @throws ReflectionException
 	 */
@@ -128,7 +131,7 @@ final class User implements Common\EventSubscriber
 
 		// Check all scheduled updates
 		foreach ($uow->getScheduledEntityUpdates() as $object) {
-			/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
+			/** @var ORM\Mapping\ClassMetadata<T> $classMetadata */
 			$classMetadata = $manager->getClassMetadata($object::class);
 
 			$config = $this->driver->getObjectConfigurations($manager, $classMetadata->getName());
@@ -162,7 +165,7 @@ final class User implements Common\EventSubscriber
 	/**
 	 * Updates a field
 	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function updateField(
 		ORM\UnitOfWork $uow,
@@ -189,6 +192,7 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws Exceptions\InvalidMapping
 	 * @throws ORM\Mapping\MappingException
 	 * @throws Persistence\Mapping\MappingException
 	 * @throws ReflectionException
@@ -200,7 +204,7 @@ final class User implements Common\EventSubscriber
 	{
 		$manager = $eventArgs->getObjectManager();
 		$uow = $manager->getUnitOfWork();
-		/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
+		/** @var ORM\Mapping\ClassMetadata<T> $classMetadata */
 		$classMetadata = $manager->getClassMetadata($entity::class); // @phpstan-ignore-line
 
 		$config = $this->driver->getObjectConfigurations($manager, $classMetadata->getName());
@@ -213,9 +217,8 @@ final class User implements Common\EventSubscriber
 	}
 
 	/**
-	 * @param Array<string> $fields
-	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @param array<string> $fields
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function updateFields(
 		array $fields,

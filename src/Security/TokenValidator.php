@@ -54,6 +54,8 @@ final class TokenValidator
 
 	/**
 	 * @return JWT\UnencryptedToken|null
+	 *
+	 * @throws Exceptions\UnauthorizedAccess
 	 */
 	public function validate(string $token): JWT\Token|null
 	{

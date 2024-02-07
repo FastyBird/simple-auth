@@ -32,18 +32,18 @@ use function in_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @method onLoggedIn(Security\User $user)
- * @method onLoggedOut(Security\User $user)
+ * @method void onLoggedIn(Security\User $user)
+ * @method void onLoggedOut(Security\User $user)
  */
 class User
 {
 
 	use Nette\SmartObject;
 
-	/** @var Array<Closure> */
+	/** @var array<Closure(Security\User $user): void> */
 	public array $onLoggedIn = [];
 
-	/** @var Array<Closure> */
+	/** @var array<Closure(Security\User $user): void> */
 	public array $onLoggedOut = [];
 
 	private IUserStorage $storage;
@@ -75,6 +75,7 @@ class User
 	 * @param string|Security\IIdentity $user name or instance of Security\IIdentity
 	 *
 	 * @throws Exceptions\Authentication
+	 * @throws Exceptions\InvalidState
 	 */
 	public function login(string|Security\IIdentity $user, string|null $password = null): void
 	{
@@ -113,7 +114,7 @@ class User
 	}
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getRoles(): array
 	{

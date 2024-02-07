@@ -23,11 +23,22 @@ extensions:
     nettrineOrmConsole          : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache            : Nettrine\ORM\DI\OrmCacheExtension
     ipubDoctrineCrud            : IPub\DoctrineCrud\DI\DoctrineCrudExtension
-    ipubDoctrineConsistence     : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
     fbDateTimeFactory           : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
 services:
     - {factory: Symfony\Component\Console\Application}
+
+decorator:
+    Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
+        setup:
+            - addDriver(@nettrineOrmAnnotations.annotationDriver, 'FastyBird\SimpleAuth\Tests\Fixtures\Entities')
+            - addDriver(@nettrineOrmAttributes.attributeDriver, 'FastyBird\SimpleAuth\Tests\Fixtures\Entities')
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver:
+        setup:
+            - addPaths([%appDir%tests/fixtures/Entities])
+    Doctrine\ORM\Mapping\Driver\AttributeDriver:
+        setup:
+            - addPaths([%appDir%tests/fixtures/Entities])
 
 nettrineDbal:
     connection:
@@ -55,7 +66,7 @@ nettrineOrmAnnotations:
 
 nettrineOrmAttributes:
     mapping: [
-        Tests\Fixtures: %appDir%fixtures
+        Tests\Fixtures: %appDir%tests/fixtures
     ]
 
 fbSimpleAuth:

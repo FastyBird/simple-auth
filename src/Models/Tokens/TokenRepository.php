@@ -20,6 +20,7 @@ use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Queries;
 use FastyBird\SimpleAuth\Types;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Ramsey\Uuid;
 use function assert;
@@ -36,7 +37,7 @@ final class TokenRepository
 
 	use Nette\SmartObject;
 
-	/** @var Array<ORM\EntityRepository<Entities\Tokens\Token>> */
+	/** @var array<ORM\EntityRepository<Entities\Tokens\Token>> */
 	private array $repository = [];
 
 	public function __construct(private readonly Persistence\ManagerRegistry $managerRegistry)
@@ -49,6 +50,9 @@ final class TokenRepository
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
+	 *
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findOneByIdentifier(
 		string $identifier,
@@ -60,7 +64,7 @@ final class TokenRepository
 		$findQuery->inState(Types\TokenState::ACTIVE);
 
 		$result = $this->findOneBy($findQuery, $type);
-		assert($result instanceof $type);
+		assert($result instanceof $type || $result === null);
 
 		return $result;
 	}
@@ -71,6 +75,9 @@ final class TokenRepository
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
+	 *
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findOneByToken(
 		string $token,
@@ -82,7 +89,7 @@ final class TokenRepository
 		$findQuery->inState(Types\TokenState::ACTIVE);
 
 		$result = $this->findOneBy($findQuery, $type);
-		assert($result instanceof $type);
+		assert($result instanceof $type || $result === null);
 
 		return $result;
 	}
@@ -94,6 +101,9 @@ final class TokenRepository
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
+	 *
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 */
 	public function findOneBy(
 		Queries\FindTokens $queryObject,

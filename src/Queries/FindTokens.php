@@ -18,7 +18,6 @@ namespace FastyBird\SimpleAuth\Queries;
 use Closure;
 use Doctrine\ORM;
 use FastyBird\SimpleAuth\Entities;
-use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
@@ -36,10 +35,10 @@ use Ramsey\Uuid;
 class FindTokens extends DoctrineOrmQuery\QueryObject
 {
 
-	/** @var Array<Closure> */
+	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
 	private array $filter = [];
 
-	/** @var Array<Closure> */
+	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
 	private array $select = [];
 
 	public function byId(Uuid\UuidInterface $id): void
@@ -56,22 +55,15 @@ class FindTokens extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	/**
-	 * @throw Exceptions\InvalidArgument
-	 */
-	public function inState(string $state): void
+	public function inState(Types\TokenState $state): void
 	{
-		if (!Types\TokenState::isValidValue($state)) {
-			throw new Exceptions\InvalidArgument('Invalid token state given');
-		}
-
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
-			$qb->andWhere('t.state = :state')->setParameter('state', $state);
+			$qb->andWhere('t.state = :state')->setParameter('state', $state->value);
 		};
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<T> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -79,7 +71,7 @@ class FindTokens extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<T> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
@@ -97,7 +89,7 @@ class FindTokens extends DoctrineOrmQuery\QueryObject
 	}
 
 	/**
-	 * @phpstan-param ORM\EntityRepository<T> $repository
+	 * @param ORM\EntityRepository<T> $repository
 	 */
 	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{

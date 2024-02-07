@@ -30,13 +30,12 @@ use Doctrine\ORM\Mapping as ORMMapping;
 final class Owner implements ORMMapping\MappingAttribute
 {
 
-	/** @var string|Array<string> */
+	/** @var string|array<string> */
 	public string|array $field;
 
-	/** @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingAnyTypeHint */
-	public $value;
+	public mixed $value;
 
-	/** @var Array<mixed>|null */
+	/** @var array<mixed>|null */
 	public array|null $association = null;
 
 	public function __construct(public readonly string $on = 'create')

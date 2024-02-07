@@ -15,7 +15,6 @@
 
 namespace FastyBird\SimpleAuth;
 
-use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Nette;
 use Psr\Http\Message\ServerRequestInterface;
@@ -52,7 +51,9 @@ final class Auth
 	}
 
 	/**
-	 * @throws SimpleAuthExceptions\Authentication
+	 * @throws Exceptions\Authentication
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\UnauthorizedAccess
 	 */
 	public function login(ServerRequestInterface $request): void
 	{

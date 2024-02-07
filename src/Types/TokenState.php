@@ -15,45 +15,28 @@
 
 namespace FastyBird\SimpleAuth\Types;
 
-use Consistence;
-use function assert;
-use function is_string;
-
 /**
- * Doctrine2 DB type for token state column
+ * Token state types
  *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Types
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TokenState extends Consistence\Enum\Enum
+enum TokenState: string
 {
 
 	/**
 	 * Define states
 	 */
-	public const ACTIVE = 'active';
+	case ACTIVE = 'active';
 
-	public const BLOCKED = 'blocked';
+	case BLOCKED = 'blocked';
 
-	public const DELETED = 'deleted';
+	case DELETED = 'deleted';
 
-	public const EXPIRED = 'expired';
+	case EXPIRED = 'expired';
 
-	public const REVOKED = 'revoked';
-
-	public function getValue(): string
-	{
-		$value = parent::getValue();
-		assert(is_string($value));
-
-		return $value;
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case REVOKED = 'revoked';
 
 }

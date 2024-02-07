@@ -47,7 +47,9 @@ class AnnotationChecker
 {
 
 	/**
-	 * @phpstan-param class-string $controllerClass
+	 * @param class-string $controllerClass
+	 *
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function checkAccess(
 		User $user,
@@ -72,19 +74,20 @@ class AnnotationChecker
 		return true;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	private function isAllowed(User $user, Reflector $element): bool
 	{
 		// Check annotations only if element have to be secured
 		return $this->parseAnnotation($element, 'Secured') !== null
-			? $this->checkUser($user, $element) && $this->checkRoles(
-				$user,
-				$element,
-			)
+			? $this->checkUser($user, $element)
+				&& $this->checkRoles($user, $element)
 			: true;
 	}
 
 	/**
-	 * @return Array<mixed>|null
+	 * @return array<mixed>|null
 	 */
 	private function parseAnnotation(Reflector $ref, string $name): array|null
 	{

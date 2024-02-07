@@ -51,14 +51,14 @@ final class Owner
 	/**
 	 * List of cached object configurations
 	 *
-	 * @var Array<mixed>
+	 * @var array<mixed>
 	 */
 	private static array $objectConfigurations = [];
 
 	/**
 	 * List of types which are valid for blame
 	 *
-	 * @var Array<string>
+	 * @var array<string>
 	 */
 	private array $validTypes = [
 		'string',
@@ -75,10 +75,11 @@ final class Owner
 	 * Get the configuration for specific object class
 	 * if cache driver is present it scans it also
 	 *
-	 * @phpstan-param class-string $class
+	 * @param class-string $class
 	 *
-	 * @phpstan-return Array<mixed>
+	 * @return array<mixed>
 	 *
+	 * @throws Exceptions\InvalidMapping
 	 * @throws ORM\Mapping\MappingException
 	 * @throws Persistence\Mapping\MappingException
 	 * @throws ReflectionException
@@ -101,7 +102,7 @@ final class Owner
 				$config = $cached;
 
 			} else {
-				/** @phpstan-var ORM\Mapping\ClassMetadata<T> $classMetadata */
+				/** @var ORM\Mapping\ClassMetadata<T> $classMetadata */
 				$classMetadata = $metadataFactory->getMetadataFor($class);
 
 				// Re-generate metadata on cache miss
@@ -135,9 +136,10 @@ final class Owner
 	}
 
 	/**
-	 * @throws ORM\Mapping\MappingException
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @throws Exceptions\InvalidMapping
+	 * @throws ORM\Mapping\MappingException
 	 */
 	public function loadMetadataForObjectClass(
 		Persistence\ObjectManager $objectManager,
@@ -169,7 +171,7 @@ final class Owner
 		foreach (array_reverse($classParents) as $parentClass) {
 			// Read only inherited mapped classes
 			if ($metadataFactory->hasMetadataFor($parentClass)) {
-				/** @phpstan-var ORM\Mapping\ClassMetadata<T> $parentClassMetadata */
+				/** @var ORM\Mapping\ClassMetadata<T> $parentClassMetadata */
 				$parentClassMetadata = $objectManager->getClassMetadata($parentClass);
 
 				$config = $this->readExtendedMetadata($parentClassMetadata, $config);
@@ -200,13 +202,13 @@ final class Owner
 	}
 
 	/**
-	 * @param Array<mixed> $config
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @param array<mixed> $config
 	 *
-	 * @return Array<mixed>
+	 * @return array<mixed>
 	 *
+	 * @throws Exceptions\InvalidMapping
 	 * @throws ORM\Mapping\MappingException
-	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 */
 	private function readExtendedMetadata(ORM\Mapping\ClassMetadata $classMetadata, array $config): array
 	{
@@ -284,9 +286,9 @@ final class Owner
 	/**
 	 * Checks if $field type is valid
 	 *
-	 * @throws ORM\Mapping\MappingException
+	 * @param ORM\Mapping\ClassMetadata<T> $classMetadata
 	 *
-	 * @phpstan-param ORM\Mapping\ClassMetadata<T> $classMetadata
+	 * @throws ORM\Mapping\MappingException
 	 */
 	private function isValidField(ORM\Mapping\ClassMetadata $classMetadata, string $field): bool
 	{

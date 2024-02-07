@@ -39,6 +39,8 @@ final class User implements MiddlewareInterface
 
 	/**
 	 * @throws Exceptions\Authentication
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\UnauthorizedAccess
 	 */
 	public function process(
 		ServerRequestInterface $request,

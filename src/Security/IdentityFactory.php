@@ -16,6 +16,7 @@
 namespace FastyBird\SimpleAuth\Security;
 
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions;
 use Lcobucci\JWT;
 use function is_array;
 use function is_string;
@@ -31,6 +32,9 @@ use function is_string;
 class IdentityFactory implements IIdentityFactory
 {
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	public function create(JWT\UnencryptedToken $token): IIdentity|null
 	{
 		$claims = $token->claims();

@@ -18,6 +18,7 @@ namespace FastyBird\SimpleAuth\Models\Tokens;
 use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Models;
 use IPub\DoctrineCrud\Crud;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
 use function assert;
@@ -37,7 +38,7 @@ class TokensManager
 	use Nette\SmartObject;
 
 	/**
-	 * @phpstan-param Crud\IEntityCrud<T> $entityCrud
+	 * @param Crud\IEntityCrud<T> $entityCrud
 	 */
 	public function __construct(private Crud\IEntityCrud $entityCrud)
 	{
@@ -52,6 +53,9 @@ class TokensManager
 		return $entity;
 	}
 
+	/**
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 */
 	public function update(
 		Entities\Tokens\Token $entity,
 		Utils\ArrayHash $values,
@@ -63,6 +67,9 @@ class TokensManager
 		return $entity;
 	}
 
+	/**
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 */
 	public function delete(Entities\Tokens\Token $entity): bool
 	{
 		// Delete entity from database

@@ -31,7 +31,7 @@ interface IIdentity
 	public function getId(): Uuid\UuidInterface;
 
 	/**
-	 * @return Array<string>
+	 * @return array<string>
 	 */
 	public function getRoles(): array;
 

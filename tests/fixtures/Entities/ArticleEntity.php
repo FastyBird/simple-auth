@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Tests\Fixtures;
+namespace FastyBird\SimpleAuth\Tests\Fixtures\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Entities;

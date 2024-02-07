@@ -148,6 +148,9 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 	}
 
+	/**
+	 * @throws DI\MissingServiceException
+	 */
 	public function beforeCompile(): void
 	{
 		parent::beforeCompile();
@@ -192,6 +195,9 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 	}
 
+	/**
+	 * @throws DI\MissingServiceException
+	 */
 	public function afterCompile(PhpGenerator\ClassType $class): void
 	{
 		$builder = $this->getContainerBuilder();

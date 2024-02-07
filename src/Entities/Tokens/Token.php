@@ -15,14 +15,12 @@
 
 namespace FastyBird\SimpleAuth\Entities\Tokens;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineCrud;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
-use Throwable;
 
 #[ORM\Entity]
 #[ORM\Table(
@@ -60,31 +58,22 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	#[ORM\Column(name: 'token_token', type: 'text', nullable: false)]
 	protected string $token;
 
-	/**
-	 * @var Types\TokenState
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @Enum(class=Types\TokenState::class)
-	 */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'token_state',
-		type: 'string_enum',
+		type: 'string',
 		nullable: false,
+		enumType: Types\TokenState::class,
 		options: ['default' => Types\TokenState::ACTIVE],
 	)]
-	protected $state;
+	protected Types\TokenState $state;
 
-	/**
-	 * @throws Throwable
-	 */
 	public function __construct(string $token, Uuid\UuidInterface|null $id = null)
 	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->token = $token;
-		$this->state = Types\TokenState::get(Types\TokenState::ACTIVE);
+		$this->state = Types\TokenState::ACTIVE;
 
 		$this->children = new Common\Collections\ArrayCollection();
 	}
@@ -116,7 +105,7 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	}
 
 	/**
-	 * @return Array<Token>
+	 * @return array<Token>
 	 */
 	public function getChildren(): array
 	{
@@ -124,7 +113,7 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 	}
 
 	/**
-	 * @param Array<Token> $children
+	 * @param array<Token> $children
 	 */
 	public function setChildren(array $children): void
 	{
@@ -157,17 +146,17 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 
 	public function isActive(): bool
 	{
-		return $this->state === Types\TokenState::get(Types\TokenState::ACTIVE);
+		return $this->state === Types\TokenState::ACTIVE;
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state === Types\TokenState::get(Types\TokenState::BLOCKED);
+		return $this->state === Types\TokenState::BLOCKED;
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state === Types\TokenState::get(Types\TokenState::DELETED);
+		return $this->state === Types\TokenState::DELETED;
 	}
 
 	public function getToken(): string
