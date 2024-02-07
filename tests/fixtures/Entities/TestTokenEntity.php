@@ -15,8 +15,13 @@ use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 		'comment' => 'Testing tokens',
 	],
 )]
+#[ORM\DiscriminatorMap([
+	self::TYPE => self::class,
+])]
 class TestTokenEntity extends Entities\Tokens\Token
 {
+
+	public const TYPE = 'test_token';
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(type: 'string', nullable: true)]

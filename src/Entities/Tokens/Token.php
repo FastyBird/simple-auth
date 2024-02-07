@@ -175,11 +175,6 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 		return $this->token;
 	}
 
-	public function getDiscriminatorName(): string
-	{
-		return 'token';
-	}
-
 	public function __toString(): string
 	{
 		return $this->getToken();
