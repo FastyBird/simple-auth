@@ -20,6 +20,7 @@ use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Security;
 use Nette;
+use Nette\Utils;
 use Ramsey\Uuid;
 use function func_get_args;
 use function in_array;
@@ -31,9 +32,6 @@ use function in_array;
  * @subpackage     Security
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- *
- * @method void onLoggedIn(Security\User $user)
- * @method void onLoggedOut(Security\User $user)
  */
 class User
 {
@@ -91,13 +89,13 @@ class User
 
 		$this->storage->setIdentity($user);
 
-		$this->onLoggedIn($this);
+		Utils\Arrays::invoke($this->onLoggedIn, $this);
 	}
 
 	public function logout(): void
 	{
 		if ($this->isLoggedIn()) {
-			$this->onLoggedOut($this);
+			Utils\Arrays::invoke($this->onLoggedOut, $this);
 		}
 
 		$this->storage->setIdentity(null);
