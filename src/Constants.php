@@ -33,6 +33,8 @@ final class Constants
 	// Permissions string delimiter
 	public const PERMISSIONS_DELIMITER = ':';
 
+	public const ACCESS_TOKEN_COOKIE = 'token';
+
 	/**
 	 * Security tokens
 	 */

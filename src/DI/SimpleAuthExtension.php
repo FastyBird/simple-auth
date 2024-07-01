@@ -18,16 +18,19 @@ namespace FastyBird\SimpleAuth\DI;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Events;
 use FastyBird\SimpleAuth\Mapping;
 use FastyBird\SimpleAuth\Middleware;
 use FastyBird\SimpleAuth\Security;
 use FastyBird\SimpleAuth\Subscribers;
 use IPub\DoctrineCrud;
 use Nette;
+use Nette\Application as NetteApplication;
 use Nette\DI;
 use Nette\PhpGenerator;
 use Nette\Schema;
 use stdClass;
+use Symfony\Contracts\EventDispatcher;
 use function assert;
 use function ucfirst;
 use const DIRECTORY_SEPARATOR;
@@ -66,6 +69,12 @@ class SimpleAuthExtension extends DI\CompilerExtension
 					'mapping' => Schema\Expect::bool(false),
 					'models' => Schema\Expect::bool(false),
 				]),
+				'nette' => Schema\Expect::structure([
+					'application' => Schema\Expect::bool(false),
+				]),
+			]),
+			'application' => Schema\Expect::structure([
+				'redirectUrl' => Schema\Expect::string(),
 			]),
 			'services' => Schema\Expect::structure([
 				'identity' => Schema\Expect::bool(false),
@@ -81,6 +90,18 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('auth'), new DI\Definitions\ServiceDefinition())
 			->setType(SimpleAuth\Auth::class);
+
+		$builder->addDefinition($this->prefix('configuration'), new DI\Definitions\ServiceDefinition())
+			->setType(SimpleAuth\Configuration::class)
+			->setArguments([
+				'tokenIssuer' => $configuration->token->issuer,
+				'tokenSignature' => $configuration->token->signature,
+				'enableMiddleware' => $configuration->enable->middleware,
+				'enableDoctrineMapping' => $configuration->enable->doctrine->mapping,
+				'enableDoctrineModels' => $configuration->enable->doctrine->models,
+				'enableNetteApplication' => $configuration->enable->nette->application,
+				'applicationRedirectUrl' => $configuration->application->redirectUrl,
+			]);
 
 		/**
 		 * Token utilities
@@ -146,6 +167,15 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				->setType(SimpleAuth\Models\Tokens\TokensManager::class)
 				->setArgument('entityCrud', '__placeholder__');
 		}
+
+		/**
+		 * Nette application extension
+		 */
+
+		if ($configuration->enable->nette->application) {
+			$builder->addDefinition($this->prefix('nette.application'), new DI\Definitions\ServiceDefinition())
+				->setType(Subscribers\Application::class);
+		}
 	}
 
 	/**
@@ -172,6 +202,10 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				->setType(Security\User::class);
 		}
 
+		/**
+		 * Doctrine extension
+		 */
+
 		if ($configuration->enable->doctrine->models) {
 			$ormAttributeDriverService = $builder->getDefinition('nettrineOrmAttributes.attributeDriver');
 
@@ -193,6 +227,35 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				]);
 			}
 		}
+
+		/**
+		 * Nette application extension
+		 */
+
+		if ($configuration->enable->nette->application) {
+			if ($builder->getByType(EventDispatcher\EventDispatcherInterface::class) !== null) {
+				if ($builder->getByType(NetteApplication\Application::class) !== null) {
+					$dispatcher = $builder->getDefinition(
+						$builder->getByType(EventDispatcher\EventDispatcherInterface::class),
+					);
+
+					$application = $builder->getDefinition($builder->getByType(NetteApplication\Application::class));
+					assert($application instanceof DI\Definitions\ServiceDefinition);
+
+					$application->addSetup('?->onRequest[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+						'@self',
+						$dispatcher,
+						new PhpGenerator\Literal(Events\Request::class),
+					]);
+
+					$application->addSetup('?->onResponse[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+						'@self',
+						$dispatcher,
+						new PhpGenerator\Literal(Events\Response::class),
+					]);
+				}
+			}
+		}
 	}
 
 	/**
@@ -203,6 +266,10 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
+
+		/**
+		 * Doctrine extension
+		 */
 
 		if ($configuration->enable->doctrine->models) {
 			$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
