@@ -39,12 +39,12 @@ trait TSimpleAuth
 
 	protected Security\AnnotationChecker $annotationChecker;
 
-	protected Security\User | null $simpleUser = null;
+	protected Security\User|null $simpleUser = null;
 
 	public function injectSimpleAuth(
 		Security\AnnotationChecker $annotationChecker,
 		SimpleAuth\Configuration $configuration,
-		Security\User | null $simpleUser = null,
+		Security\User|null $simpleUser = null,
 	): void
 	{
 		$this->annotationChecker = $annotationChecker;
