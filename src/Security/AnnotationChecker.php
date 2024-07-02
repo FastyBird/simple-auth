@@ -52,17 +52,23 @@ class AnnotationChecker
 	 * @throws Exceptions\InvalidArgument
 	 */
 	public function checkAccess(
-		User $user,
+		User|null $user,
 		string $controllerClass,
-		string $controllerMethod,
+		string|null $controllerMethod,
 	): bool
 	{
 		try {
 			if (class_exists($controllerClass)) {
 				$reflection = new ReflectionClass($controllerClass);
 
-				foreach ([$reflection, $reflection->getMethod($controllerMethod)] as $element) {
-					if (!$this->isAllowed($user, $element)) {
+				if ($controllerMethod !== null) {
+					foreach ([$reflection, $reflection->getMethod($controllerMethod)] as $element) {
+						if (!$this->isAllowed($user, $element)) {
+							return false;
+						}
+					}
+				} else {
+					if (!$this->isAllowed($user, $reflection)) {
 						return false;
 					}
 				}
@@ -77,13 +83,18 @@ class AnnotationChecker
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	private function isAllowed(User $user, Reflector $element): bool
+	private function isAllowed(User|null $user, Reflector $element): bool
 	{
+		if ($this->parseAnnotation($element, 'Secured') === null) {
+			return true;
+		}
+
+		if ($user === null) {
+			return false;
+		}
+
 		// Check annotations only if element have to be secured
-		return $this->parseAnnotation($element, 'Secured') !== null
-			? $this->checkUser($user, $element)
-				&& $this->checkRoles($user, $element)
-			: true;
+		return $this->checkUser($user, $element) && $this->checkRoles($user, $element);
 	}
 
 	/**

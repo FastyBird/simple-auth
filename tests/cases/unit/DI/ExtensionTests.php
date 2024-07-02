@@ -2,6 +2,7 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\DI;
 
+use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Mapping;
 use FastyBird\SimpleAuth\Middleware;
 use FastyBird\SimpleAuth\Security;
@@ -19,9 +20,13 @@ final class ExtensionTests extends BaseTestCase
 	{
 		$container = $this->createContainer();
 
+		self::assertNotNull($container->getByType(SimpleAuth\Auth::class, false));
+		self::assertNotNull($container->getByType(SimpleAuth\Configuration::class, false));
+
 		self::assertNotNull($container->getByType(Middleware\User::class, false));
 		self::assertNotNull($container->getByType(Middleware\Access::class, false));
 
+		self::assertNotNull($container->getByType(Subscribers\Application::class, false));
 		self::assertNotNull($container->getByType(Subscribers\User::class, false));
 
 		self::assertNotNull($container->getByType(Mapping\Driver\Owner::class, false));
