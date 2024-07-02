@@ -31,8 +31,6 @@ use ReflectionMethod;
  *
  * @method Application\IPresenter getPresenter()
  * @method string storeRequest(string $expiration = '+ 10 minutes')
- *
- * @property-read Security\User|null $user;
  */
 trait TSimpleAuth
 {
@@ -41,13 +39,17 @@ trait TSimpleAuth
 
 	protected Security\AnnotationChecker $annotationChecker;
 
+	protected Security\User | null $simpleUser = null;
+
 	public function injectSimpleAuth(
 		Security\AnnotationChecker $annotationChecker,
 		SimpleAuth\Configuration $configuration,
+		Security\User | null $simpleUser = null,
 	): void
 	{
 		$this->annotationChecker = $annotationChecker;
 		$this->simpleAuthConfiguration = $configuration;
+		$this->simpleUser = $simpleUser;
 	}
 
 	/**
@@ -66,8 +68,8 @@ trait TSimpleAuth
 			parent::checkRequirements($element);
 
 			if (!$this->annotationChecker->checkAccess(
-				$this->user,
-				$element->class,
+				$this->simpleUser,
+				$element instanceof ReflectionClass ? $element->name : $element->class,
 				$element instanceof ReflectionMethod ? $element->name : null,
 			)) {
 				throw new Application\ForbiddenRequestException();
