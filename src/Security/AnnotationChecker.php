@@ -156,12 +156,12 @@ class AnnotationChecker
 					if ($userAnnotation === 'loggedIn' && $user->isLoggedIn() === false) {
 						return false;
 
-					// User have to be logged out and is logged in
+						// User have to be logged out and is logged in
 					} elseif ($userAnnotation === 'guest' && $user->isLoggedIn() === true) {
 						return false;
 					}
 
-				// Annotation have wrong definition
+					// Annotation have wrong definition
 				} else {
 					throw new Exceptions\InvalidArgument(
 						'In @Security\User annotation is allowed only one from two strings: \'loggedIn\' & \'guest\'',

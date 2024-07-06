@@ -83,7 +83,6 @@ trait TSimpleAuth
 				} else {
 					$this->getPresenter()->redirectUrl($redirectUrl);
 				}
-
 			} else {
 				throw $ex;
 			}
