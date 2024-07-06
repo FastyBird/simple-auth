@@ -40,7 +40,8 @@ class Configuration
 		private readonly bool $enableDoctrineMapping,
 		private readonly bool $enableDoctrineModels,
 		private readonly bool $enableNetteApplication,
-		private readonly string|null $applicationRedirectUrl = null,
+		private readonly string|null $applicationSignInUrl = null,
+		private readonly string $applicationHomeUrl = '/',
 	)
 	{
 	}
@@ -84,11 +85,23 @@ class Configuration
 	 */
 	public function getRedirectUrl(array $params = []): string|null
 	{
-		if ($this->applicationRedirectUrl !== null) {
-			return $this->linkGenerator->link($this->applicationRedirectUrl, $params);
+		if ($this->applicationSignInUrl !== null) {
+			return $this->linkGenerator->link($this->applicationSignInUrl, $params);
 		}
 
 		return null;
+	}
+
+	/**
+	 * Build the URL for redirection to homepage
+	 *
+	 * @param array<mixed> $params
+	 *
+	 * @throws Application\UI\InvalidLinkException
+	 */
+	public function getHomeUrl(array $params = []): string|null
+	{
+		return $this->linkGenerator->link($this->applicationHomeUrl, $params);
 	}
 
 }
