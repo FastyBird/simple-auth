@@ -64,6 +64,8 @@ trait TSimpleAuth
 			'backlink' => $this->storeRequest(),
 		]);
 
+		$homeUrl = $this->simpleAuthConfiguration->getHomeUrl();
+
 		try {
 			parent::checkRequirements($element);
 
@@ -76,7 +78,11 @@ trait TSimpleAuth
 			}
 		} catch (Application\ForbiddenRequestException $ex) {
 			if ($redirectUrl) {
-				$this->getPresenter()->redirectUrl($redirectUrl);
+				if ($this->simpleUser->isLoggedIn()) {
+					$this->getPresenter()->redirectUrl($homeUrl);
+				} else {
+					$this->getPresenter()->redirectUrl($redirectUrl);
+				}
 
 			} else {
 				throw $ex;

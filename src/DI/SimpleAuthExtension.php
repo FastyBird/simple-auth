@@ -74,7 +74,8 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				]),
 			]),
 			'application' => Schema\Expect::structure([
-				'redirectUrl' => Schema\Expect::string(),
+				'signInUrl' => Schema\Expect::string(),
+				'homeUrl' => Schema\Expect::string('/'),
 			]),
 			'services' => Schema\Expect::structure([
 				'identity' => Schema\Expect::bool(false),
@@ -100,7 +101,8 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				'enableDoctrineMapping' => $configuration->enable->doctrine->mapping,
 				'enableDoctrineModels' => $configuration->enable->doctrine->models,
 				'enableNetteApplication' => $configuration->enable->nette->application,
-				'applicationRedirectUrl' => $configuration->application->redirectUrl,
+				'applicationSignInUrl' => $configuration->application->signInUrl,
+				'applicationHomeUrl' => $configuration->application->homeUrl,
 			]);
 
 		/**
