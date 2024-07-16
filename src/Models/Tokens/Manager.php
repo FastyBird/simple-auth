@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TokensManager.php
+ * Manager.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -17,7 +17,7 @@ namespace FastyBird\SimpleAuth\Models\Tokens;
 
 use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Models;
-use IPub\DoctrineCrud\Crud;
+use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
@@ -26,28 +26,30 @@ use function assert;
 /**
  * Security tokens entities manager
  *
- * @template T of Entities\Tokens\Token
- *
  * @package        FastyBird:SimpleAuth!
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class TokensManager
+class Manager
 {
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Tokens\Token>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param Crud\IEntityCrud<T> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Tokens\Token> $entityCrudFactory
 	 */
-	public function __construct(private Crud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Entity CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Tokens\Token
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Tokens\Token);
 
 		return $entity;
@@ -61,7 +63,7 @@ class TokensManager
 		Utils\ArrayHash $values,
 	): Entities\Tokens\Token
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Tokens\Token);
 
 		return $entity;
@@ -73,7 +75,19 @@ class TokensManager
 	public function delete(Entities\Tokens\Token $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Tokens\Token>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Tokens\Token::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

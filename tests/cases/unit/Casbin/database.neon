@@ -1,0 +1,26 @@
+#
+# DI configuration
+#
+# @license      More in LICENSE.md
+# @copyright    https://www.fastybird.com
+# @author       Adam Kadlec <adam.kadlec@fastybird.com>
+# @package      FastyBird:SimpleAuth!
+# @subpackage   config
+# @since        0.1.0
+#
+# @date         15.07.24
+
+fbSimpleAuth:
+    token:
+        issuer: fb_tester
+    enable:
+        middleware: true
+        doctrine:
+            mapping: true
+            models: true
+        casbin:
+            database: true
+    services:
+        identity: true
+    casbin:
+        policy: %appDir%tests/fixtures/policy.csv

@@ -16,14 +16,12 @@
 namespace FastyBird\SimpleAuth\Security;
 
 use Closure;
-use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Security;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function func_get_args;
-use function in_array;
 
 /**
  * Application user
@@ -104,27 +102,6 @@ class User
 	public function isLoggedIn(): bool
 	{
 		return $this->storage->isAuthenticated();
-	}
-
-	public function isInRole(string $role): bool
-	{
-		return in_array($role, $this->getRoles(), true);
-	}
-
-	/**
-	 * @return array<string>
-	 */
-	public function getRoles(): array
-	{
-		if (!$this->isLoggedIn()) {
-			return [SimpleAuth\Constants::ROLE_ANONYMOUS];
-		}
-
-		$identity = $this->getIdentity();
-
-		return $identity !== null && $identity->getRoles() !== []
-			? $identity->getRoles()
-			: [SimpleAuth\Constants::ROLE_USER];
 	}
 
 }

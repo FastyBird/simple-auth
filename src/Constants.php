@@ -65,4 +65,6 @@ final class Constants
 
 	public const ROLE_ADMINISTRATOR = 'administrator';
 
+	public const USER_ANONYMOUS = 'guest';
+
 }

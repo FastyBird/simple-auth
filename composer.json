@@ -40,6 +40,8 @@
   "require" : {
     "php": ">=8.1.0",
     "ext-openssl": "*",
+    "casbin/casbin": "^3.23",
+    "casbin/dbal-adapter": "^2.4",
     "contributte/event-dispatcher": "^0.9",
     "cweagans/composer-patches": "^1.7",
     "fastybird/datetime-factory": "^0.6",
@@ -86,7 +88,8 @@
   "autoload-dev" : {
     "psr-4" : {
       "FastyBird\\SimpleAuth\\Tests\\Cases\\Unit\\" : "tests/cases/unit",
-      "FastyBird\\SimpleAuth\\Tests\\Fixtures\\" : "tests/fixtures"
+      "FastyBird\\SimpleAuth\\Tests\\Fixtures\\" : "tests/fixtures",
+      "FastyBird\\SimpleAuth\\Tests\\Tools\\": "tests/tools"
     }
   },
 
@@ -104,6 +107,9 @@
     "patches" : {
       "nette/utils" : {
         "Bug: Offset check with null support" : "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nette.array.offsetCheck.diff"
+      },
+      "nettrine/orm": {
+        "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
       }
     }
   }

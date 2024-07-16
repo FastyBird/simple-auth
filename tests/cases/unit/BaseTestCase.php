@@ -11,6 +11,7 @@ use Nette\DI;
 use Nettrine;
 use PHPUnit\Framework\TestCase;
 use function file_exists;
+use function in_array;
 use function md5;
 use function time;
 
@@ -20,6 +21,9 @@ abstract class BaseTestCase extends TestCase
 	protected DI\Container $container;
 
 	protected Nettrine\ORM\EntityManagerDecorator $em;
+
+	/** @var array<string> */
+	protected array $neonFiles = [];
 
 	/**
 	 * @throws DI\MissingServiceException
@@ -54,6 +58,10 @@ abstract class BaseTestCase extends TestCase
 
 		$config->addConfig(__DIR__ . '/../../common.neon');
 
+		foreach ($this->neonFiles as $neonFile) {
+			$config->addConfig($neonFile);
+		}
+
 		if ($additionalConfig !== null && file_exists($additionalConfig)) {
 			$config->addConfig($additionalConfig);
 		}
@@ -79,6 +87,13 @@ abstract class BaseTestCase extends TestCase
 	{
 		$this->container->removeService($serviceName);
 		$this->container->addService($serviceName, $service);
+	}
+
+	protected function registerNeonConfigurationFile(string $file): void
+	{
+		if (!in_array($file, $this->neonFiles, true)) {
+			$this->neonFiles[] = $file;
+		}
 	}
 
 	/**

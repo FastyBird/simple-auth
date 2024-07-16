@@ -15,15 +15,17 @@
 
 namespace FastyBird\SimpleAuth\DI;
 
+use Casbin;
+use CasbinAdapter;
+use Doctrine\DBAL\Connection;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth;
-use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Events;
+use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Mapping;
 use FastyBird\SimpleAuth\Middleware;
 use FastyBird\SimpleAuth\Security;
 use FastyBird\SimpleAuth\Subscribers;
-use IPub\DoctrineCrud;
 use Nette;
 use Nette\Application as NetteApplication;
 use Nette\DI;
@@ -32,7 +34,8 @@ use Nette\Schema;
 use stdClass;
 use Symfony\Contracts\EventDispatcher;
 use function assert;
-use function ucfirst;
+use function is_file;
+use function is_string;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -69,6 +72,9 @@ class SimpleAuthExtension extends DI\CompilerExtension
 					'mapping' => Schema\Expect::bool(false),
 					'models' => Schema\Expect::bool(false),
 				]),
+				'casbin' => Schema\Expect::structure([
+					'database' => Schema\Expect::bool(false),
+				]),
 				'nette' => Schema\Expect::structure([
 					'application' => Schema\Expect::bool(false),
 				]),
@@ -80,6 +86,24 @@ class SimpleAuthExtension extends DI\CompilerExtension
 			'services' => Schema\Expect::structure([
 				'identity' => Schema\Expect::bool(false),
 			]),
+			'casbin' => Schema\Expect::structure([
+				'model' => Schema\Expect::string(
+					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+					__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'model.conf',
+				),
+				'policy' => Schema\Expect::string(),
+			]),
+			'database' => Schema\Expect::anyOf(
+				Schema\Expect::null(),
+				Schema\Expect::structure([
+					'driver' => Schema\Expect::string('pdo_mysql'),
+					'host' => Schema\Expect::string('127.0.0.1'),
+					'port' => Schema\Expect::int(3_306),
+					'database' => Schema\Expect::string('security'),
+					'user' => Schema\Expect::string('root'),
+					'password' => Schema\Expect::string(),
+				]),
+			),
 		]);
 	}
 
@@ -162,13 +186,18 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 
 		if ($configuration->enable->doctrine->models) {
-			$builder->addDefinition($this->prefix('doctrine.tokenRepository'), new DI\Definitions\ServiceDefinition())
-				->setType(SimpleAuth\Models\Tokens\TokenRepository::class);
+			$builder->addDefinition($this->prefix('doctrine.tokensRepository'), new DI\Definitions\ServiceDefinition())
+				->setType(SimpleAuth\Models\Tokens\Repository::class);
 
 			$builder->addDefinition($this->prefix('doctrine.tokensManager'), new DI\Definitions\ServiceDefinition())
-				->setType(SimpleAuth\Models\Tokens\TokensManager::class)
-				->setArgument('entityCrud', '__placeholder__');
+				->setType(SimpleAuth\Models\Tokens\Manager::class);
 		}
+
+		$builder->addDefinition($this->prefix('doctrine.policiesRepository'), new DI\Definitions\ServiceDefinition())
+			->setType(SimpleAuth\Models\Policies\Repository::class);
+
+		$builder->addDefinition($this->prefix('doctrine.policiesManager'), new DI\Definitions\ServiceDefinition())
+			->setType(SimpleAuth\Models\Policies\Manager::class);
 
 		/**
 		 * Nette application extension
@@ -182,6 +211,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 	/**
 	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\Logical
 	 */
 	public function beforeCompile(): void
 	{
@@ -258,32 +288,73 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				}
 			}
 		}
-	}
-
-	/**
-	 * @throws DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-		$configuration = $this->getConfig();
-		assert($configuration instanceof stdClass);
 
 		/**
-		 * Doctrine extension
+		 * Casbin
 		 */
 
-		if ($configuration->enable->doctrine->models) {
-			$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
+		if ($configuration->enable->casbin->database) {
+			$connectionServiceName = $builder->getByType(Connection::class);
 
-			$tokensManagerService = $class->getMethod(
-				'createService' . ucfirst($this->name) . '__doctrine__tokensManager',
-			);
-			$tokensManagerService->setBody(
-				'return new ' . SimpleAuth\Models\Tokens\TokensManager::class
-				. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Tokens\Token::class . '\'));',
-			);
+			if ($connectionServiceName !== null) {
+				$connectionService = $builder->getDefinition($connectionServiceName);
+
+				$adapter = $builder->addDefinition(
+					$this->prefix('casbin.adapter'),
+					new DI\Definitions\ServiceDefinition(),
+				)
+					->setType(CasbinAdapter\DBAL\Adapter::class)
+					->setArguments([
+						'connection' => $connectionService,
+					])
+					->addSetup('$policyTableName', ['fb_security_policies']);
+			} else {
+				$adapter = $builder->addDefinition(
+					$this->prefix('casbin.adapter'),
+					new DI\Definitions\ServiceDefinition(),
+				)
+					->setType(CasbinAdapter\DBAL\Adapter::class)
+					->setArguments([
+						'connection' => [
+							'driver' => $configuration->database->driver,
+							'host' => $configuration->database->host,
+							'port' => $configuration->database->port,
+							'dbname' => $configuration->database->database,
+							'user' => $configuration->database->user,
+							'password' => $configuration->database->password,
+							'policy_table_name' => 'fb_security_policies',
+						],
+					]);
+			}
+
+			$builder->addDefinition($this->prefix('casbin.subscriber'), new DI\Definitions\ServiceDefinition())
+				->setType(Subscribers\Policy::class);
+		} else {
+			$policyFile = $configuration->casbin->policy;
+
+			if (!is_string($policyFile) || !is_file($policyFile)) {
+				throw new Exceptions\Logical('Casbin policy file is not configured');
+			}
+
+			$adapter = $builder->addDefinition($this->prefix('casbin.adapter'), new DI\Definitions\ServiceDefinition())
+				->setType(Casbin\Persist\Adapters\FileAdapter::class)
+				->setArguments([
+					'filePath' => $policyFile,
+				]);
 		}
+
+		$modelFile = $configuration->casbin->model;
+
+		if (!is_string($modelFile) || !is_file($modelFile)) {
+			throw new Exceptions\Logical('Casbin model file is not configured');
+		}
+
+		$builder->addDefinition($this->prefix('casbin.enforcer'), new DI\Definitions\ServiceDefinition())
+			->setType(Casbin\Enforcer::class)
+			->setArguments([
+				$modelFile,
+				$adapter,
+			]);
 	}
 
 }
