@@ -1,0 +1,8 @@
+p, 2784d750-f085-4580-8525-4d622face83d, data1, read
+p, c450531d-0f10-4587-a0ce-42fb48a8a8ad, data2, write
+p, visitor, data2, read
+p, administrator, data2, read
+p, administrator, data2, write
+
+g, 2784d750-f085-4580-8525-4d622face83d, visitor
+g, 5785924c-75a8-42ae-9bdd-a6ce5edbadac, administrator

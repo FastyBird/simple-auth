@@ -12,7 +12,7 @@ use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\DI;
 use Nette\Utils;
 
-final class RepositoryTest extends BaseTestCase
+final class ToknesRepositoryTest extends BaseTestCase
 {
 
 	/**
@@ -27,9 +27,9 @@ final class RepositoryTest extends BaseTestCase
 	{
 		$this->generateDbSchema();
 
-		$manager = $this->container->getByType(Models\Tokens\TokensManager::class);
+		$manager = $this->container->getByType(Models\Tokens\Manager::class);
 
-		$repository = $this->container->getByType(Models\Tokens\TokenRepository::class);
+		$repository = $this->container->getByType(Models\Tokens\Repository::class);
 
 		$tokenEntity = $manager->create(Utils\ArrayHash::from([
 			'entity' => Fixtures\Entities\TestTokenEntity::class,

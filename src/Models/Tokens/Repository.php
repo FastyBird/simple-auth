@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * TokenRepository.php
+ * Repository.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -32,7 +32,7 @@ use function assert;
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class TokenRepository
+final class Repository
 {
 
 	use Nette\SmartObject;

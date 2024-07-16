@@ -35,7 +35,7 @@ use Ramsey\Uuid;
 	],
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'token_type', type: 'string', length: 20)]
+#[ORM\DiscriminatorColumn(name: 'token_type', type: 'string', length: 100)]
 #[ORM\MappedSuperclass]
 abstract class Token implements DoctrineCrud\Entities\IEntity
 {
@@ -76,6 +76,11 @@ abstract class Token implements DoctrineCrud\Entities\IEntity
 		$this->state = Types\TokenState::ACTIVE;
 
 		$this->children = new Common\Collections\ArrayCollection();
+	}
+
+	public function getId(): Uuid\UuidInterface
+	{
+		return $this->id;
 	}
 
 	public function getParent(): self|null

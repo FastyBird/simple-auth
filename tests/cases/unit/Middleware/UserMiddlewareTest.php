@@ -2,6 +2,7 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\Middleware;
 
+use Casbin;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Middleware;
 use FastyBird\SimpleAuth\Security;
@@ -22,6 +23,8 @@ final class UserMiddlewareTest extends BaseTestCase
 	 */
 	public function testAllowedPermission(string $url, string $method, string $token, string $id): void
 	{
+		$enforcer = $this->container->getByType(Casbin\Enforcer::class);
+
 		$router = $this->createRouter();
 
 		$request = new Psr7\ServerRequest(
@@ -37,7 +40,10 @@ final class UserMiddlewareTest extends BaseTestCase
 		$user = $this->container->getByType(Security\User::class);
 
 		self::assertSame($id, (string) $user->getId());
-		self::assertSame([SimpleAuth\Constants::ROLE_ADMINISTRATOR], $user->getRoles());
+		self::assertTrue($enforcer->hasRoleForUser(
+			$user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
+		));
 	}
 
 	/**

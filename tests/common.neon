@@ -67,3 +67,5 @@ fbSimpleAuth:
             models: true
     services:
         identity: true
+    casbin:
+        policy: %appDir%tests/fixtures/policy.csv

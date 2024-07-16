@@ -15,11 +15,14 @@
 
 namespace FastyBird\SimpleAuth\Security;
 
+use Casbin;
+use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
 use ReflectionClass;
 use ReflectionException;
 use Reflector;
 use function array_key_exists;
+use function assert;
 use function call_user_func;
 use function class_exists;
 use function count;
@@ -45,6 +48,10 @@ use const PREG_SPLIT_NO_EMPTY;
  */
 class AnnotationChecker
 {
+
+	public function __construct(private readonly Casbin\Enforcer $enforcer)
+	{
+	}
 
 	/**
 	 * @param class-string $controllerClass
@@ -187,7 +194,14 @@ class AnnotationChecker
 					continue;
 				}
 
-				if (is_string($role) && $user->isInRole($role)) {
+				assert(is_string($role));
+
+				if (
+					$this->enforcer->hasRoleForUser(
+						$user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+						$role,
+					)
+				) {
 					return true;
 				}
 			}

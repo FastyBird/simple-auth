@@ -20,6 +20,7 @@
                 <element key="src" value="FastyBird\SimpleAuth"/>
                 <element key="tests/cases/unit" value="FastyBird\SimpleAuth\Tests\Cases\Unit"/>
                 <element key="tests/fixtures" value="FastyBird\SimpleAuth\Tests\Fixtures"/>
+                <element key="tests/tools" value="FastyBird\SimpleAuth\Tests\Tools"/>
             </property>
         </properties>
     </rule>

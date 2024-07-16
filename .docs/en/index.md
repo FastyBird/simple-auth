@@ -159,8 +159,8 @@ class SomeSessionController {
     /** @var Security\User */
     private Security\User $user;
 
-    /** @var Models\Tokens\TokensManager */
-    private Models\Tokens\TokensManager $tokensManager;
+    /** @var Models\Tokens\Manager */
+    private Models\Tokens\Manager $tokensManager;
 
     /** @var Security\TokenBuilder */
     private Security\TokenBuilder $tokenBuilder;
