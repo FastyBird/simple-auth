@@ -18,6 +18,7 @@ namespace FastyBird\SimpleAuth\Queries;
 use Closure;
 use Doctrine\ORM;
 use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
 
@@ -47,7 +48,7 @@ class FindPolicies extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	public function byType(string $type): void
+	public function byType(Types\PolicyType $type): void
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($type): void {
 			$qb->andWhere('p.type = :type')->setParameter('type', $type);
