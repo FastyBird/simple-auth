@@ -3,6 +3,7 @@
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\Models;
 
 use Doctrine\ORM;
+use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Models;
 use FastyBird\SimpleAuth\Queries;
 use FastyBird\SimpleAuth\Tests\Cases\Unit\BaseTestCase;
@@ -78,6 +79,11 @@ final class PoliciesRepositoryTest extends BaseTestCase
 		self::assertNull($foundPolicy);
 	}
 
+	/**
+	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidState
+	 * @throws ORM\Tools\ToolsException
+	 */
 	public function testFetchEntities(): void
 	{
 		$this->generateDbSchema();
