@@ -21,6 +21,7 @@ use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
+use function assert;
 
 /**
  * Find tokens entities query
@@ -52,6 +53,15 @@ class FindPolicies extends DoctrineOrmQuery\QueryObject
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($type): void {
 			$qb->andWhere('p.type = :type')->setParameter('type', $type);
+		};
+	}
+
+	public function byValue(int $key, string|null $value): void
+	{
+		assert($key >= 0 && $key <= 5);
+
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($key, $value): void {
+			$qb->andWhere('p.v' . $key . ' = :v' . $key . 'value')->setParameter('v' . $key . 'value', $value);
 		};
 	}
 

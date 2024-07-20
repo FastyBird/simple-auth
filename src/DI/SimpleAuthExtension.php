@@ -16,8 +16,6 @@
 namespace FastyBird\SimpleAuth\DI;
 
 use Casbin;
-use CasbinAdapter;
-use Doctrine\DBAL\Connection;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Events;
@@ -93,17 +91,6 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				),
 				'policy' => Schema\Expect::string(),
 			]),
-			'database' => Schema\Expect::anyOf(
-				Schema\Expect::null(),
-				Schema\Expect::structure([
-					'driver' => Schema\Expect::string('pdo_mysql'),
-					'host' => Schema\Expect::string('127.0.0.1'),
-					'port' => Schema\Expect::int(3_306),
-					'database' => Schema\Expect::string('security'),
-					'user' => Schema\Expect::string('root'),
-					'password' => Schema\Expect::string(),
-				]),
-			),
 		]);
 	}
 
@@ -294,38 +281,11 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		 */
 
 		if ($configuration->enable->casbin->database) {
-			$connectionServiceName = $builder->getByType(Connection::class);
-
-			if ($connectionServiceName !== null) {
-				$connectionService = $builder->getDefinition($connectionServiceName);
-
-				$adapter = $builder->addDefinition(
-					$this->prefix('casbin.adapter'),
-					new DI\Definitions\ServiceDefinition(),
-				)
-					->setType(CasbinAdapter\DBAL\Adapter::class)
-					->setArguments([
-						'connection' => $connectionService,
-					])
-					->addSetup('$policyTableName', ['fb_security_policies']);
-			} else {
-				$adapter = $builder->addDefinition(
-					$this->prefix('casbin.adapter'),
-					new DI\Definitions\ServiceDefinition(),
-				)
-					->setType(CasbinAdapter\DBAL\Adapter::class)
-					->setArguments([
-						'connection' => [
-							'driver' => $configuration->database->driver,
-							'host' => $configuration->database->host,
-							'port' => $configuration->database->port,
-							'dbname' => $configuration->database->database,
-							'user' => $configuration->database->user,
-							'password' => $configuration->database->password,
-							'policy_table_name' => 'fb_security_policies',
-						],
-					]);
-			}
+			$adapter = $builder->addDefinition(
+				$this->prefix('casbin.adapter'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(SimpleAuth\Models\Casbin\Adapter::class);
 
 			$builder->addDefinition($this->prefix('casbin.subscriber'), new DI\Definitions\ServiceDefinition())
 				->setType(Subscribers\Policy::class);

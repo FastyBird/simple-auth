@@ -11,3 +11,13 @@ parameters:
         - phpstan-bootstrap.php
 
     resultCachePath: %currentWorkingDirectory%/var/tools/PHPStan/resultCache.src.php
+
+    ignoreErrors:
+        -
+            message: '#^Method FastyBird\\SimpleAuth\\Models\\Casbin\\Adapter::addPolicy\(\) has parameter \$rule with no value type specified in iterable type array.#'
+            path: ../src/Models/Casbin/Adapter.php
+            count: 1
+        -
+            message: '#^Method FastyBird\\SimpleAuth\\Models\\Casbin\\Adapter::removePolicy\(\) has parameter \$rule with no value type specified in iterable type array.#'
+            path: ../src/Models/Casbin/Adapter.php
+            count: 1
