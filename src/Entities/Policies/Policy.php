@@ -25,7 +25,7 @@ use Ramsey\Uuid;
 #[ORM\Table(
 	name: 'fb_security_policies',
 	indexes: [
-		new ORM\Index(columns: ['p_type'], name: 'p_type_idx'),
+		new ORM\Index(columns: ['policy_type'], name: 'policy_type_idx'),
 	],
 	options: [
 		'collate' => 'utf8mb4_general_ci',
@@ -34,8 +34,7 @@ use Ramsey\Uuid;
 	],
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'policy_type', type: 'string', length: 100)]
-#[ORM\MappedSuperclass]
+#[ORM\DiscriminatorColumn(name: 'policy_policy_type', type: 'string', length: 100)]
 class Policy implements DoctrineCrud\Entities\IEntity
 {
 
@@ -46,7 +45,7 @@ class Policy implements DoctrineCrud\Entities\IEntity
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(
-		name: 'p_type',
+		name: 'policy_type',
 		type: 'string',
 		nullable: false,
 		enumType: Types\PolicyType::class,
@@ -54,27 +53,27 @@ class Policy implements DoctrineCrud\Entities\IEntity
 	protected Types\PolicyType $type;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'v0', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'policy_v0', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v0 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'v1', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'policy_v1', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v1 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'v2', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'policy_v2', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v2 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'v3', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'policy_v3', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v3 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'v4', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'policy_v4', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v4 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'v5', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'policy_v5', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v5 = null;
 
 	public function __construct(
@@ -99,9 +98,9 @@ class Policy implements DoctrineCrud\Entities\IEntity
 		return $this->id;
 	}
 
-	public function getType(): string
+	public function getType(): Types\PolicyType
 	{
-		return $this->type->value;
+		return $this->type;
 	}
 
 	public function getV0(): string|null
@@ -162,6 +161,23 @@ class Policy implements DoctrineCrud\Entities\IEntity
 	public function setV5(string|null $v5): void
 	{
 		$this->v5 = $v5;
+	}
+
+	/**
+	 * @return array<string, string|null>
+	 */
+	public function toArray(): array
+	{
+		return [
+			'id' => $this->id->toString(),
+			'type' => $this->type->value,
+			'v0' => $this->v0,
+			'v1' => $this->v1,
+			'v2' => $this->v2,
+			'v3' => $this->v3,
+			'v4' => $this->v4,
+			'v5' => $this->v5,
+		];
 	}
 
 }
