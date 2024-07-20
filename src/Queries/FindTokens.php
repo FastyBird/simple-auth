@@ -36,10 +36,10 @@ class FindTokens extends DoctrineOrmQuery\QueryObject
 {
 
 	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $filter = [];
+	protected array $filter = [];
 
 	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $select = [];
+	protected array $select = [];
 
 	public function byId(Uuid\UuidInterface $id): void
 	{
@@ -73,7 +73,7 @@ class FindTokens extends DoctrineOrmQuery\QueryObject
 	/**
 	 * @param ORM\EntityRepository<T> $repository
 	 */
-	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
+	protected function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
 	{
 		$qb = $repository->createQueryBuilder('t');
 
