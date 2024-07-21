@@ -2,8 +2,8 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\Middleware;
 
-use Casbin;
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Middleware;
 use FastyBird\SimpleAuth\Security;
 use FastyBird\SimpleAuth\Tests\Cases\Unit\BaseTestCase;
@@ -18,12 +18,13 @@ final class UserMiddlewareTest extends BaseTestCase
 
 	/**
 	 * @throws DI\MissingServiceException
+	 * @throws Exceptions\InvalidState
 	 *
 	 * @dataProvider signIn
 	 */
 	public function testAllowedPermission(string $url, string $method, string $token, string $id): void
 	{
-		$enforcer = $this->container->getByType(Casbin\Enforcer::class);
+		$enforcerFactory = $this->container->getByType(Security\EnforcerFactory::class);
 
 		$router = $this->createRouter();
 
@@ -41,7 +42,7 @@ final class UserMiddlewareTest extends BaseTestCase
 
 		self::assertSame($id, (string) $user->getId());
 		self::assertSame([SimpleAuth\Constants::ROLE_ADMINISTRATOR], $user->getRoles());
-		self::assertTrue($enforcer->hasRoleForUser(
+		self::assertTrue($enforcerFactory->getEnforcer()->hasRoleForUser(
 			$user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
 			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		));

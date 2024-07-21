@@ -7,6 +7,7 @@ use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Models;
 use FastyBird\SimpleAuth\Queries;
+use FastyBird\SimpleAuth\Security;
 use FastyBird\SimpleAuth\Tests\Cases\Unit\DbTestCase;
 use FastyBird\SimpleAuth\Tests\Fixtures;
 use FastyBird\SimpleAuth\Types;
@@ -42,15 +43,19 @@ final class DatabaseTest extends DbTestCase
 
 		$parentId = Uuid\Uuid::fromString('ff11f4fd-c06b-40a2-9a79-6dd3e3a10373');
 
-		$enforcer = $this->container->getByType(Casbin\CachedEnforcer::class);
+		$enforcerFactory = $this->container->getByType(Security\EnforcerFactory::class);
 
 		self::assertSame(
 			['visitor', 'administrator'],
-			$enforcer->getAllRoles(),
+			$enforcerFactory->getEnforcer()->getAllRoles(),
 		);
 
-		self::assertFalse($enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'));
-		self::assertTrue($enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data3', 'read'));
+		self::assertFalse(
+			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
+		);
+		self::assertTrue(
+			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data3', 'read'),
+		);
 
 		$createdPolicy = $manager->create(Utils\ArrayHash::from([
 			'entity' => Fixtures\Entities\TestPolicyEntity::class,
@@ -68,9 +73,15 @@ final class DatabaseTest extends DbTestCase
 
 		self::assertNotNull($foundPolicy);
 
-		self::assertTrue($enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'));
+		self::assertTrue(
+			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
+		);
 
-		$enforcer->deletePermissionForUser('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read');
+		$enforcerFactory->getEnforcer()->deletePermissionForUser(
+			'2784d750-f085-4580-8525-4d622face83d',
+			'data2',
+			'read',
+		);
 
 		$findPolicy = new Queries\FindPolicies();
 		$findPolicy->byId($createdPolicy->getId());
@@ -79,14 +90,16 @@ final class DatabaseTest extends DbTestCase
 
 		self::assertNull($foundPolicy);
 
-		self::assertFalse($enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'));
+		self::assertFalse(
+			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
+		);
 
-		$enforcer->addRoleForUser('2784d750-f085-4580-8525-4d622face83d', 'new_role');
+		$enforcerFactory->getEnforcer()->addRoleForUser('2784d750-f085-4580-8525-4d622face83d', 'new_role');
 
 		self::assertEqualsCanonicalizing([
 			'new_role',
 			'visitor',
-		], $enforcer->getRolesForUser('2784d750-f085-4580-8525-4d622face83d'));
+		], $enforcerFactory->getEnforcer()->getRolesForUser('2784d750-f085-4580-8525-4d622face83d'));
 
 		$findPolices = new Queries\FindPolicies();
 

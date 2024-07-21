@@ -15,7 +15,6 @@
 
 namespace FastyBird\SimpleAuth\Security;
 
-use Casbin;
 use Closure;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
@@ -46,7 +45,7 @@ class User
 
 	public function __construct(
 		protected readonly Security\IUserStorage $storage,
-		protected readonly Casbin\CachedEnforcer $enforcer,
+		protected readonly Security\EnforcerFactory $enforcerFactory,
 		protected readonly Security\IAuthenticator|null $authenticator = null,
 	)
 	{
@@ -101,9 +100,12 @@ class User
 		return $this->storage->isAuthenticated();
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	public function isInRole(string $role): bool
 	{
-		return $this->enforcer->hasRoleForUser(
+		return $this->enforcerFactory->getEnforcer()->hasRoleForUser(
 			$this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
 			$role,
 		);
@@ -111,6 +113,8 @@ class User
 
 	/**
 	 * @return array<string>
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function getRoles(): array
 	{
@@ -118,7 +122,9 @@ class User
 			return [SimpleAuth\Constants::ROLE_ANONYMOUS];
 		}
 
-		return $this->enforcer->getRolesForUser($this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS);
+		return $this->enforcerFactory->getEnforcer()->getRolesForUser(
+			$this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+		);
 	}
 
 }
