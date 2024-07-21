@@ -20,6 +20,8 @@ use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth\Entities;
+use FastyBird\SimpleAuth\Exceptions;
+use FastyBird\SimpleAuth\Security;
 use Nette;
 use function count;
 
@@ -38,7 +40,7 @@ final class Policy implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly Casbin\CachedEnforcer $enforcer,
+		private readonly Security\EnforcerFactory $enforcerFactory,
 	)
 	{
 	}
@@ -54,6 +56,8 @@ final class Policy implements Common\EventSubscriber
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -65,12 +69,19 @@ final class Policy implements Common\EventSubscriber
 			return;
 		}
 
-		$this->enforcer->invalidateCache();
-		$this->enforcer->loadPolicy();
+		$enforcer = $this->enforcerFactory->getEnforcer();
+
+		if ($enforcer instanceof Casbin\CachedEnforcer) {
+			$enforcer->invalidateCache();
+		}
+
+		$enforcer->loadPolicy();
 	}
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -95,12 +106,19 @@ final class Policy implements Common\EventSubscriber
 			return;
 		}
 
-		$this->enforcer->invalidateCache();
-		$this->enforcer->loadPolicy();
+		$enforcer = $this->enforcerFactory->getEnforcer();
+
+		if ($enforcer instanceof Casbin\CachedEnforcer) {
+			$enforcer->invalidateCache();
+		}
+
+		$enforcer->loadPolicy();
 	}
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -112,8 +130,13 @@ final class Policy implements Common\EventSubscriber
 			return;
 		}
 
-		$this->enforcer->invalidateCache();
-		$this->enforcer->loadPolicy();
+		$enforcer = $this->enforcerFactory->getEnforcer();
+
+		if ($enforcer instanceof Casbin\CachedEnforcer) {
+			$enforcer->invalidateCache();
+		}
+
+		$enforcer->loadPolicy();
 	}
 
 }

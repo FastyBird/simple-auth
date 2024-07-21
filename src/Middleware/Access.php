@@ -50,6 +50,7 @@ final class Access implements MiddlewareInterface
 	/**
 	 * @throws Exceptions\ForbiddenAccess
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	public function process(
 		ServerRequestInterface $request,

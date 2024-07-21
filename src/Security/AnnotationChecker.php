@@ -50,6 +50,7 @@ class AnnotationChecker
 	 * @param class-string $controllerClass
 	 *
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	public function checkAccess(
 		User|null $user,
@@ -82,6 +83,7 @@ class AnnotationChecker
 
 	/**
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	private function isAllowed(User|null $user, Reflector $element): bool
 	{
@@ -175,6 +177,9 @@ class AnnotationChecker
 		return true;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
 	private function checkRoles(User $user, Reflector $element): bool
 	{
 		// Check if element has @Secured\Role annotation

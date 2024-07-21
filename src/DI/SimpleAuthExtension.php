@@ -94,6 +94,9 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		]);
 	}
 
+	/**
+	 * @throws Exceptions\Logical
+	 */
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
@@ -152,6 +155,49 @@ class SimpleAuthExtension extends DI\CompilerExtension
 			->setType(Security\User::class);
 
 		/**
+		 * Casbin
+		 */
+
+		if ($configuration->enable->casbin->database) {
+			$adapter = $builder->addDefinition(
+				$this->prefix('casbin.adapter'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(SimpleAuth\Models\Casbin\Adapter::class)
+				->setArguments([
+					'policyFile' => $configuration->casbin->policy,
+				]);
+
+			$builder->addDefinition($this->prefix('casbin.subscriber'), new DI\Definitions\ServiceDefinition())
+				->setType(Subscribers\Policy::class);
+		} else {
+			$policyFile = $configuration->casbin->policy;
+
+			if (!is_string($policyFile) || !is_file($policyFile)) {
+				throw new Exceptions\Logical('Casbin policy file is not configured');
+			}
+
+			$adapter = $builder->addDefinition($this->prefix('casbin.adapter'), new DI\Definitions\ServiceDefinition())
+				->setType(Casbin\Persist\Adapters\FileAdapter::class)
+				->setArguments([
+					'filePath' => $policyFile,
+				]);
+		}
+
+		$modelFile = $configuration->casbin->model;
+
+		if (!is_string($modelFile) || !is_file($modelFile)) {
+			throw new Exceptions\Logical('Casbin model file is not configured');
+		}
+
+		$builder->addDefinition($this->prefix('casbin.enforcerFactory'), new DI\Definitions\ServiceDefinition())
+			->setType(Security\EnforcerFactory::class)
+			->setArguments([
+				'modelFile' => $modelFile,
+				'adapter' => $adapter,
+			]);
+
+		/**
 		 * Web server extension
 		 */
 
@@ -206,7 +252,6 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 	/**
 	 * @throws DI\MissingServiceException
-	 * @throws Exceptions\Logical
 	 */
 	public function beforeCompile(): void
 	{
@@ -215,49 +260,6 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
-
-		/**
-		 * Casbin
-		 */
-
-		if ($configuration->enable->casbin->database) {
-			$adapter = $builder->addDefinition(
-				$this->prefix('casbin.adapter'),
-				new DI\Definitions\ServiceDefinition(),
-			)
-				->setType(SimpleAuth\Models\Casbin\Adapter::class)
-				->setArguments([
-					'policyFile' => $configuration->casbin->policy,
-				]);
-
-			$builder->addDefinition($this->prefix('casbin.subscriber'), new DI\Definitions\ServiceDefinition())
-				->setType(Subscribers\Policy::class);
-		} else {
-			$policyFile = $configuration->casbin->policy;
-
-			if (!is_string($policyFile) || !is_file($policyFile)) {
-				throw new Exceptions\Logical('Casbin policy file is not configured');
-			}
-
-			$adapter = $builder->addDefinition($this->prefix('casbin.adapter'), new DI\Definitions\ServiceDefinition())
-				->setType(Casbin\Persist\Adapters\FileAdapter::class)
-				->setArguments([
-					'filePath' => $policyFile,
-				]);
-		}
-
-		$modelFile = $configuration->casbin->model;
-
-		if (!is_string($modelFile) || !is_file($modelFile)) {
-			throw new Exceptions\Logical('Casbin model file is not configured');
-		}
-
-		$builder->addDefinition($this->prefix('casbin.enforcer'), new DI\Definitions\ServiceDefinition())
-			->setType(Casbin\CachedEnforcer::class)
-			->setArguments([
-				$modelFile,
-				$adapter,
-			]);
 
 		/**
 		 * Doctrine extension
