@@ -40,6 +40,7 @@ final class UserMiddlewareTest extends BaseTestCase
 		$user = $this->container->getByType(Security\User::class);
 
 		self::assertSame($id, (string) $user->getId());
+		self::assertSame([SimpleAuth\Constants::ROLE_ADMINISTRATOR], $user->getRoles());
 		self::assertTrue($enforcer->hasRoleForUser(
 			$user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
 			SimpleAuth\Constants::ROLE_ADMINISTRATOR,

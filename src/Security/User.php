@@ -15,7 +15,9 @@
 
 namespace FastyBird\SimpleAuth\Security;
 
+use Casbin;
 use Closure;
+use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Security;
 use Nette;
@@ -42,17 +44,12 @@ class User
 	/** @var array<Closure(Security\User $user): void> */
 	public array $onLoggedOut = [];
 
-	private IUserStorage $storage;
-
-	private IAuthenticator|null $authenticator;
-
 	public function __construct(
-		Security\IUserStorage $storage,
-		Security\IAuthenticator|null $authenticator = null,
+		protected readonly Security\IUserStorage $storage,
+		protected readonly Casbin\Enforcer $enforcer,
+		protected readonly Security\IAuthenticator|null $authenticator = null,
 	)
 	{
-		$this->storage = $storage;
-		$this->authenticator = $authenticator;
 	}
 
 	public function getId(): Uuid\UuidInterface|null
@@ -102,6 +99,26 @@ class User
 	public function isLoggedIn(): bool
 	{
 		return $this->storage->isAuthenticated();
+	}
+
+	public function isInRole(string $role): bool
+	{
+		return $this->enforcer->hasRoleForUser(
+			$this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+			$role,
+		);
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getRoles(): array
+	{
+		if (!$this->isLoggedIn()) {
+			return [SimpleAuth\Constants::ROLE_ANONYMOUS];
+		}
+
+		return $this->enforcer->getRolesForUser($this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS);
 	}
 
 }
