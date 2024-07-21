@@ -42,7 +42,7 @@ final class DatabaseTest extends DbTestCase
 
 		$parentId = Uuid\Uuid::fromString('ff11f4fd-c06b-40a2-9a79-6dd3e3a10373');
 
-		$enforcer = $this->container->getByType(Casbin\Enforcer::class);
+		$enforcer = $this->container->getByType(Casbin\CachedEnforcer::class);
 
 		self::assertSame(
 			['visitor', 'administrator'],

@@ -38,7 +38,7 @@ final class Policy implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly Casbin\Enforcer $enforcer,
+		private readonly Casbin\CachedEnforcer $enforcer,
 	)
 	{
 	}
@@ -65,6 +65,7 @@ final class Policy implements Common\EventSubscriber
 			return;
 		}
 
+		$this->enforcer->invalidateCache();
 		$this->enforcer->loadPolicy();
 	}
 
@@ -94,6 +95,7 @@ final class Policy implements Common\EventSubscriber
 			return;
 		}
 
+		$this->enforcer->invalidateCache();
 		$this->enforcer->loadPolicy();
 	}
 
@@ -110,6 +112,7 @@ final class Policy implements Common\EventSubscriber
 			return;
 		}
 
+		$this->enforcer->invalidateCache();
 		$this->enforcer->loadPolicy();
 	}
 

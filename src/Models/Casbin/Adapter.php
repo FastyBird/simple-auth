@@ -17,6 +17,7 @@ namespace FastyBird\SimpleAuth\Models\Casbin;
 
 use Casbin\Model as CasbinModel;
 use Casbin\Persist as CasbinPersist;
+use Doctrine\DBAL;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Models;
 use FastyBird\SimpleAuth\Queries;
@@ -29,10 +30,10 @@ use function array_filter;
 use function count;
 use function implode;
 use function intval;
+use function is_file;
 use function range;
 use function strval;
 use function trim;
-use function var_dump;
 
 /**
  * Casbin database adapter
@@ -46,11 +47,19 @@ class Adapter implements CasbinPersist\Adapter
 
 	use CasbinPersist\AdapterHelper;
 
+	private CasbinPersist\Adapter|null $fallback;
+
+	private bool $useFallback = false;
+
 	public function __construct(
 		private readonly Models\Policies\Repository $policiesRepository,
 		private readonly Models\Policies\Manager $policiesManager,
+		string|null $policyFile = null,
 	)
 	{
+		$this->fallback = $policyFile !== null && is_file($policyFile)
+			? new CasbinPersist\Adapters\FileAdapter($policyFile)
+			: null;
 	}
 
 	/**
@@ -77,9 +86,17 @@ class Adapter implements CasbinPersist\Adapter
 	 */
 	public function loadPolicy(CasbinModel\Model $model): void
 	{
-		$findPoliciesQuery = new Queries\FindPolicies();
+		try {
+			$findPoliciesQuery = new Queries\FindPolicies();
 
-		$policies = $this->policiesRepository->findAllBy($findPoliciesQuery);
+			$policies = $this->policiesRepository->findAllBy($findPoliciesQuery);
+		} catch (DBAL\Driver\Exception) {
+			$this->fallback?->loadPolicy($model);
+
+			$this->useFallback = true;
+
+			return;
+		}
 
 		foreach ($policies as $policy) {
 			$data = [
@@ -104,6 +121,12 @@ class Adapter implements CasbinPersist\Adapter
 	 */
 	public function savePolicy(CasbinModel\Model $model): void
 	{
+		if ($this->useFallback) {
+			$this->fallback?->savePolicy($model);
+
+			return;
+		}
+
 		foreach ($model['p'] ?? [] as $type => $ast) {
 			foreach ($ast->policy as $rule) {
 				$this->savePolicyLine($type, $rule);
@@ -123,6 +146,12 @@ class Adapter implements CasbinPersist\Adapter
 	 */
 	public function addPolicy(string $sec, string $ptype, array $rule): void
 	{
+		if ($this->useFallback) {
+			$this->fallback?->addPolicy($sec, $ptype, $rule);
+
+			return;
+		}
+
 		$this->savePolicyLine($ptype, $rule);
 	}
 
@@ -134,6 +163,12 @@ class Adapter implements CasbinPersist\Adapter
 	 */
 	public function removePolicy(string $sec, string $ptype, array $rule): void
 	{
+		if ($this->useFallback) {
+			$this->fallback?->removePolicy($sec, $ptype, $rule);
+
+			return;
+		}
+
 		$findPoliciesQuery = new Queries\FindPolicies();
 		$findPoliciesQuery->byType(PolicyType::from($ptype));
 
@@ -156,7 +191,12 @@ class Adapter implements CasbinPersist\Adapter
 	 */
 	public function removeFilteredPolicy(string $sec, string $ptype, int $fieldIndex, string ...$fieldValues): void
 	{
-		var_dump('REMOVE 2');
+		if ($this->useFallback) {
+			$this->fallback?->removeFilteredPolicy($sec, $ptype, $fieldIndex, ...$fieldValues);
+
+			return;
+		}
+
 		$findPoliciesQuery = new Queries\FindPolicies();
 		$findPoliciesQuery->byType(PolicyType::from($ptype));
 

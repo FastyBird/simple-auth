@@ -49,7 +49,7 @@ use const PREG_SPLIT_NO_EMPTY;
 class AnnotationChecker
 {
 
-	public function __construct(private readonly Casbin\Enforcer $enforcer)
+	public function __construct(private readonly Casbin\CachedEnforcer $enforcer)
 	{
 	}
 
