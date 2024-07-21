@@ -184,7 +184,10 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		}
 
 		if ($configuration->enable->casbin->database) {
-			$builder->addDefinition($this->prefix('doctrine.policiesRepository'), new DI\Definitions\ServiceDefinition())
+			$builder->addDefinition(
+				$this->prefix('doctrine.policiesRepository'),
+				new DI\Definitions\ServiceDefinition(),
+			)
 				->setType(SimpleAuth\Models\Policies\Repository::class);
 
 			$builder->addDefinition($this->prefix('doctrine.policiesManager'), new DI\Definitions\ServiceDefinition())
