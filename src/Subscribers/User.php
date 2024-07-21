@@ -45,7 +45,7 @@ final class User implements Common\EventSubscriber
 	 */
 	public function __construct(
 		private readonly Mapping\Driver\Owner $driver,
-		private readonly Security\User $user,
+		private readonly Security\IUserStorage $userStorage,
 	)
 	{
 	}
@@ -178,7 +178,7 @@ final class User implements Common\EventSubscriber
 
 		// @phpstan-ignore-next-line
 		$oldValue = $property->getValue($object);
-		$newValue = $this->user->getId()?->toString();
+		$newValue = $this->userStorage->getIdentity()?->getId()->toString();
 
 		// @phpstan-ignore-next-line
 		$property->setValue($object, $newValue);
