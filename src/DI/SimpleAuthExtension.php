@@ -151,9 +151,6 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('security.annotationChecker'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\AnnotationChecker::class);
 
-		$builder->addDefinition($this->prefix('security.user'), new DI\Definitions\ServiceDefinition())
-			->setType(Security\User::class);
-
 		/**
 		 * Casbin
 		 */
@@ -260,6 +257,23 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$configuration = $this->getConfig();
 		assert($configuration instanceof stdClass);
+
+		/**
+		 * Security
+		 */
+
+		$userContextServiceName = $builder->getByType(Security\User::class);
+
+		$userContext = null;
+
+		if ($userContextServiceName !== null) {
+			$userContext = $builder->getDefinition($userContextServiceName);
+		}
+
+		if ($userContext === null) {
+			$builder->addDefinition($this->prefix('security.user'), new DI\Definitions\ServiceDefinition())
+				->setType(Security\User::class);
+		}
 
 		/**
 		 * Doctrine extension
