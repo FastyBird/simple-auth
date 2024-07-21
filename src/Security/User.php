@@ -46,7 +46,7 @@ class User
 
 	public function __construct(
 		protected readonly Security\IUserStorage $storage,
-		protected readonly Casbin\Enforcer $enforcer,
+		protected readonly Casbin\CachedEnforcer $enforcer,
 		protected readonly Security\IAuthenticator|null $authenticator = null,
 	)
 	{
