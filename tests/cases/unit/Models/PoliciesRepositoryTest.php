@@ -18,6 +18,13 @@ use Ramsey\Uuid;
 final class PoliciesRepositoryTest extends BaseTestCase
 {
 
+	public function setUp(): void
+	{
+		$this->registerNeonConfigurationFile(__DIR__ . '/database.neon');
+
+		parent::setUp();
+	}
+
 	/**
 	 * @throws DI\MissingServiceException
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
