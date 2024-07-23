@@ -1,0 +1,41 @@
+<?php declare(strict_types=1);
+
+namespace Casbin\Persist;
+
+interface UpdatableAdapter extends Adapter
+{
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, string|null> $oldRule
+     * @param array<int, string|null> $newPolicy
+     *
+     * @return void
+     */
+    public function updatePolicy(string $sec, string $ptype, array $oldRule, array $newPolicy): void;
+
+    /**
+     * UpdatePolicies updates some policy rules to storage, like db, redis.
+     *
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, array<int, string|null>> $oldRules
+     * @param array<int, array<int, string|null>> $newRules
+     *
+     * @return void
+     */
+    public function updatePolicies(string $sec, string $ptype, array $oldRules, array $newRules): void;
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, array<int, string|null>> $newPolicies
+     * @param int $fieldIndex
+     * @param string ...$fieldValues
+     *
+     * @return array<int, array<int, string|null>>
+     */
+    public function updateFilteredPolicies(string $sec, string $ptype, array $newPolicies, int $fieldIndex, string ...$fieldValues): array;
+
+}

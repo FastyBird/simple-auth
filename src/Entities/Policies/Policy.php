@@ -34,9 +34,14 @@ use Ramsey\Uuid;
 	],
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorMap([
+	self::TYPE => self::class,
+])]
 #[ORM\DiscriminatorColumn(name: 'policy_policy_type', type: 'string', length: 100)]
 class Policy implements DoctrineCrud\Entities\IEntity
 {
+
+	public const TYPE = 'policy';
 
 	#[ORM\Id]
 	#[ORM\Column(name: 'policy_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]

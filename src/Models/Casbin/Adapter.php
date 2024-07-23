@@ -10,28 +10,27 @@
  * @subpackage     Models
  * @since          0.1.0
  *
- * @date           09.07.20
+ * @date           09.07.24
  */
 
 namespace FastyBird\SimpleAuth\Models\Casbin;
 
 use Casbin\Model as CasbinModel;
 use Casbin\Persist as CasbinPersist;
+use Closure;
 use Doctrine\DBAL;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Models;
-use FastyBird\SimpleAuth\Queries;
-use FastyBird\SimpleAuth\Types\PolicyType;
-use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
-use Nette\Utils\ArrayHash;
+use FastyBird\SimpleAuth\Types;
+use Ramsey\Uuid;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_filter;
-use function count;
+use function array_values;
 use function implode;
 use function intval;
-use function is_file;
-use function range;
+use function is_string;
 use function strval;
 use function trim;
 
@@ -42,177 +41,336 @@ use function trim;
  * @subpackage     Models
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Adapter implements CasbinPersist\Adapter
+class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapter, CasbinPersist\UpdatableAdapter
 {
 
 	use CasbinPersist\AdapterHelper;
 
-	private CasbinPersist\Adapter|null $fallback;
+	private string $policyTableName = 'fb_security_policies';
 
-	private bool $useFallback = false;
+	private bool $filtered = false;
 
-	public function __construct(
-		private readonly Models\Policies\Repository $policiesRepository,
-		private readonly Models\Policies\Manager $policiesManager,
-		string|null $policyFile = null,
-	)
+	/** @var array<string> */
+	private array $columns = ['policy_type', 'policy_v0', 'policy_v1', 'policy_v2', 'policy_v3', 'policy_v4', 'policy_v5'];
+
+	public function __construct(private readonly DBAL\Connection $connection)
 	{
-		$this->fallback = $policyFile !== null && is_file($policyFile)
-			? new CasbinPersist\Adapters\FileAdapter($policyFile)
-			: null;
 	}
 
 	/**
-	 * @param array<string, string|null> $rule
+	 * @param array<int, string|null> $rule
 	 *
+	 * @throws DBAL\Exception
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function savePolicyLine(string $ptype, array $rule): void
+	public function savePolicyLine(string $pType, array $rule): DBAL\Result|int|string
 	{
-		$data = [
-			'type' => PolicyType::from($ptype),
-		];
+		$queryBuilder = $this->connection->createQueryBuilder();
+		$queryBuilder
+			->insert($this->policyTableName)
+			->values([
+				'policy_id' => '?',
+				'policy_type' => '?',
+				'policy_policy_type' => '?',
+			])
+			->setParameter(0, Uuid\Uuid::uuid4(), Uuid\Doctrine\UuidBinaryType::NAME)
+			->setParameter(1, Types\PolicyType::from($pType)->value)
+			->setParameter(2, 'policy');
 
 		foreach ($rule as $key => $value) {
-			$data['v' . strval($key)] = $value;
+			$queryBuilder
+				->setValue('policy_v' . strval($key), '?')
+				->setParameter(intval($key) + 3, $value);
 		}
 
-		$this->policiesManager->create(ArrayHash::from($data));
+		return $queryBuilder->executeQuery();
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws DBAL\Exception
 	 */
 	public function loadPolicy(CasbinModel\Model $model): void
 	{
-		try {
-			$findPoliciesQuery = new Queries\FindPolicies();
+		$queryBuilder = $this->connection->createQueryBuilder();
 
-			$policies = $this->policiesRepository->findAllBy($findPoliciesQuery);
-		} catch (DBAL\Driver\Exception) {
-			$this->fallback?->loadPolicy($model);
+		$stmt = $queryBuilder
+			->select('policy_type', 'policy_v0', 'policy_v1', 'policy_v2', 'policy_v3', 'policy_v4', 'policy_v5')
+			->from($this->policyTableName)
+			->executeQuery();
 
-			$this->useFallback = true;
-
-			return;
-		}
-
-		foreach ($policies as $policy) {
-			$data = [
-				$policy->getType()->value,
-				$policy->getV0(),
-				$policy->getV1(),
-				$policy->getV2(),
-				$policy->getV3(),
-				$policy->getV4(),
-				$policy->getV5(),
-			];
-
-			$line = implode(', ', array_filter($data, static fn ($val) => $val != '' && $val !== null));
-
-			$this->loadPolicyLine(trim($line), $model);
+		while ($row = $stmt->fetchAssociative()) {
+			/** @var array<int, string|null> $row */
+			$this->loadPolicyArray($this->filterRule($row), $model);
 		}
 	}
 
 	/**
+	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidState
+	 */
+	public function loadFilteredPolicy(CasbinModel\Model $model, $filter): void
+	{
+		$queryBuilder = $this->connection->createQueryBuilder();
+		$queryBuilder->select(
+			'policy_type',
+			'policy_v0',
+			'policy_v1',
+			'policy_v2',
+			'policy_v3',
+			'policy_v4',
+			'policy_v5',
+		);
+
+		if (is_string($filter) || $filter instanceof DBAL\Query\Expression\CompositeExpression) {
+			$queryBuilder->where($filter);
+		} elseif ($filter instanceof Filter) {
+			$queryBuilder->where($filter->getPredicates());
+			foreach ($filter->getParams() as $key => $value) {
+				$queryBuilder->setParameter($key, $value);
+			}
+		} elseif ($filter instanceof Closure) {
+			$filter($queryBuilder);
+		} else {
+			throw new Exceptions\InvalidState('Invalid filter type');
+		}
+
+		$stmt = $queryBuilder->from($this->policyTableName)->executeQuery();
+
+		while ($row = $stmt->fetchAssociative()) {
+			/** @var array<int, string|null> $row */
+			$line = implode(', ', array_filter($row, static fn ($val) => $val != '' && $val !== null));
+			$this->loadPolicyLine(trim($line), $model);
+		}
+
+		$this->setFiltered(true);
+	}
+
+	/**
+	 * @throws DBAL\Exception
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function savePolicy(CasbinModel\Model $model): void
 	{
-		if ($this->useFallback) {
-			$this->fallback?->savePolicy($model);
-
-			return;
-		}
-
-		foreach ($model['p'] ?? [] as $type => $ast) {
+		foreach ($model['p'] ?? [] as $pType => $ast) {
 			foreach ($ast->policy as $rule) {
-				$this->savePolicyLine($type, $rule);
+				$this->savePolicyLine($pType, $rule);
 			}
 		}
 
-		foreach ($model['g'] ?? [] as $type => $ast) {
+		foreach ($model['g'] ?? [] as $pType => $ast) {
 			foreach ($ast->policy as $rule) {
-				$this->savePolicyLine($type, $rule);
+				$this->savePolicyLine($pType, $rule);
 			}
 		}
 	}
 
 	/**
+	 * @param array<int, string|null> $rule
+	 *
+	 * @throws DBAL\Exception
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function addPolicy(string $sec, string $ptype, array $rule): void
+	public function addPolicy(string $sec, string $pType, array $rule): void
 	{
-		if ($this->useFallback) {
-			$this->fallback?->addPolicy($sec, $ptype, $rule);
-
-			return;
-		}
-
-		$this->savePolicyLine($ptype, $rule);
+		$this->savePolicyLine($pType, $rule);
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
-	 * @throws Exceptions\InvalidState
+	 * @param array<int, array<int, string|null>> $rules
+	 *
+	 * @throws DBAL\Exception
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function removePolicy(string $sec, string $ptype, array $rule): void
+	public function addPolicies(string $sec, string $pType, array $rules): void
 	{
-		if ($this->useFallback) {
-			$this->fallback?->removePolicy($sec, $ptype, $rule);
+		$this->connection->transactional(function () use ($pType, $rules): void {
+			foreach ($rules as $rule) {
+				$this->savePolicyLine($pType, $rule);
+			}
+		});
+	}
 
-			return;
+	/**
+	 * @param array<int, string|null> $rule
+	 *
+	 * @throws DBAL\Exception
+	 */
+	public function removePolicy(string $sec, string $pType, array $rule): void
+	{
+		$this->removePolicyLine($pType, $rule);
+	}
+
+	/**
+	 * @param array<int, array<int, string|null>> $rules
+	 *
+	 * @throws Throwable
+	 */
+	public function removePolicies(string $sec, string $pType, array $rules): void
+	{
+		$this->connection->transactional(function () use ($pType, $rules): void {
+			foreach ($rules as $rule) {
+				$this->removePolicyLine($pType, $rule);
+			}
+		});
+	}
+
+	/**
+	 * @throws Throwable
+	 */
+	public function removeFilteredPolicy(string $sec, string $pType, int $fieldIndex, string ...$fieldValues): void
+	{
+		$this->removeFiltered($pType, $fieldIndex, ...$fieldValues);
+	}
+
+	/**
+	 * @param array<int, string|null> $oldRule
+	 * @param array<int, string|null> $newPolicy
+	 *
+	 * @throws DBAL\Exception
+	 */
+	public function updatePolicy(string $sec, string $pType, array $oldRule, array $newPolicy): void
+	{
+		$queryBuilder = $this->connection->createQueryBuilder();
+		$queryBuilder->where('policy_type = :ptype')->setParameter('ptype', $pType);
+
+		foreach ($oldRule as $key => $value) {
+			$placeholder = 'w' . strval($key);
+			$queryBuilder->andWhere('policy_v' . strval($key) . ' = :' . $placeholder)->setParameter(
+				$placeholder,
+				$value,
+			);
 		}
 
-		$findPoliciesQuery = new Queries\FindPolicies();
-		$findPoliciesQuery->byType(PolicyType::from($ptype));
+		foreach ($newPolicy as $key => $value) {
+			$placeholder = 's' . strval($key);
+			$queryBuilder->set('policy_v' . strval($key), ':' . $placeholder)->setParameter($placeholder, $value);
+		}
+
+		$queryBuilder->update($this->policyTableName);
+
+		$queryBuilder->executeQuery();
+	}
+
+	/**
+	 * @param array<int, array<int, string|null>> $oldRules
+	 * @param array<int, array<int, string|null>> $newRules
+	 */
+	public function updatePolicies(string $sec, string $pType, array $oldRules, array $newRules): void
+	{
+		$this->connection->transactional(function () use ($sec, $pType, $oldRules, $newRules): void {
+			foreach ($oldRules as $i => $oldRule) {
+				$this->updatePolicy($sec, $pType, $oldRule, $newRules[$i]);
+			}
+		});
+	}
+
+	/**
+	 * @param array<int, array<int, string|null>> $newRules
+	 *
+	 * @return array<int, array<int, string|null>>
+	 *
+	 * @throws Throwable
+	 */
+	public function updateFilteredPolicies(
+		string $sec,
+		string $pType,
+		array $newRules,
+		int $fieldIndex,
+		string|null ...$fieldValues,
+	): array
+	{
+		$oldRules = [];
+
+		$this->connection->transactional(
+			function () use ($sec, $pType, $newRules, $fieldIndex, $fieldValues, &$oldRules): void {
+				$oldRules = $this->removeFiltered($pType, $fieldIndex, ...$fieldValues);
+
+				$this->addPolicies($sec, $pType, $newRules);
+			},
+		);
+
+		return $oldRules;
+	}
+
+	/**
+	 * @param array<int, string|null> $rule
+	 *
+	 * @return array<int, string>
+	 */
+	public function filterRule(array $rule): array
+	{
+		$rule = array_values($rule);
+
+		return array_filter($rule, static fn ($value): bool => $value !== null && $value !== '');
+	}
+
+	public function isFiltered(): bool
+	{
+		return $this->filtered;
+	}
+
+	public function setFiltered(bool $filtered): void
+	{
+		$this->filtered = $filtered;
+	}
+
+	/**
+	 * @param array<int, string|null> $rule
+	 *
+	 * @throws DBAL\Exception
+	 */
+	private function removePolicyLine(string $pType, array $rule): void
+	{
+		$queryBuilder = $this->connection->createQueryBuilder();
+		$queryBuilder->where('policy_type = ?')->setParameter(0, $pType);
 
 		foreach ($rule as $key => $value) {
-			$findPoliciesQuery->byValue(intval($key), $value);
+			$queryBuilder->andWhere('policy_v' . strval($key) . ' = ?')->setParameter($key + 1, $value);
 		}
 
-		$policies = $this->policiesRepository->findAllBy($findPoliciesQuery);
-
-		foreach ($policies as $policy) {
-			$this->policiesManager->delete($policy);
-		}
+		$queryBuilder->delete($this->policyTableName)->executeQuery();
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
-	 * @throws Exceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
+	 * @return array<int, array<int, string|null>>
+	 *
+	 * @throws Throwable
 	 */
-	public function removeFilteredPolicy(string $sec, string $ptype, int $fieldIndex, string ...$fieldValues): void
+	public function removeFiltered(string $pType, int $fieldIndex, string|null ...$fieldValues): array
 	{
-		if ($this->useFallback) {
-			$this->fallback?->removeFilteredPolicy($sec, $ptype, $fieldIndex, ...$fieldValues);
+		$removedRules = [];
 
-			return;
-		}
+		$this->connection->transactional(function () use ($pType, $fieldIndex, $fieldValues, &$removedRules): void {
+			$queryBuilder = $this->connection->createQueryBuilder();
+			$queryBuilder->where('policy_type = :ptype')->setParameter('ptype', $pType);
 
-		$findPoliciesQuery = new Queries\FindPolicies();
-		$findPoliciesQuery->byType(PolicyType::from($ptype));
+			foreach ($fieldValues as $value) {
+				if ($value !== null && $value !== '') {
+					$key = 'policy_v' . strval($fieldIndex);
 
-		foreach (range(0, 5) as $value) {
-			if ($fieldIndex <= $value && $value < $fieldIndex + count($fieldValues)) {
-				if ($fieldValues[$value - $fieldIndex] != '') {
-					$findPoliciesQuery->byValue(intval($value), $fieldValues[$value - $fieldIndex]);
+					$queryBuilder
+						->andWhere($key . ' = :' . $key)
+						->setParameter($key, $value);
 				}
+
+				$fieldIndex++;
 			}
-		}
 
-		$policies = $this->policiesRepository->findAllBy($findPoliciesQuery);
+			$stmt = $queryBuilder->select(...$this->columns)->from($this->policyTableName)->executeQuery();
 
-		foreach ($policies as $policy) {
-			$this->policiesManager->delete($policy);
-		}
+			while ($row = $stmt->fetchAssociative()) {
+				/** @var array<int, string|null> $row */
+				$removedRules[] = $this->filterRule($row);
+			}
+
+			$queryBuilder->delete($this->policyTableName)->executeQuery();
+		});
+
+		return $removedRules;
 	}
 
 }

@@ -11,6 +11,7 @@ use FastyBird\SimpleAuth\Security;
 use FastyBird\SimpleAuth\Tests\Cases\Unit\DbTestCase;
 use FastyBird\SimpleAuth\Tests\Fixtures;
 use FastyBird\SimpleAuth\Types;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\DI;
 use Nette\Utils;
@@ -31,6 +32,7 @@ final class DatabaseTest extends DbTestCase
 	/**
 	 * @throws Casbin\Exceptions\CasbinException
 	 * @throws DI\MissingServiceException
+	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
@@ -45,16 +47,21 @@ final class DatabaseTest extends DbTestCase
 
 		$enforcerFactory = $this->container->getByType(Security\EnforcerFactory::class);
 
+		$enforcer = $enforcerFactory->getEnforcer();
+
 		self::assertSame(
 			['visitor', 'administrator'],
-			$enforcerFactory->getEnforcer()->getAllRoles(),
+			$enforcer->getAllRoles(),
 		);
 
+		self::assertTrue(
+			$enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data1', 'read'),
+		);
 		self::assertFalse(
-			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
+			$enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
 		);
 		self::assertTrue(
-			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data3', 'read'),
+			$enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data3', 'read'),
 		);
 
 		$createdPolicy = $manager->create(Utils\ArrayHash::from([
@@ -74,14 +81,10 @@ final class DatabaseTest extends DbTestCase
 		self::assertNotNull($foundPolicy);
 
 		self::assertTrue(
-			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
+			$enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
 		);
 
-		$enforcerFactory->getEnforcer()->deletePermissionForUser(
-			'2784d750-f085-4580-8525-4d622face83d',
-			'data2',
-			'read',
-		);
+		$manager->delete($createdPolicy);
 
 		$findPolicy = new Queries\FindPolicies();
 		$findPolicy->byId($createdPolicy->getId());
@@ -90,16 +93,18 @@ final class DatabaseTest extends DbTestCase
 
 		self::assertNull($foundPolicy);
 
+		$enforcer->loadPolicy();
+
 		self::assertFalse(
-			$enforcerFactory->getEnforcer()->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
+			$enforcer->enforce('2784d750-f085-4580-8525-4d622face83d', 'data2', 'read'),
 		);
 
-		$enforcerFactory->getEnforcer()->addRoleForUser('2784d750-f085-4580-8525-4d622face83d', 'new_role');
+		$enforcer->addRoleForUser('2784d750-f085-4580-8525-4d622face83d', 'new_role');
 
 		self::assertEqualsCanonicalizing([
 			'new_role',
 			'visitor',
-		], $enforcerFactory->getEnforcer()->getRolesForUser('2784d750-f085-4580-8525-4d622face83d'));
+		], $enforcer->getRolesForUser('2784d750-f085-4580-8525-4d622face83d'));
 
 		$findPolices = new Queries\FindPolicies();
 
@@ -249,6 +254,48 @@ final class DatabaseTest extends DbTestCase
 			},
 			$policies,
 		));
+
+		$findPolices = new Queries\FindPolicies();
+
+		$policies = $repository->findAllBy($findPolices);
+
+		self::assertCount(13, $policies);
+
+		self::assertFalse(
+			$enforcer->enforce('78bee0f3-882a-47d9-88a5-2bbd78572690', 'data1', 'read'),
+		);
+
+		$result = $enforcer->addPermissionForUser(
+			'78bee0f3-882a-47d9-88a5-2bbd78572690',
+			'data1',
+			'read',
+		);
+		self::assertTrue($result);
+
+		$enforcer->invalidateCache();
+
+		$findPolices = new Queries\FindPolicies();
+
+		$policies = $repository->findAllBy($findPolices);
+
+		self::assertCount(14, $policies);
+
+		self::assertTrue(
+			$enforcer->enforce('78bee0f3-882a-47d9-88a5-2bbd78572690', 'data1', 'read'),
+		);
+
+		$result = $enforcer->deletePermissionForUser(
+			'78bee0f3-882a-47d9-88a5-2bbd78572690',
+			'data1',
+			'read',
+		);
+		self::assertTrue($result);
+
+		$enforcer->invalidateCache();
+
+		self::assertFalse(
+			$enforcer->enforce('78bee0f3-882a-47d9-88a5-2bbd78572690', 'data1', 'read'),
+		);
 	}
 
 }

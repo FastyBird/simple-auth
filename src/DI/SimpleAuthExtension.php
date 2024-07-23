@@ -160,10 +160,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 				$this->prefix('casbin.adapter'),
 				new DI\Definitions\ServiceDefinition(),
 			)
-				->setType(SimpleAuth\Models\Casbin\Adapter::class)
-				->setArguments([
-					'policyFile' => $configuration->casbin->policy,
-				]);
+				->setType(SimpleAuth\Models\Casbin\Adapter::class);
 
 			$builder->addDefinition($this->prefix('casbin.subscriber'), new DI\Definitions\ServiceDefinition())
 				->setType(Subscribers\Policy::class);

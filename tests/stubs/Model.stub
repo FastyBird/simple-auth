@@ -1,0 +1,10 @@
+<?php declare(strict_types=1);
+
+namespace Casbin\Model;
+
+use Casbin\Config\ConfigContract;
+
+class Model
+{
+
+}
