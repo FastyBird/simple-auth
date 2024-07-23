@@ -15,7 +15,6 @@
 
 namespace FastyBird\SimpleAuth\Subscribers;
 
-use Casbin;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -71,10 +70,7 @@ final class Policy implements Common\EventSubscriber
 
 		$enforcer = $this->enforcerFactory->getEnforcer();
 
-		if ($enforcer instanceof Casbin\CachedEnforcer) {
-			$enforcer->invalidateCache();
-		}
-
+		$enforcer->invalidateCache();
 		$enforcer->loadPolicy();
 	}
 
@@ -108,10 +104,7 @@ final class Policy implements Common\EventSubscriber
 
 		$enforcer = $this->enforcerFactory->getEnforcer();
 
-		if ($enforcer instanceof Casbin\CachedEnforcer) {
-			$enforcer->invalidateCache();
-		}
-
+		$enforcer->invalidateCache();
 		$enforcer->loadPolicy();
 	}
 
@@ -132,10 +125,7 @@ final class Policy implements Common\EventSubscriber
 
 		$enforcer = $this->enforcerFactory->getEnforcer();
 
-		if ($enforcer instanceof Casbin\CachedEnforcer) {
-			$enforcer->invalidateCache();
-		}
-
+		$enforcer->invalidateCache();
 		$enforcer->loadPolicy();
 	}
 

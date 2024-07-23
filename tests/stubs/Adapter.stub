@@ -1,0 +1,42 @@
+<?php declare(strict_types=1);
+
+namespace Casbin\Persist;
+
+use Casbin\Model\Model;
+
+interface Adapter
+{
+
+    /**
+     * @param Model $model
+     */
+    public function loadPolicy(Model $model): void;
+
+    /**
+     * @param Model $model
+     */
+    public function savePolicy(Model $model): void;
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, string|null> $rule
+     */
+    public function addPolicy(string $sec, string $ptype, array $rule): void;
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, string|null> $rule
+     */
+    public function removePolicy(string $sec, string $ptype, array $rule): void;
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param int $fieldIndex
+     * @param string ...$fieldValues
+     */
+    public function removeFilteredPolicy(string $sec, string $ptype, int $fieldIndex, string ...$fieldValues): void;
+
+}

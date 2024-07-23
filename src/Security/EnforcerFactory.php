@@ -41,7 +41,7 @@ class EnforcerFactory
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getEnforcer(): Casbin\Enforcer
+	public function getEnforcer(): Casbin\CachedEnforcer
 	{
 		if ($this->enforcer === null) {
 			try {

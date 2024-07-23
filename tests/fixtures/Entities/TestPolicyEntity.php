@@ -9,9 +9,6 @@ use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 
 #[ORM\Entity]
-#[ORM\DiscriminatorMap([
-	self::TYPE => self::class,
-])]
 class TestPolicyEntity extends Entities\Policies\Policy
 {
 

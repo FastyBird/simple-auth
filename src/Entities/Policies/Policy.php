@@ -38,6 +38,8 @@ use Ramsey\Uuid;
 class Policy implements DoctrineCrud\Entities\IEntity
 {
 
+	public const TYPE = 'policy';
+
 	#[ORM\Id]
 	#[ORM\Column(name: 'policy_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]

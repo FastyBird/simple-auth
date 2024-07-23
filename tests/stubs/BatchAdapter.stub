@@ -1,0 +1,26 @@
+<?php declare(strict_types=1);
+
+namespace Casbin\Persist;
+
+interface BatchAdapter extends Adapter
+{
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, array<int, string|null>> $rules
+     *
+     * @return void
+     */
+    public function addPolicies(string $sec, string $ptype, array $rules): void;
+
+    /**
+     * @param string $sec
+     * @param string $ptype
+     * @param array<int, array<int, string|null>> $rules
+     *
+     * @return void
+     */
+    public function removePolicies(string $sec, string $ptype, array $rules): void;
+
+}
