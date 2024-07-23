@@ -8,9 +8,6 @@ use FastyBird\SimpleAuth\Types;
 use Ramsey\Uuid;
 
 #[ORM\Entity]
-#[ORM\DiscriminatorMap([
-	self::TYPE => self::class,
-])]
 class TestRoleEntity extends Entities\Policies\Policy
 {
 
