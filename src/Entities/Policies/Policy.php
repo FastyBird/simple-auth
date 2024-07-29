@@ -34,7 +34,7 @@ use Ramsey\Uuid;
 	],
 )]
 #[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'policy_policy_type', type: 'string', length: 100)]
+#[ORM\DiscriminatorColumn(name: 'policy_type', type: 'string', length: 100)]
 class Policy implements DoctrineCrud\Entities\IEntity
 {
 
@@ -47,7 +47,7 @@ class Policy implements DoctrineCrud\Entities\IEntity
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(
-		name: 'policy_type',
+		name: 'ptype',
 		type: 'string',
 		nullable: false,
 		enumType: Types\PolicyType::class,
@@ -55,27 +55,27 @@ class Policy implements DoctrineCrud\Entities\IEntity
 	protected Types\PolicyType $type;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'policy_v0', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'v0', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v0 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'policy_v1', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'v1', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v1 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'policy_v2', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'v2', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v2 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'policy_v3', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'v3', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v3 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'policy_v4', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'v4', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v4 = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\Column(name: 'policy_v5', type: 'string', length: 150, nullable: true, options: ['default' => null])]
+	#[ORM\Column(name: 'v5', type: 'string', length: 150, nullable: true, options: ['default' => null])]
 	protected string|null $v5 = null;
 
 	public function __construct(

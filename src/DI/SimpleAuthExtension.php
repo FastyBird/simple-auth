@@ -18,6 +18,7 @@ namespace FastyBird\SimpleAuth\DI;
 use Casbin;
 use Doctrine\Persistence;
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Access;
 use FastyBird\SimpleAuth\Events;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Mapping;
@@ -148,8 +149,18 @@ class SimpleAuthExtension extends DI\CompilerExtension
 		$builder->addDefinition($this->prefix('security.userStorage'), new DI\Definitions\ServiceDefinition())
 			->setType(Security\UserStorage::class);
 
-		$builder->addDefinition($this->prefix('security.annotationChecker'), new DI\Definitions\ServiceDefinition())
-			->setType(Security\AnnotationChecker::class);
+		/**
+		 * Access checks
+		 */
+
+		$builder->addDefinition($this->prefix('access.annotationChecker'), new DI\Definitions\ServiceDefinition())
+			->setType(Access\AnnotationChecker::class);
+
+		$builder->addDefinition($this->prefix('access.latteChecker'), new DI\Definitions\ServiceDefinition())
+			->setType(Access\LatteChecker::class);
+
+		$builder->addDefinition($this->prefix('access.linkChecker'), new DI\Definitions\ServiceDefinition())
+			->setType(Access\LinkChecker::class);
 
 		/**
 		 * Casbin
@@ -197,7 +208,7 @@ class SimpleAuthExtension extends DI\CompilerExtension
 
 		if ($configuration->enable->middleware) {
 			$builder->addDefinition($this->prefix('middleware.access'), new DI\Definitions\ServiceDefinition())
-				->setType(Middleware\Access::class);
+				->setType(Middleware\Authorization::class);
 
 			$builder->addDefinition($this->prefix('middleware.user'), new DI\Definitions\ServiceDefinition())
 				->setType(Middleware\User::class);

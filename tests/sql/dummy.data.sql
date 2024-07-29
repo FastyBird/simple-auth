@@ -1,4 +1,4 @@
-INSERT INTO fb_security_policies (policy_id, policy_type, policy_v0, policy_v1, policy_v2, policy_v3, policy_v4, policy_v5, policy_policy_type) VALUES
+INSERT INTO fb_security_policies (policy_id, ptype, v0, v1, v2, v3, v4, v5, policy_type) VALUES
 (X'e65bb4b539a44136a92208aefaee3c44', 'p', 'testing', 'data1', 'read', NULL, NULL, NULL, 'policy'),
 (X'272379D8835144B6AD8D73A0ABCB7F9C', 'p', '2784d750-f085-4580-8525-4d622face83d', 'data1', 'read', NULL, NULL, NULL, 'testpolicyentity'),
 (X'AB369E71ADA64D1AA5A8B6EE5CD58296', 'p', 'c450531d-0f10-4587-a0ce-42fb48a8a8ad', 'data2', 'write', NULL, NULL, NULL, 'testpolicyentity'),

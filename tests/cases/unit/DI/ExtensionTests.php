@@ -24,7 +24,7 @@ final class ExtensionTests extends BaseTestCase
 		self::assertNotNull($container->getByType(SimpleAuth\Configuration::class, false));
 
 		self::assertNotNull($container->getByType(Middleware\User::class, false));
-		self::assertNotNull($container->getByType(Middleware\Access::class, false));
+		self::assertNotNull($container->getByType(Middleware\Authorization::class, false));
 
 		self::assertNotNull($container->getByType(Subscribers\Application::class, false));
 		self::assertNotNull($container->getByType(Subscribers\User::class, false));

@@ -12,8 +12,6 @@ use Ramsey\Uuid;
 class TestPolicyEntity extends Entities\Policies\Policy
 {
 
-	public const TYPE = 'test_policy';
-
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(
 		name: 'policy_parent',

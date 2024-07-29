@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Access.php
+ * Authorization.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,8 +15,8 @@
 
 namespace FastyBird\SimpleAuth\Middleware;
 
+use FastyBird\SimpleAuth\Access;
 use FastyBird\SimpleAuth\Exceptions;
-use FastyBird\SimpleAuth\Security;
 use IPub\SlimRouter;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,12 +37,11 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Access implements MiddlewareInterface
+final class Authorization implements MiddlewareInterface
 {
 
 	public function __construct(
-		private readonly Security\User $user,
-		private readonly Security\AnnotationChecker $annotationChecker,
+		private readonly Access\AnnotationChecker $annotationChecker,
 	)
 	{
 	}
@@ -70,7 +69,6 @@ final class Access implements MiddlewareInterface
 				&& class_exists(get_class($routeCallable[0]))
 			) {
 				if (!$this->annotationChecker->checkAccess(
-					$this->user,
 					get_class($routeCallable[0]),
 					$routeCallable[1],
 				)) {
