@@ -1,6 +1,6 @@
 # Quick start
 
-This extension adds support for user access handling for PSR-7 applications.
+This extension adds support for user access handling for PSR-7 applications. The access check is done with help of the [Casbin](https://casbin.org) library
 
 ***
 
@@ -41,12 +41,22 @@ fbSimpleAuth:
         issuer: fb_tester
         signature: someSecurityHasToProtectGeneratedToken
     enable:
-        middleware: true
+        middleware: false
         doctrine:
-            mapping: true
-            models: true
+            mapping: false
+            models: false
+        casbin:
+            database: false
+        nette:
+            application: false
+    application:
+        signInUrl:
+        homeUrl: /
     services:
         identity: true
+    casbin:
+        model: rbac.model.conf
+        policy:
 ```
 
 Where:
@@ -58,11 +68,17 @@ Where:
 
 - `enable -> middleware` enable or disable extension middlewares
 - `enable -> doctrine -> mapping` enable or disable Doctrine2 owner field mapping to your entities
-- `enable -> doctrine -> models` enable or disable Doctrine2 models services for reading, creating, updating and
-  deleting tokens
+- `enable -> doctrine -> models` enable or disable Doctrine2 models services for reading, creating, updating and deleting tokens
+- `enable -> casbin -> database` enable or disable Casbin database storage for policies
+- `enable -> nette -> application` enable or disable [Nette](https://www.nette.org) access checker for presenters
 
+- `application -> signInUrl` is route definition where user will be redirected when is not signed in
+- `application -> homeUrl` is route definition where user will be redirected when signed in and open page for not signed in users
 
 - `services -> identity` enable or disable simple identity factory
+
+- `casbin -> model` path to Casbin model configuration. By default, the RBAC model is used
+- `casbin -> policy` path to Casbin policy CSV file if the database storage for policies is not used
 
 ## Application user & identity
 
@@ -239,15 +255,32 @@ Access to controllers or methods are managed via PHPDoc annotation:
 namespace Your\CoolApp\Controllers;
 
 /**
- * @Secured(loggedIn)
+ * @Secured\User(loggedIn)
  * @Secured\Role(manager,administrator)
  */
 class RestrictedController
 {
 
     /**
-     * @Secured(loggedIn)
+     * @Secured\User(loggedIn)
      * @Secured\Role(administrator)
+     */
+    public function readContent()
+    {
+        // ...
+    }
+
+    /**
+     * @Secured\Resource(NameOfResource)
+     * @Secured\Privilege(NameOfPrivilege)
+     */
+    public function readContent()
+    {
+        // ...
+    }
+
+    /**
+     * @Secured\Permission(NameOfResource: NameOfPrivilege)
      */
     public function readContent()
     {
@@ -259,15 +292,79 @@ class RestrictedController
 
 Restriction is configured with attributes:
 
-`@Secured(loggedIn)` - user have to have valid access token, eg. user have to be logged-in
+`@Secured\User(loggedIn)` - user have to be signed in
 
-`@Secured(guest)` - user have to be anonymous
+`@Secured\User(guest)` - user have to be anonymous
 
-`@Secured\Role(roleName)` - Access middleware is going to check if logged-in user has configured role. Role could be
-single or multiple separated with commas
+`@Secured\Role(roleName)` - User have to be a member of provided user role. Role could be single or multiple separated with commas
+
+`@Secured\Resource(resourceName)` - User have to have access to provided resource. Only one resource per check is allowed 
+
+`@Secured\Privilege(privilegeName)` - This annotation is expecting permission string NameOfResource: NameOfPrivilege. This annotation allows multiple definitions 
+
+`@Secured\Permission(permissionName)` - This  
 
 Annotation could be combined or only on signle place. You could restrict whole controller or only specific methods.
 
+# Using in presenters, components, models, etc.
+
+Everywhere you want to check user rights to some action, you just create a simple call:
+
+```php
+$user->isAllowed('resource', 'privilege', ....);
+```
+
+and if user has access to this combination, you will receive **TRUE** value
+
+## Using in Latte
+
+In latte you can use two special macros.
+
+```latte
+<div class="some class">
+    <p>
+        This text is for everyone....
+    </p>
+    {ifAllowed resource => 'system', privilege => 'manage'}
+    <p>
+        But this one is only for special persons....
+    </p>
+    {else}
+    <p>
+        And here is a content for non special persons....
+    </p>
+    {/ifAllowed}
+</div>
+```
+
+Macro **ifAllowed** is very similar to annotations definition. You can use here one or all of available parameters: user, resource, privilege, permission or role.
+
+This macro can be also used as **n:macro**:
+
+```latte
+<div class="some class">
+    <p>
+        This text is for everyone....
+    </p>
+    <p n:ifAllowed resource => 'system', privilege => 'manage user permissions'>
+        But this one is only for special persons....
+    </p>
+    <p n:elseAllowed>
+        And here is a content for non special persons....
+    </p>
+</div>
+```
+
+And second special macro is for links:
+
+```latte
+<a n:allowedHref="Settings:" class="some class">
+    Link text...
+</a>
+
+Macro **n:allowedHref** is expecting only valid link and in case user doesn't have access to this link, link is not clickable.
+
+```
 # Tip
 
 We recommend using this extension with [fastybird/web-server](https://github.com/FastyBird/web-server) package. This
