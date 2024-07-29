@@ -112,15 +112,7 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 	public function loadFilteredPolicy(CasbinModel\Model $model, $filter): void
 	{
 		$queryBuilder = $this->connection->createQueryBuilder();
-		$queryBuilder->select(
-			'ptype',
-			'v0',
-			'v1',
-			'v2',
-			'v3',
-			'v4',
-			'v5',
-		);
+		$queryBuilder->select('ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5');
 
 		if (is_string($filter) || $filter instanceof DBAL\Query\Expression\CompositeExpression) {
 			$queryBuilder->where($filter);
