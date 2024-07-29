@@ -17,3 +17,13 @@ parameters:
         - ../tests/stubs/BatchAdapter.stub
         - ../tests/stubs/UpdatableAdapter.stub
         - ../tests/stubs/Model.stub
+
+    ignoreErrors:
+        -
+            message: '#^Unsafe usage of new static\(\).#'
+            path: ../src/Latte/Nodes/IfAllowedNode.php
+            count: 1
+        -
+            message: '#^Unsafe usage of new static\(\).#'
+            path: ../src/Latte/Nodes/AllowedHrefNode.php
+            count: 1

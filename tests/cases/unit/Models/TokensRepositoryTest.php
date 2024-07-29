@@ -12,7 +12,7 @@ use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\DI;
 use Nette\Utils;
 
-final class ToknesRepositoryTest extends BaseTestCase
+final class TokensRepositoryTest extends BaseTestCase
 {
 
 	/**

@@ -79,7 +79,7 @@ final class UserMiddlewareTest extends BaseTestCase
 				$group->patch('/testing-endpoint', [$controller, 'update']);
 			});
 
-		$route->addMiddleware($this->container->getByType(Middleware\Access::class));
+		$route->addMiddleware($this->container->getByType(Middleware\Authorization::class));
 		$route->addMiddleware($this->container->getByType(Middleware\User::class));
 
 		return $router;

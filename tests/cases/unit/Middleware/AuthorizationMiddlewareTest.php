@@ -13,7 +13,7 @@ use IPub\SlimRouter;
 use Nette\DI;
 use Nette\Utils;
 
-final class AccessMiddlewareTest extends BaseTestCase
+final class AuthorizationMiddlewareTest extends BaseTestCase
 {
 
 	/**
@@ -151,7 +151,7 @@ final class AccessMiddlewareTest extends BaseTestCase
 				$group->patch('/testing-endpoint', [$controller, 'update']);
 			});
 
-		$route->addMiddleware($this->container->getByType(Middleware\Access::class));
+		$route->addMiddleware($this->container->getByType(Middleware\Authorization::class));
 		$route->addMiddleware($this->container->getByType(Middleware\User::class));
 
 		return $router;

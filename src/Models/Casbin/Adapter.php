@@ -51,7 +51,7 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 	private bool $filtered = false;
 
 	/** @var array<string> */
-	private array $columns = ['policy_type', 'policy_v0', 'policy_v1', 'policy_v2', 'policy_v3', 'policy_v4', 'policy_v5'];
+	private array $columns = ['ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5'];
 
 	public function __construct(private readonly DBAL\Connection $connection)
 	{
@@ -71,8 +71,8 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 			->insert($this->policyTableName)
 			->values([
 				'policy_id' => '?',
+				'ptype' => '?',
 				'policy_type' => '?',
-				'policy_policy_type' => '?',
 			])
 			->setParameter(0, Uuid\Uuid::uuid4(), Uuid\Doctrine\UuidBinaryType::NAME)
 			->setParameter(1, Types\PolicyType::from($pType)->value)
@@ -80,7 +80,7 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 
 		foreach ($rule as $key => $value) {
 			$queryBuilder
-				->setValue('policy_v' . strval($key), '?')
+				->setValue('v' . strval($key), '?')
 				->setParameter(intval($key) + 3, $value);
 		}
 
@@ -95,7 +95,7 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 		$queryBuilder = $this->connection->createQueryBuilder();
 
 		$stmt = $queryBuilder
-			->select('policy_type', 'policy_v0', 'policy_v1', 'policy_v2', 'policy_v3', 'policy_v4', 'policy_v5')
+			->select('ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5')
 			->from($this->policyTableName)
 			->executeQuery();
 
@@ -113,13 +113,13 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 	{
 		$queryBuilder = $this->connection->createQueryBuilder();
 		$queryBuilder->select(
-			'policy_type',
-			'policy_v0',
-			'policy_v1',
-			'policy_v2',
-			'policy_v3',
-			'policy_v4',
-			'policy_v5',
+			'ptype',
+			'v0',
+			'v1',
+			'v2',
+			'v3',
+			'v4',
+			'v5',
 		);
 
 		if (is_string($filter) || $filter instanceof DBAL\Query\Expression\CompositeExpression) {
@@ -235,11 +235,11 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 	public function updatePolicy(string $sec, string $pType, array $oldRule, array $newPolicy): void
 	{
 		$queryBuilder = $this->connection->createQueryBuilder();
-		$queryBuilder->where('policy_type = :ptype')->setParameter('ptype', $pType);
+		$queryBuilder->where('ptype = :ptype')->setParameter('ptype', $pType);
 
 		foreach ($oldRule as $key => $value) {
 			$placeholder = 'w' . strval($key);
-			$queryBuilder->andWhere('policy_v' . strval($key) . ' = :' . $placeholder)->setParameter(
+			$queryBuilder->andWhere('v' . strval($key) . ' = :' . $placeholder)->setParameter(
 				$placeholder,
 				$value,
 			);
@@ -247,7 +247,7 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 
 		foreach ($newPolicy as $key => $value) {
 			$placeholder = 's' . strval($key);
-			$queryBuilder->set('policy_v' . strval($key), ':' . $placeholder)->setParameter($placeholder, $value);
+			$queryBuilder->set('v' . strval($key), ':' . $placeholder)->setParameter($placeholder, $value);
 		}
 
 		$queryBuilder->update($this->policyTableName);
@@ -326,10 +326,10 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 	private function removePolicyLine(string $pType, array $rule): void
 	{
 		$queryBuilder = $this->connection->createQueryBuilder();
-		$queryBuilder->where('policy_type = ?')->setParameter(0, $pType);
+		$queryBuilder->where('ptype = ?')->setParameter(0, $pType);
 
 		foreach ($rule as $key => $value) {
-			$queryBuilder->andWhere('policy_v' . strval($key) . ' = ?')->setParameter($key + 1, $value);
+			$queryBuilder->andWhere('v' . strval($key) . ' = ?')->setParameter($key + 1, $value);
 		}
 
 		$queryBuilder->delete($this->policyTableName)->executeQuery();
@@ -346,11 +346,11 @@ class Adapter implements CasbinPersist\FilteredAdapter, CasbinPersist\BatchAdapt
 
 		$this->connection->transactional(function () use ($pType, $fieldIndex, $fieldValues, &$removedRules): void {
 			$queryBuilder = $this->connection->createQueryBuilder();
-			$queryBuilder->where('policy_type = :ptype')->setParameter('ptype', $pType);
+			$queryBuilder->where('ptype = :ptype')->setParameter('ptype', $pType);
 
 			foreach ($fieldValues as $value) {
 				if ($value !== null && $value !== '') {
-					$key = 'policy_v' . strval($fieldIndex);
+					$key = 'v' . strval($fieldIndex);
 
 					$queryBuilder
 						->andWhere($key . ' = :' . $key)

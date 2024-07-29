@@ -1,0 +1,29 @@
+#
+# DI configuration
+#
+# @license      More in LICENSE.md
+# @copyright    https://www.fastybird.com
+# @author       Adam Kadlec <adam.kadlec@fastybird.com>
+# @package      FastyBird:SimpleAuth!
+# @subpackage   config
+# @since        0.1.0
+#
+# @date         28.07.24
+
+services:
+    latteAccessExtension:
+        class: FastyBird\SimpleAuth\Latte\AccessExtension
+
+    # Test presenter
+    presenters.article:
+        class: FastyBird\SimpleAuth\Tests\Fixtures\Presenters\ArticlePresenter
+
+    - FastyBird\SimpleAuth\Tests\Fixtures\RouterFactory::createRouter
+
+latte:
+    extensions:
+         - @latteAccessExtension
+
+application:
+    mapping:
+        *: FastyBird\SimpleAuth\Tests\Fixtures\Presenters\*Presenter

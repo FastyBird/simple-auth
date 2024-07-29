@@ -15,6 +15,7 @@
 
 namespace FastyBird\SimpleAuth\Security;
 
+use Casbin\Exceptions as CasbinExceptions;
 use Closure;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
@@ -125,6 +126,25 @@ class User
 		return $this->enforcerFactory->getEnforcer()->getRolesForUser(
 			$this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
 		);
+	}
+
+	/**
+	 * @param string $rules
+	 *
+	 * @throws Exceptions\InvalidState
+	 *
+	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
+	 */
+	public function isAllowed(...$rules): bool
+	{
+		try {
+			return $this->enforcerFactory->getEnforcer()->enforce(
+				$this->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+				...$rules,
+			);
+		} catch (CasbinExceptions\CasbinException) {
+			return false;
+		}
 	}
 
 }

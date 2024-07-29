@@ -1,0 +1,18 @@
+{block content}
+    <h1>Article detail</h1>
+
+    {ifAllowed resource => data2, privilege => read}
+        You are able to see private content of the article
+    {else}
+        You don't have insufficient rights to see private content
+    {/ifAllowed}
+
+    <h2>Next paragraph</h2>
+
+    <p n:ifAllowed="resource => data2, privilege => read">
+        This is part of the article is only for special users
+    </p>
+    <p n:elseAllowed>
+        Alternative content for users without permissions
+    </p>
+{/block}

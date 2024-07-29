@@ -11,8 +11,6 @@ use Ramsey\Uuid;
 class TestRoleEntity extends Entities\Policies\Policy
 {
 
-	public const TYPE = 'test_role';
-
 	public function __construct(Uuid\UuidInterface|null $id = null)
 	{
 		parent::__construct(Types\PolicyType::ROLE, $id);

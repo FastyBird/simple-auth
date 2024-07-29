@@ -16,6 +16,7 @@
 namespace FastyBird\SimpleAuth\Application;
 
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Access;
 use FastyBird\SimpleAuth\Security;
 use Nette\Application;
 use ReflectionClass;
@@ -37,12 +38,12 @@ trait TSimpleAuth
 
 	protected SimpleAuth\Configuration $simpleAuthConfiguration;
 
-	protected Security\AnnotationChecker $annotationChecker;
+	protected Access\AnnotationChecker $annotationChecker;
 
 	protected Security\User|null $simpleUser = null;
 
 	public function injectSimpleAuth(
-		Security\AnnotationChecker $annotationChecker,
+		Access\AnnotationChecker $annotationChecker,
 		SimpleAuth\Configuration $configuration,
 		Security\User|null $simpleUser = null,
 	): void
@@ -70,7 +71,6 @@ trait TSimpleAuth
 			parent::checkRequirements($element);
 
 			if (!$this->annotationChecker->checkAccess(
-				$this->simpleUser,
 				$element instanceof ReflectionClass ? $element->name : $element->class,
 				$element instanceof ReflectionMethod ? $element->name : null,
 			)) {
