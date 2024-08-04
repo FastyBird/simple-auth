@@ -27,10 +27,11 @@ final class PoliciesRepositoryTest extends BaseTestCase
 
 	/**
 	 * @throws DI\MissingServiceException
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws ORM\Tools\ToolsException
 	 */
 	public function testPolicyEntity(): void
@@ -88,6 +89,9 @@ final class PoliciesRepositoryTest extends BaseTestCase
 
 	/**
 	 * @throws DI\MissingServiceException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws ORM\Tools\ToolsException
 	 */

@@ -32,7 +32,9 @@ final class DatabaseTest extends DbTestCase
 	/**
 	 * @throws Casbin\Exceptions\CasbinException
 	 * @throws DI\MissingServiceException
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState

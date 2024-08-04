@@ -17,10 +17,11 @@ final class TokensRepositoryTest extends BaseTestCase
 
 	/**
 	 * @throws DI\MissingServiceException
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws ORM\Tools\ToolsException
 	 */
 	public function testTokenEntity(): void
