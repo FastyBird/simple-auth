@@ -47,6 +47,11 @@ class Manager
 	{
 	}
 
+	/**
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(Utils\ArrayHash $values): Entities\Policies\Policy
 	{
 		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
@@ -56,7 +61,8 @@ class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Policies\Policy $entity,
@@ -70,7 +76,8 @@ class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Policies\Policy $entity): bool
 	{
