@@ -2,6 +2,7 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\Models;
 
+use Doctrine\DBAL;
 use Doctrine\ORM;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Models;
@@ -26,6 +27,7 @@ final class PoliciesRepositoryTest extends BaseTestCase
 	}
 
 	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DI\MissingServiceException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument
@@ -88,6 +90,7 @@ final class PoliciesRepositoryTest extends BaseTestCase
 	}
 
 	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DI\MissingServiceException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument

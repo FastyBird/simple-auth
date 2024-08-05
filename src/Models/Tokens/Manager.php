@@ -15,6 +15,7 @@
 
 namespace FastyBird\SimpleAuth\Models\Tokens;
 
+use Doctrine\DBAL;
 use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Models;
 use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
@@ -48,6 +49,7 @@ class Manager
 	}
 
 	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidState
@@ -61,6 +63,7 @@ class Manager
 	}
 
 	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DoctrineCrudExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidState
 	 */

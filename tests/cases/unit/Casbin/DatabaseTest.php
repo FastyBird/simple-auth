@@ -3,6 +3,7 @@
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\Casbin;
 
 use Casbin;
+use Doctrine\DBAL;
 use FastyBird\SimpleAuth\Entities;
 use FastyBird\SimpleAuth\Exceptions;
 use FastyBird\SimpleAuth\Models;
@@ -31,6 +32,7 @@ final class DatabaseTest extends DbTestCase
 
 	/**
 	 * @throws Casbin\Exceptions\CasbinException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DI\MissingServiceException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument
