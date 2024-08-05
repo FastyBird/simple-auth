@@ -2,6 +2,7 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit\Models;
 
+use Doctrine\DBAL;
 use Doctrine\ORM;
 use FastyBird\SimpleAuth\Models;
 use FastyBird\SimpleAuth\Queries;
@@ -16,6 +17,7 @@ final class TokensRepositoryTest extends BaseTestCase
 {
 
 	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DI\MissingServiceException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument
