@@ -2,10 +2,8 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit;
 
-use DateTimeImmutable;
 use Doctrine\DBAL;
 use Doctrine\ORM;
-use FastyBird\DateTimeFactory;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions;
 use IPub\DoctrineCrud;
@@ -58,16 +56,6 @@ abstract class DbTestCase extends TestCase
 
 		$this->container = $this->createContainer();
 		$this->em = $this->container->getByType(NettrineORM\EntityManagerDecorator::class);
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
 	}
 
 	/**

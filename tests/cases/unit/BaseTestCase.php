@@ -2,9 +2,7 @@
 
 namespace FastyBird\SimpleAuth\Tests\Cases\Unit;
 
-use DateTimeImmutable;
 use Doctrine\ORM;
-use FastyBird\DateTimeFactory;
 use FastyBird\SimpleAuth;
 use Nette;
 use Nette\DI;
@@ -34,16 +32,6 @@ abstract class BaseTestCase extends TestCase
 
 		$this->container = $this->createContainer();
 		$this->em = $this->container->getByType(Nettrine\ORM\EntityManagerDecorator::class);
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
 	}
 
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
