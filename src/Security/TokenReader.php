@@ -55,7 +55,8 @@ final class TokenReader
 
 		if (
 			is_string($headerJWT)
-			&& preg_match(SimpleAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) !== false
+			&& preg_match(SimpleAuth\Constants::TOKEN_HEADER_REGEXP, $headerJWT, $matches) === 1
+			&& $matches[1] !== ''
 		) {
 			$token = $this->tokenValidator->validate($matches[1]);
 
