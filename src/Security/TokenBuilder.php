@@ -44,7 +44,7 @@ final class TokenBuilder
 	public function __construct(
 		private readonly string $tokenSignature,
 		private readonly string $tokenIssuer,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 	)
 	{
 	}
@@ -65,7 +65,7 @@ final class TokenBuilder
 			JWT\Signer\Key\InMemory::plainText($this->tokenSignature),
 		);
 
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 		assert($now instanceof DateTimeImmutable);
 
 		$jwtBuilder = $configuration->builder();
