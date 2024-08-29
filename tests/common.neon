@@ -71,4 +71,4 @@ fbSimpleAuth:
         policy: %appDir%tests/fixtures/policy.csv
 
 fbDateTimeFactory:
-    frozen: new DateTimeImmutable('2020-04-01T12:00:00+00:00')
+    frozen: DateTimeImmutable('2020-04-01T12:00:00+00:00')
